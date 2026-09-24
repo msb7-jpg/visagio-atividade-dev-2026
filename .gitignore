@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Ambiente e banco local
+.env
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# Sistema operacional e IDE
+.DS_Store
+.vscode/
+
+data/
