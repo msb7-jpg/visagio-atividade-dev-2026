@@ -1,0 +1,1 @@
+"""Componentes transversais da aplicação."""

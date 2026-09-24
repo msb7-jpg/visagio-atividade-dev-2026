@@ -1,0 +1,4 @@
+Revisões Alembic do RocketLab 2026.2.
+
+Use `alembic revision --autogenerate -m "mensagem"` após modificar os
+modelos ORM. Revise toda migração autogerada antes de aplicá-la.
