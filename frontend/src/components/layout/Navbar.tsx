@@ -1,4 +1,4 @@
-import React from 'react'
+import { routes } from '@/routes/routes.types'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, Loader2, X, Film, LogIn, LogOut, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         {/* Logo / Brand */}
         <Link
-          to="/"
+          to={routes.home()}
           className="group flex items-center gap-2.5 transition-transform active:scale-95"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary shadow-[0_0_15px_rgba(234,179,8,0.15)] transition-all group-hover:border-primary/40 group-hover:shadow-[0_0_20px_rgba(234,179,8,0.3)]">
@@ -125,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
                 className="hidden items-center gap-1.5 rounded-full border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary sm:flex"
               >
                 <ShieldCheck className="size-3.5 text-primary" />
-                <span className="max-w-[120px] truncate font-medium">
+                <span className="max-w-30 truncate font-medium">
                   {user?.nome || 'Admin'}
                 </span>
               </Badge>
@@ -143,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(routes.login())}
               className="gap-1.5 border-white/15 bg-white/5 text-xs text-white hover:bg-white/10"
             >
               <LogIn className="h-4 w-4 text-primary" />

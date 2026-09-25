@@ -1,21 +1,26 @@
+import { Badge } from '@/components/ui/badge'
+import { BlurImage } from '@/components/ui/blur-image'
 import {
   CommandGroup,
   CommandItem,
   CommandSeparator
 } from '@/components/ui/command'
-import { Badge } from '@/components/ui/badge'
-import { BlurImage } from '@/components/ui/blur-image'
-import type { QuickSearchMovieItem } from '@/features/command-palette/api/spotlightApi'
-import { ArrowRight, Compass, LogIn, Sparkles } from 'lucide-react'
+import {
+  type CommandGenreItem,
+  type CommandMovieItem,
+  type CommandPaletteAction
+} from '@/features/command-palette/types/command-palette.types'
+import { ArrowRight, Compass, LogIn, LogOut, Sparkles } from 'lucide-react'
 import React from 'react'
 
 interface CommandResultsGroupViewProps {
-  movies: QuickSearchMovieItem[]
+  movies: CommandMovieItem[]
   query?: string
-  onSelectMovie: (movie: QuickSearchMovieItem) => void
-  onSelectAction: (path: string) => void
-  onSelectGenre: (genre: string) => void
-  genres?: string[]
+  onSelectMovie: (movie: CommandMovieItem) => void
+  onSelectAction: (action: CommandPaletteAction) => void
+  onSelectGenre: (genre: CommandGenreItem) => void
+  genres?: CommandGenreItem[]
+  isAuthenticated?: boolean
 }
 
 const DEFAULT_POPULAR_GENRES = [
@@ -35,7 +40,8 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
   onSelectMovie,
   onSelectAction,
   onSelectGenre,
-  genres
+  genres,
+  isAuthenticated = false
 }) => {
   const displayedGenres = genres && genres.length > 0 ? genres.slice(0, 8) : DEFAULT_POPULAR_GENRES
   return (
@@ -115,17 +121,28 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
           onSelect={() => onSelectAction('/')}
           className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10"
         >
-          <Compass className="h-4 w-4 text-primary" />
+          <Compass className="h-4 w-4" />
           <span>Explorar Catálogo Completo</span>
         </CommandItem>
-        <CommandItem
-          value="action-login"
-          onSelect={() => onSelectAction('/login')}
-          className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10"
-        >
-          <LogIn className="h-4 w-4 text-primary" />
-          <span>Área Administrativa (Login)</span>
-        </CommandItem>
+        {isAuthenticated ? (
+          <CommandItem
+            value="action-logout"
+            onSelect={() => onSelectAction('logout')}
+            className="/10 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Sair</span>
+          </CommandItem>
+        ) : (
+          <CommandItem
+            value="action-login"
+            onSelect={() => onSelectAction('/login')}
+            className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10"
+          >
+            <LogIn className="h-4 w-4 text-primary" />
+            <span>Área Administrativa (Login)</span>
+          </CommandItem>
+        )}
       </CommandGroup>
     </>
   )

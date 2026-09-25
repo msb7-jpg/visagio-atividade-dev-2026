@@ -1,12 +1,13 @@
+import type { AdminUser, LoginFormData, TokenResponse } from '@/features/auth/schemas/auth.schema'
+import type { UseMutateAsyncFunction } from '@tanstack/react-query'
 import { createContext } from 'react'
-import type { AdminUser, LoginFormData } from '@/features/auth/schemas/auth.schema'
 
 export interface AuthContextValue {
   token: string | null
   user: AdminUser | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (credentials: LoginFormData) => Promise<void>
+  login: UseMutateAsyncFunction<TokenResponse, Error, LoginFormData, unknown>
   logout: () => void
 }
 

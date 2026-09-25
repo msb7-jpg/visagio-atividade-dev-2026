@@ -69,4 +69,27 @@ describe('CommandResultsGroupView', () => {
     fireEvent.click(screen.getByText('Action'))
     expect(handleSelectGenre).toHaveBeenCalledWith('Action')
   })
+
+  it('renderiza Sair quando isAuthenticated for true e dispara logout ao clicar', () => {
+    const handleSelectAction = vi.fn()
+
+    render(
+      <Command>
+        <CommandList>
+          <CommandResultsGroupView
+            movies={[]}
+            query=""
+            onSelectMovie={vi.fn()}
+            onSelectAction={handleSelectAction}
+            onSelectGenre={vi.fn()}
+            isAuthenticated={true}
+          />
+        </CommandList>
+      </Command>
+    )
+
+    expect(screen.getByText('Sair')).toBeDefined()
+    fireEvent.click(screen.getByText('Sair'))
+    expect(handleSelectAction).toHaveBeenCalledWith('logout')
+  })
 })

@@ -7,7 +7,11 @@ import {
 } from '@/components/ui/command'
 import { CommandResultsGroupView } from './CommandResultsGroupView'
 import { useSpotlightSearch } from '@/features/command-palette/hooks/useSpotlightSearch'
-import type { QuickSearchMovieItem } from '@/features/command-palette/api/spotlightApi'
+import type {
+  CommandGenreItem,
+  CommandMovieItem,
+  CommandPaletteAction
+} from '@/features/command-palette/types/command-palette.types'
 import { Kbd } from '@/components/ui/kbd'
 import { Separator } from '@/components/ui/separator'
 import { Loader2 } from 'lucide-react'
@@ -15,10 +19,11 @@ import { Loader2 } from 'lucide-react'
 interface CommandPaletteDialogViewProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
-  onSelectMovie: (movie: QuickSearchMovieItem) => void
-  onSelectAction: (path: string) => void
-  onSelectGenre: (genre: string) => void
-  genres?: string[]
+  onSelectMovie: (movie: CommandMovieItem) => void
+  onSelectAction: (action: CommandPaletteAction) => void
+  onSelectGenre: (genre: CommandGenreItem) => void
+  genres?: CommandGenreItem[]
+  isAuthenticated?: boolean
 }
 
 export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> = ({
@@ -27,19 +32,20 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
   onSelectMovie,
   onSelectAction,
   onSelectGenre,
-  genres
+  genres,
+  isAuthenticated = false
 }) => {
   const [query, setQuery] = useState('')
   const { results, isLoading, isDebouncing } = useSpotlightSearch(query)
 
-  const handleSelectMovie = (movie: QuickSearchMovieItem) => {
+  const handleSelectMovie = (movie: CommandMovieItem) => {
     onOpenChange(false)
     onSelectMovie(movie)
   }
 
-  const handleSelectAction = (path: string) => {
+  const handleSelectAction = (action: CommandPaletteAction) => {
     onOpenChange(false)
-    onSelectAction(path)
+    onSelectAction(action)
   }
 
   const handleSelectGenre = (genre: string) => {
@@ -55,7 +61,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
     >
       <div className="relative">
         <CommandInput
-          placeholder="Busque por filme, gênero ou ação... (⌘K / Ctrl+K)"
+          placeholder="Busque por filme, gênero ou ação..."
           value={query}
           onValueChange={setQuery}
           className="h-14 text-base"
@@ -78,6 +84,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
           movies={results}
           query={query}
           genres={genres}
+          isAuthenticated={isAuthenticated}
           onSelectMovie={handleSelectMovie}
           onSelectAction={handleSelectAction}
           onSelectGenre={handleSelectGenre}
@@ -86,7 +93,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
 
       <Separator className="border-white/10" />
 
-      <div className="flex items-center justify-between bg-white/[0.02] px-4 py-2.5 text-[11px] text-muted-foreground">
+      <div className="flex items-center justify-between bg-white/2 px-4 py-2.5 text-[11px] text-muted-foreground">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             <Kbd className="bg-white/10 font-mono text-[10px] text-white">

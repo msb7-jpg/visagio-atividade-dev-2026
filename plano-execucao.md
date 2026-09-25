@@ -89,12 +89,14 @@
   - [x] Estruturar pastas base: `backend/app/core/`, `backend/app/db/`, `backend/app/shared/` (`dependencies.py`, `pagination.py`, `exceptions.py`) conforme [ARQUITETURA.md (Seção 3.1)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L128-L141).
   - [x] Configurar conexão assíncrona SQLite (`sqlite+aiosqlite:///./rocketlab.db`) e middleware de CORS para liberar `http://localhost:5173`.
   - [x] **Critério de Aceite / Teste:** `uv run pytest` executa e passa com 3 testes assíncronos.
-- [x] **0.2 Frontend Tooling & Design System Setup** *(Concluído em 2026-09-24)*
-  - [x] Instalar pacotes de produção: `bun add zod @tanstack/zod-form-adapter clsx tailwind-merge class-variance-authority lucide-react cmdk framer-motion simplex-noise axios`.
+- [x] **0.2 Frontend Tooling & Design System Setup** *(Concluído em 2026-09-24, ampliado em 2026-09-25)*
+  - [x] Instalar pacotes de produção: `bun add zod @tanstack/zod-form-adapter clsx tailwind-merge class-variance-authority lucide-react cmdk framer-motion simplex-noise axios @tanstack/react-form`.
   - [x] Configurar tokens semânticos CSS em `frontend/src/index.css` conforme paleta escura cinematográfica de [DESIGN.md (Seção 3)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L53-L86).
   - [x] Configurar clientes globais em `frontend/src/lib/`:
     - `api-client.ts` (instância Axios com base URL `/api/v1` e interceptor JWT).
-    - `query-client.ts` (`staleTime: 5min`, `gcTime: 15min`).
+    - `query-client.ts` (`staleTime: 5min`, `gcTime: 15min`) com `MutationCache` global interceptando `mutation.meta?.invalidates` e `mutation.meta?.redirectOnSuccess`.
+    - `navigation.ts` (navegador desacoplado para execução de redirects orquestrados por mutations).
+    - `types/tanstack-query.d.ts` (extensão tipada de `Register.mutationMeta` com `redirectOnSuccess`, `replace`, `invalidates` e `successMessage`).
     - `utils.ts` (função `cn()`).
   - [x] Criar componentes de feedback compartilhado em `frontend/src/components/feedback/`:
     - `RequiredFieldBadge.tsx` (asterisco com tooltip dark baseado em Aceternity `Tooltip` de `@aceternity/tooltip-card-demo` conforme [DESIGN.md 5.2](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)).
@@ -135,19 +137,19 @@
   - [x] `router.py`: `POST /api/v1/auth/login` e `GET /api/v1/auth/me`.
   - [x] `dependencies.py`: Injeção de dependência FastAPI `get_current_admin` para proteção de rotas mutantes.
   - [x] **Testes Backend:** `backend/tests/test_auth.py` (6 testes assíncronos cobrindo geração, decodificação, sucesso no login, senha incorreta, e-mail inexistente, `/auth/me` e 401 não autenticado).
-- [x] **2.2 Frontend: Auth Slice (`frontend/src/features/auth/`)** *(Concluído em 2026-09-24)*
+- [x] **2.2 Frontend: Auth Slice (`frontend/src/features/auth/`)** *(Concluído em 2026-09-24, ampliado com TanStack Query Mutations e TanStack Form em 2026-09-25)*
   - [x] `api/authApi.ts`: Chamada HTTP para login e `/auth/me`.
   - [x] `schemas/auth.schema.ts`: Schema Zod para formulário de login (email e senha obrigatórios) e tipo `JwtPayload`.
   - [x] `utils/token.ts`: Utilitário baseado em `jwt-decode` para inspeção segura de claims (`sub`, `role`, `exp`), cálculo proativo de expiração (`isTokenExpired`) com margem de segurança de 30s.
-  - [x] `hooks/useAuth.tsx`: Gerenciamento reativo de token no `localStorage` via `useSyncExternalStore` + React Context com checagem síncrona de expiração e estado `isAuthenticated`.
+  - [x] `hooks/useAuth.tsx` & `context/AuthProvider.tsx`: Gerenciamento reativo de token no `localStorage` via `useSyncExternalStore` + TanStack Query `useMutation` para login e logout padronizado (com `queryClient.clear()` e `meta: { redirectOnSuccess: '/login' }`).
   - [x] `components/subcomponents/CinematicIllustrations.tsx`: SVGs temáticos de alta fidelidade estilizados estilo Storyset com animações do Framer Motion (claquete pulsante, projetor cinematográfico com feixe luminoso, e métricas analíticas de bilheteria).
   - [x] `components/ui/layout-text-flip.tsx`: Componente oficial Aceternity instalado via `bunx --bun shadcn@latest add @aceternity/layout-text-flip` alternando os gêneros com flip 3D e blur.
   - [x] `components/subcomponents/SyncVisualShowcase.tsx`: Container lateral direito inspirado em `references/login-signup.png` que utiliza diretamente o `@aceternity/layout-text-flip` para alternar palavras/gêneros e sincroniza atômica e fluidamente com as ilustrações SVG do Storyset e cards de métricas.
   - [x] `components/subcomponents/CinematicMultiStepLoader.tsx`: Loader sequencial estilo Aceternity Loader com mensagens progressivas e checkmarks ao autenticar.
   - [x] `components/LoginCardView.tsx`: Cartão Glassmorphic visual puro com indicadores de campos obrigatórios (`RequiredFieldBadge`), input com ícones, tratamento de erros e botão de preenchimento rápido para avaliação técnica.
-  - [x] `components/LoginContainer.tsx`: Orquestrador de estado e redirecionamento conectando validações Zod, loader multi-step e visual split.
+  - [x] `components/LoginContainer.tsx`: Orquestrador de formulário com TanStack Form (`useForm` + `zodValidator`) integrado à mutação TanStack Query com `meta: { redirectOnSuccess: fromLocation }`.
   - [x] Configurar rotas `/login` e guard `ProtectedRoute` em `frontend/src/routes/` com validação de expiração via `jwt-decode`.
-  - [x] **Testes Frontend:** `frontend/src/features/auth/__tests__/LoginCard.test.tsx` e `token.test.ts` (8 testes passando no Vitest).
+  - [x] **Testes Frontend:** `frontend/src/features/auth/__tests__/LoginCard.test.tsx` e `token.test.ts` (testes passando no Vitest).
 
 ---
 
@@ -236,8 +238,8 @@
 - [ ] **5.2 Frontend: Reviews Slice (`frontend/src/features/reviews/`)**
   - [ ] `api/reviewsApi.ts`: Funções `fetchMovieReviews` e `submitReview`.
   - [ ] `schemas/review.schema.ts`: Schema Zod espelhando os contratos de negócio.
-  - [ ] `hooks/useReviewForm.ts`: TanStack Form + `zodFormAdapter` com reset após sucesso.
-  - [ ] `hooks/useReviewsQuery.ts` & `useSubmitReviewMutation.ts`: Invalidação de cache de queries do filme e detalhes ao submeter resenha.
+  - [ ] `hooks/useReviewForm.ts`: TanStack Form (`useForm` + `zodValidator`) com reset pós-submissão.
+  - [ ] `hooks/useReviewsQuery.ts` & `useSubmitReviewMutation.ts`: TanStack Query mutation com `meta: { invalidates: [['movies', id, 'reviews'], ['movies', id]], successMessage: 'Avaliação publicada com sucesso!' }` gerenciado no `MutationCache` global.
   - [ ] `components/ReviewRatingStarsView.tsx`: Seletor interativo de estrelas com feedback de nota em tempo real.
   - [ ] `components/NewReviewModalView.tsx`: Modal com formulário tipado e indicadores visuais de obrigatoriedade (`RequiredFieldBadge`).
   - [ ] `components/ReviewExpandableCardView.tsx`: Aceternity `ExpandableCard` com Framer Motion (`layoutId`) para abrir e ler resenhas completas sem reload.
@@ -247,7 +249,7 @@
 ---
 
 ### Etapa 6: Slice Vertical de Gestão de Filmes (CRUD Admin)
-> **Objetivo:** Permitir ao Administrador autenticado cadastrar novos filmes (com campos obrigatórios, seleção de gêneros, preview de pôster), atualizar informações de filmes existentes e remover filmes com diálogo de confirmação.  
+> **Objetivo:** Permitir ao Administrador autenticado cadastrar novos filmes (com campos obrigatórios, seleção de gêneros, preview de pôster), atualizar informações de filmes existentes e remover filmes com diálogo de confirmação, orquestrados por TanStack Form e TanStack Query mutations com redirects e invalidações declarativas via `mutationMeta`.  
 > **Referências:**  
 > - [Atividade de Dev.pdf (Cadastrar filmes, remover e atualizar filmes individualmente)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seção 3.1 `movies` e 4.1 `movie-admin`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L298-L312)  
@@ -266,6 +268,7 @@
   - [ ] `api/movieAdminApi.ts`: Chamadas autenticadas `createMovie`, `updateMovie`, `deleteMovie`.
   - [ ] `schemas/movie-form.schema.ts`: Schema Zod do formulário com validações de limites de ano (1888 a 2030), duração e textos.
   - [ ] `hooks/useMovieAdminForm.ts`: TanStack Form com preenchimento em modo edição e reset em modo criação.
+  - [ ] `hooks/useMovieAdminMutations.ts`: TanStack Query mutations (`createMovie`, `updateMovie`, `deleteMovie`) configuradas com `meta: { redirectOnSuccess: (data) => /filmes/${data.sk_movie_id}, invalidates: [['movies']] }`.
   - [ ] `components/PosterPreviewCard.tsx`: Preview dinâmico do pôster com suporte a fallback visual em caso de erro na URL digitada.
   - [ ] `components/MovieFormView.tsx`: Formulário completo com seletor de gêneros, textarea para sinopse e indicadores de campos obrigatórios (`RequiredFieldBadge`).
   - [ ] `components/MovieCreateContainer.tsx` (rota `/admin/filmes/novo`) & `components/MovieEditContainer.tsx` (rota `/admin/filmes/:id/editar`).
@@ -282,7 +285,7 @@
 > - [ARQUITETURA.md (Seção 4.1 `command-palette`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L313-L325)  
 
 - [ ] **7.1 Frontend: Ações Contextuais e Integração com Roles Admin**
-  - [ ] Adicionar grupo "Ações Administrativas" visível condicionalmente para administradores logados (atalhos diretos para `/admin/filmes/novo`).
+  - [ ] Adicionar grupo "Ações Administrativas" visível condicionalmente para administradores logados (atalhos diretos para `/admin/filmes/novo` e ação unificada de encerramento de sessão disparando mutação de logout).
   - [ ] Integrar atalhos analíticos (pular para os filmes com maior ROI ou maior bilheteria).
   - [ ] **Testes Frontend:** `frontend/src/features/command-palette/__tests__/CommandPaletteAdvanced.test.tsx` (exibição condicional de ações administrativas e execução de atalhos).
 

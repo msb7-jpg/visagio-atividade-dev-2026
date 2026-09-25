@@ -1,8 +1,15 @@
-import type { QuickSearchMovieItem } from '@/features/command-palette/api/spotlightApi'
+import { routes } from '@/routes/routes.types'
+import {
+  COMMAND_ACTIONS,
+  type CommandGenreItem,
+  type CommandMovieItem,
+  type CommandPaletteAction
+} from '@/features/command-palette/types/command-palette.types'
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CommandPaletteDialogView } from './CommandPaletteDialogView'
 import { useGenresQuery } from '@/features/catalog/hooks/useMoviesQuery'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 
 interface CommandPaletteContainerProps {
   isOpen: boolean
@@ -14,11 +21,12 @@ export const CommandPaletteContainer: React.FC<CommandPaletteContainerProps> = (
   onOpenChange
 }) => {
   const navigate = useNavigate()
+  const { isAuthenticated, logout } = useAuth()
   const { data: genresData } = useGenresQuery()
 
   const availableGenres = useMemo(() => {
     if (genresData && genresData.length > 0) {
-      return genresData.map((g) => g.nome_genero)
+      return genresData.map(genre => genre.nome_genero)
     }
     return [
       'Action',
@@ -32,16 +40,23 @@ export const CommandPaletteContainer: React.FC<CommandPaletteContainerProps> = (
     ]
   }, [genresData])
 
-  const handleSelectMovie = (movie: QuickSearchMovieItem) => {
-    navigate(`/filmes/${movie.sk_movie_id}`)
+  const handleSelectMovie = (movie: CommandMovieItem) => {
+    onOpenChange(false)
+    navigate(routes.movieDetail(movie.sk_movie_id))
   }
 
-  const handleSelectAction = (path: string) => {
-    navigate(path)
+  const handleSelectAction = (action: CommandPaletteAction) => {
+    onOpenChange(false)
+    if (action === COMMAND_ACTIONS.LOGOUT) {
+      logout()
+    } else {
+      navigate(action)
+    }
   }
 
-  const handleSelectGenre = (genre: string) => {
-    navigate(`/?genre=${encodeURIComponent(genre)}`)
+  const handleSelectGenre = (genre: CommandGenreItem) => {
+    onOpenChange(false)
+    navigate(routes.catalogGenre(genre))
   }
 
   return (
@@ -52,6 +67,7 @@ export const CommandPaletteContainer: React.FC<CommandPaletteContainerProps> = (
       onSelectAction={handleSelectAction}
       onSelectGenre={handleSelectGenre}
       genres={availableGenres}
+      isAuthenticated={isAuthenticated}
     />
   )
 }
