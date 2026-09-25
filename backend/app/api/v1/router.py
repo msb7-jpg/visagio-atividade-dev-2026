@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
+from app.features.auth.router import auth_router
+
 api_router = APIRouter()
 
-# Registre aqui os routers dos futuros domínios. Exemplo:
-# api_router.include_router(movies_router, prefix="/movies", tags=["movies"])
+api_router.include_router(auth_router, prefix="/auth", tags=["auth"])

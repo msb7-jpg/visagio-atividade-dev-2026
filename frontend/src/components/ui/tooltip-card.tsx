@@ -1,6 +1,6 @@
 'use client'
 import { cn } from '@/lib/utils'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion } from 'framer-motion'
 import React, { useEffect, useRef, useState } from 'react'
 
 export const Tooltip = ({
@@ -120,7 +120,7 @@ export const Tooltip = ({
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Toggle visibility on click for mobile devices
-    if (window.matchMedia('(hover: none)').matches) {
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(hover: none)').matches) {
       e.preventDefault()
       if (isVisible) {
         setIsVisible(false)
@@ -168,11 +168,11 @@ export const Tooltip = ({
               stiffness: 200,
               damping: 20
             }}
-            className="pointer-events-none absolute z-50 min-w-[15rem] overflow-hidden rounded-md border border-white/10 bg-popover shadow-sm ring-1 ring-white/10"
+            className="pointer-events-none absolute top-(--tooltip-top) left-(--tooltip-left) z-50 min-w-60 overflow-hidden rounded-md border border-white/10 bg-popover shadow-sm ring-1 ring-white/10"
             style={{
-              top: position.y,
-              left: position.x
-            }}
+              '--tooltip-top': `${position.y}px`,
+              '--tooltip-left': `${position.x}px`
+            } as React.CSSProperties}
           >
             <div
               ref={contentRef}

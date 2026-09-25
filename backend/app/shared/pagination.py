@@ -1,4 +1,5 @@
 from typing import Generic, TypeVar
+
 from pydantic import BaseModel, Field
 
 T = TypeVar("T")
@@ -22,7 +23,9 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
     @classmethod
     def create(cls, items: list[T], total: int, params: PaginationParams) -> "PaginatedResponse[T]":
-        total_pages = (total + params.page_size - 1) // params.page_size if params.page_size > 0 else 0
+        total_pages = (
+            (total + params.page_size - 1) // params.page_size if params.page_size > 0 else 0
+        )
         return cls(
             items=items,
             total=total,

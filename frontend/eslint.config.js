@@ -58,9 +58,14 @@ const rules = {
   '@stylistic/space-infix-ops': 'error',
   '@stylistic/type-annotation-spacing': ['error', {
     before: false,
-    after: true
+    after: true,
+    overrides: {
+      arrow: {
+        before: true,
+        after: true
+      }
+    }
   }],
-  '@stylistic/arrow-spacing': ['error', { before: true, after: true }],
 
   // TypeScript rules
   '@typescript-eslint/no-unused-vars': ['warn', {
@@ -118,6 +123,27 @@ export default defineConfig([
     files: ['src/routes/**/*.{ts,tsx}', 'src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off'
+    }
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/components/ui/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: "JSXOpeningElement[name.name='input']",
+          message: 'Evite utilizar elementos nativos <input>. Utilize os componentes de UI padronizados do shadcn (@/components/ui/input ou @/components/ui/input-group).'
+        },
+        {
+          selector: "JSXOpeningElement[name.name='button']",
+          message: 'Evite utilizar elementos nativos <button>. Utilize os componentes de UI padronizados do shadcn (@/components/ui/button ou @/components/ui/input-group).'
+        },
+        {
+          selector: "JSXOpeningElement[name.name='textarea']",
+          message: 'Evite utilizar elementos nativos <textarea>. Utilize os componentes de UI padronizados do shadcn (@/components/ui/textarea ou @/components/ui/input-group).'
+        }
+      ]
     }
   }
 ])

@@ -8,11 +8,11 @@ dependencies = [
     "uvicorn[standard]>=0.32.0",
     "sqlalchemy>=2.0.35",
     "aiosqlite>=0.20.0",
-    "pydantic>=2.9.0",
+    "pydantic[email]>=2.9.0",
     "pydantic-settings>=2.5.0",
     "alembic>=1.19.2",
-    "python-jose[cryptography]>=3.3.0",
-    "passlib[argon2]>=1.7.4",
+    "pyjwt>=2.8.0",
+    "pwdlib[argon2]>=0.2.0",
 ]
 
 [project.optional-dependencies]

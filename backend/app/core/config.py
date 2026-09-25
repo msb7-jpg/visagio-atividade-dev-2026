@@ -16,6 +16,16 @@ class Settings(BaseSettings):
     backend_cors_origins: list[str] = ["http://localhost:5173"]
     log_level: str = "INFO"
 
+    # Autenticação e Segurança (JWT)
+    jwt_secret_key: str = "rocketfilms-super-secret-jwt-key-2026-visagio-cinema"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 1440  # 24 horas
+
+    # Credenciais do Administrador Padrão
+    admin_email: str = "admin@rocketfilms.com"
+    admin_password: str = "admin123"
+    admin_name: str = "Miguel Batista AKA Dono do Pedaço"
+
 
 @lru_cache
 def get_settings() -> Settings:

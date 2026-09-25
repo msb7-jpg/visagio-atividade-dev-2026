@@ -2,7 +2,7 @@
 
 > **Documento Vivo de Rastreabilidade e Execução**  
 > **Fontes da Verdade:**  
-> - [Atividade de Dev.pdf](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf) (Especificação oficial dos requisitos funcionais do projeto)  
+> - [Atividade de Dev.pdf](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md) (Especificação oficial dos requisitos funcionais do projeto)  
 > - [ARQUITETURA.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md) (Padrão Vertical Slices, Linguagem Onipresente, desacoplamento UI Pura vs Orquestração)  
 > - [DESIGN.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md) (Design System, paleta de cores, tipografia Geist, referências visuais)  
 > - [DESIGN-IMPLEMENTATION.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md) (Especificação de telas, microinterações e componentes)  
@@ -18,11 +18,23 @@
      - Marque a caixa de seleção com `[x]`.
      - Adicione a data/timestamp e um breve resumo do que foi entregue, com os links dos arquivos criados ou modificados.
      - Execute a suíte de testes correspondente (Pytest no backend, Vitest/ESLint no frontend) para certificar integridade.
-   - **Nunca pule validações de testes:** Uma fatia vertical só é considerada `[x]` concluída quando backend, frontend (se aplicável), contratos e testes automatizados passarem com sucesso.
+   - **Validação de Qualidade Obrigatória pós-etapa:** Após alterações em qualquer etapa ou subetapa, execute impreterivelmente:
+     1. `bun run lint --fix` (no diretório `frontend/`) e garanta que todos os problemas/avisos foram resolvidos.
+     2. `bun fallow health` (no diretório `frontend/`) e certifique-se de que não haja breaches de complexidade ou saúde de código.
+     3. A suíte de testes (`pytest` no backend e `bun run test` no frontend).
+   - **Nunca pule validações de testes e qualidade:** Uma fatia vertical só é considerada `[x]` concluída quando backend, frontend (se aplicável), contratos, testes automatizados, linters (`bun run lint`) e métricas de saúde (`bun fallow health`) passarem com 100% de sucesso.
 2. **Uso de Referências Diretas:**
    - Este plano referencia diretamente as seções dos documentos de especificação. **Não é necessário carregar os documentos inteiros no contexto**: consulte apenas as seções e números de linha indicados em cada etapa.
 3. **Respeito à Linguagem Onipresente:**
    - Utilize rigorosamente a tabela oficial de equivalência definida em [ARQUITETURA.md (Seção 1.2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L20-L46). Ex: `titulo`, `url_poster`, `url_backdrop`, `nota_media_usuarios`, `comentario`, `nome`.
+
+4. **Diretriz de Resolução Efetiva de Código (Sem Supressões Indevidas):**
+   - **É terminantemente proibido suprimir alertas, lints ou complexidade** com comentários de escape (como `// fallow-ignore`, `/* eslint-disable */` ou `@ts-ignore`) sem que seja um caso extremo e explicitamente autorizado.
+   - **Regra da Resolução Arquitetural:**
+     - Se o Fast Refresh ou linter acusar problema de exportação compartilhada (`react-refresh/only-export-components`), **separe em arquivos dedicados** (ex: contexto em `context/`, componentes em `components/`, hooks em `hooks/`, helpers em `utils/`).
+     - Se uma função for acusada de complexidade excessiva pelo `fallow` ou linter, **refatore-a e extraia submódulos/funções puras** com responsabilidade única.
+     - Se houver risco CRAP apontado pelo fallow por baixa cobertura de função crítica, **adicione testes unitários dedicados** para cobrir os fluxos lógicos e estabilizar a métrica.
+     - O caminho padrão deve ser **SEMPRE** projetar a solução e refatorar o código, nunca mascarar o sintoma.
 
 ---
 
@@ -40,7 +52,7 @@
 | :--- | :---: | :---: | :---: | :---: |
 | **Etapa 0: Fundação & Infraestrutura Base** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 1: Ingestão de Dados & Camada Analítica** | `[x]` | N/A | `[x]` | `[x]` Concluído |
-| **Etapa 2: Slice Vertical de Autenticação Admin** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| **Etapa 2: Slice Vertical de Autenticação Admin** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 3: Slice Vertical de Catálogo & Busca** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 4: Slice Vertical de Ficha Técnica & Analytics** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
@@ -62,7 +74,7 @@
 > - [DESIGN.md (Seção 3 - Paleta e Tokens Semânticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L49-L87)
 
 - [x] **0.1 Backend Core Setup** *(Concluído em 2026-09-24)*
-  - [x] Verificar e instalar dependências backend via `uv` (`fastapi`, `uvicorn`, `sqlalchemy>=2.0`, `aiosqlite`, `alembic`, `pydantic-settings`, `python-jose`, `passlib[argon2]`, `httpx`, `pytest`, `pytest-asyncio`).
+  - [x] Verificar e instalar dependências backend via `uv` (`fastapi`, `uvicorn`, `sqlalchemy>=2.0`, `aiosqlite`, `alembic`, `pydantic-settings`, `pyjwt`, `pwdlib[argon2]`, `httpx`, `pytest`, `pytest-asyncio`).
   - [x] Estruturar pastas base: `backend/app/core/`, `backend/app/db/`, `backend/app/shared/` (`dependencies.py`, `pagination.py`, `exceptions.py`) conforme [ARQUITETURA.md (Seção 3.1)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L128-L141).
   - [x] Configurar conexão assíncrona SQLite (`sqlite+aiosqlite:///./rocketlab.db`) e middleware de CORS para liberar `http://localhost:5173`.
   - [x] **Critério de Aceite / Teste:** `uv run pytest` executa e passa com 3 testes assíncronos.
@@ -83,7 +95,7 @@
 ### Etapa 1: Ingestão de Dados & Camada Analítica (Seed Data)
 > **Objetivo:** Garantir que o banco relacional SQLite seja inicializado e alimentado com os dados da camada analítica (Diamond Layer) fornecidos nos arquivos CSV.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Materiais e Dados Iniciais)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (Materiais e Dados Iniciais)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [requisitos-nao-funcionais.md (RNF13)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L113-L117)  
 > - Arquivos CSV em `data/` (`dim_movies.csv`, `dim_genres.csv`, `bridge_*`, `fact_movies_performance.csv`, `movies_reviews.csv`).
 
@@ -101,35 +113,37 @@
 ### Etapa 2: Slice Vertical de Autenticação Admin
 > **Objetivo:** Permitir autenticação administrativa com JWT, persistência de sessão e proteção de rotas/ações restritas.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Perfil Administrador)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (Perfil Administrador)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seções 3.1 `auth` e 4.1 `auth`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L142-L146)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.2 Tela de Login)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L95-L113)  
 > - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)
 
-- [ ] **2.1 Backend: Auth Slice (`backend/app/features/auth/`)**
-  - [ ] `schemas.py`: `LoginRequest`, `TokenResponse`, `AdminUserDTO`.
-  - [ ] `service.py`: Verificação de credenciais de admin configuradas em `core/config.py` e geração de JWT.
-  - [ ] `router.py`: `POST /api/v1/auth/login` e `GET /api/v1/auth/me`.
-  - [ ] `dependencies.py`: Injeção de dependência FastAPI `get_current_admin` para proteção de rotas mutantes.
-  - [ ] **Testes Backend:** `backend/tests/test_auth.py` (login com credenciais válidas, senha errada e validação de token).
-- [ ] **2.2 Frontend: Auth Slice (`frontend/src/features/auth/`)**
-  - [ ] `api/authApi.ts`: Chamada HTTP para login.
-  - [ ] `schemas/auth.schema.ts`: Schema Zod para formulário de login (email e senha obrigatórios) e tipo `JwtPayload`.
-  - [ ] `utils/token.ts`: Utilitário baseado em `jwt-decode` para inspeção segura de claims (`sub`, `role`, `exp`), cálculo proativo de expiração (`isTokenExpired`) com margem de segurança.
-  - [ ] `hooks/useAuth.ts`: Gerenciamento de token no `localStorage` / React Context com checagem síncrona de expiração e estado `isAuthenticated`.
-  - [ ] `hooks/useLoginForm.ts`: Integração do TanStack Form com Zod.
-  - [ ] `components/subcomponents/TextFlipHeader.tsx`: Efeito visual Aceternity `layout-text-flip` alternando gêneros  (Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Music, Mystery,  Romance, Science Fiction, Thriller, Tv Movie, War ,Western).
-  - [ ] `components/LoginCardView.tsx`: Cartão Glassmorphic visual puro com indicadores de campos obrigatórios (`RequiredFieldBadge`).
-  - [ ] `components/LoginContainer.tsx`: Orquestrador de estado e redirecionamento.
-  - [ ] Configurar rotas `/login` e guard `ProtectedRoute` em `frontend/src/routes/` com validação de expiração via `jwt-decode`.
-  - [ ] **Testes Frontend:** `frontend/src/features/auth/__tests__/LoginCard.test.tsx` e `token.test.ts` (renderização, decodificação e validação de token expirado).
+- [x] **2.1 Backend: Auth Slice (`backend/app/features/auth/`)** *(Concluído em 2026-09-24)*
+  - [x] `schemas.py`: `LoginRequest`, `TokenResponse`, `AdminUserDTO`.
+  - [x] `service.py`: Verificação de credenciais de admin configuradas em `core/config.py` e geração de JWT.
+  - [x] `router.py`: `POST /api/v1/auth/login` e `GET /api/v1/auth/me`.
+  - [x] `dependencies.py`: Injeção de dependência FastAPI `get_current_admin` para proteção de rotas mutantes.
+  - [x] **Testes Backend:** `backend/tests/test_auth.py` (6 testes assíncronos cobrindo geração, decodificação, sucesso no login, senha incorreta, e-mail inexistente, `/auth/me` e 401 não autenticado).
+- [x] **2.2 Frontend: Auth Slice (`frontend/src/features/auth/`)** *(Concluído em 2026-09-24)*
+  - [x] `api/authApi.ts`: Chamada HTTP para login e `/auth/me`.
+  - [x] `schemas/auth.schema.ts`: Schema Zod para formulário de login (email e senha obrigatórios) e tipo `JwtPayload`.
+  - [x] `utils/token.ts`: Utilitário baseado em `jwt-decode` para inspeção segura de claims (`sub`, `role`, `exp`), cálculo proativo de expiração (`isTokenExpired`) com margem de segurança de 30s.
+  - [x] `hooks/useAuth.tsx`: Gerenciamento reativo de token no `localStorage` via `useSyncExternalStore` + React Context com checagem síncrona de expiração e estado `isAuthenticated`.
+  - [x] `components/subcomponents/CinematicIllustrations.tsx`: SVGs temáticos de alta fidelidade estilizados estilo Storyset com animações do Framer Motion (claquete pulsante, projetor cinematográfico com feixe luminoso, e métricas analíticas de bilheteria).
+  - [x] `components/ui/layout-text-flip.tsx`: Componente oficial Aceternity instalado via `bunx --bun shadcn@latest add @aceternity/layout-text-flip` alternando os gêneros com flip 3D e blur.
+  - [x] `components/subcomponents/SyncVisualShowcase.tsx`: Container lateral direito inspirado em `references/login-signup.png` que utiliza diretamente o `@aceternity/layout-text-flip` para alternar palavras/gêneros e sincroniza atômica e fluidamente com as ilustrações SVG do Storyset e cards de métricas.
+  - [x] `components/subcomponents/CinematicMultiStepLoader.tsx`: Loader sequencial estilo Aceternity Loader com mensagens progressivas e checkmarks ao autenticar.
+  - [x] `components/LoginCardView.tsx`: Cartão Glassmorphic visual puro com indicadores de campos obrigatórios (`RequiredFieldBadge`), input com ícones, tratamento de erros e botão de preenchimento rápido para avaliação técnica.
+  - [x] `components/LoginContainer.tsx`: Orquestrador de estado e redirecionamento conectando validações Zod, loader multi-step e visual split.
+  - [x] Configurar rotas `/login` e guard `ProtectedRoute` em `frontend/src/routes/` com validação de expiração via `jwt-decode`.
+  - [x] **Testes Frontend:** `frontend/src/features/auth/__tests__/LoginCard.test.tsx` e `token.test.ts` (8 testes passando no Vitest).
 
 ---
 
 ### Etapa 3: Slice Vertical de Catálogo, Busca e Filtros
 > **Objetivo:** Implementar a visualização do catálogo paginado de filmes, barra de busca com debounce, filtros por gênero, ordenação multicritério e toggle Grid/List.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Requisitos de Catálogo, Paginação e Busca)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (Requisitos de Catálogo, Paginação e Busca)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seções 3.1 `movies`/`metadata` e 4.1 `catalog`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L147-L167)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.1 Tela Principal)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L39-L93)  
 > - [DESIGN.md (Seção 5.3 Toggle Grid/List)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L138-L145)  
@@ -160,7 +174,7 @@
 ### Etapa 4: Slice Vertical de Ficha Técnica & Métricas Analíticas
 > **Objetivo:** Exibir a página de detalhes completos do filme, elenco, sinopse, comparação de notas (Usuários vs TMDb vs IMDb) e métricas financeiras da camada analítica.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Detalhes do Filme e Informações Completas)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (Detalhes do Filme e Informações Completas)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seção 3.1 `analytics` e 4.1 `movie-details`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L153-L157)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.3 Tela de Detalhes)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L115-L144)  
 > - [DESIGN.md (Seção 3 - Paleta Funcional de Dados Analíticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L88-L102)
@@ -180,13 +194,13 @@
   - [ ] `components/FinancialMetricsView.tsx`: Cards de Orçamento, Bilheteria e Lucro/ROI em verde esmeralda ou alerta de prejuízo.
   - [ ] `components/MovieDetailsContainer.tsx`: Orquestrador da rota `/filmes/:id`.
   - [ ] **Testes Frontend:** `frontend/src/features/movie-details/__tests__/MovieDetails.test.tsx` (exibição de ficha técnica e métricas financeiras).
-
+  
 ---
 
 ### Etapa 5: Slice Vertical de Avaliações & Resenhas (Reviews)
 > **Objetivo:** Permitir aos usuários adicionar avaliações (nota 0 a 10 e comentário em texto), recalcular atomicamente a média geral do filme e exibir o histórico com cards expansíveis fluidos.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Adicionar avaliação com nota e resenha, ver média geral e histórico)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (Adicionar avaliação com nota e resenha, ver média geral e histórico)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seção 3.1 `reviews` e 4.1 `reviews` e 5 - Clean Component Pattern)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L158-L162)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.3 - Histórico de Avaliações)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L146-L153)  
 > - Aceternity `expandable-card` e TanStack Form com indicadores obrigatórios.
@@ -214,7 +228,7 @@
 ### Etapa 6: Slice Vertical de Gestão de Filmes (CRUD Admin)
 > **Objetivo:** Permitir ao Administrador autenticado cadastrar novos filmes (com campos obrigatórios, seleção de gêneros, preview de pôster), atualizar informações de filmes existentes e remover filmes com diálogo de confirmação.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Cadastrar filmes, remover e atualizar filmes individualmente)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (Cadastrar filmes, remover e atualizar filmes individualmente)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seção 3.1 `movies` e 4.1 `movie-admin`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L298-L312)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.4 Telas de Cadastro e Edição)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L155-L188)  
 > - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)  
@@ -263,7 +277,7 @@
 ### Etapa 8: Documentação, Storybook, Auditoria de Código e Validação E2E
 > **Objetivo:** Consolidar a documentação do projeto com Storybook, validar a qualidade do código com ESLint/TSDoc e produzir o README com guia de execução passo a passo exigido pelo PDF de especificação.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (README com passo a passo)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
+> - [Atividade de Dev.pdf (README com passo a passo)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [requisitos-nao-funcionais.md (RNF07, RNF08, RNF10)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L79-L102)  
 > - [ARQUITETURA.md (Seção 6)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md)
 
@@ -294,3 +308,5 @@
 | Timestamp | Subetapa | Ação Realizada | Responsável | Status Resultante |
 | :--- | :--- | :--- | :--- | :---: |
 | 2026-09-24 01:10 | Criação | Criação do plano inicial em fatias verticais | Antigravity | `[x]` Plano Estruturado |
+| 2026-09-24 21:30 | Etapa 2 | Implementação completa da Slice de Autenticação Admin (Backend JWT + Frontend Login split com Storyset SVGs animados, textos rotativos e Aceternity MultiStepLoader) | Antigravity | `[x]` Concluído |
+| 2026-09-24 22:05 | Etapa 2 | Migração da camada de autenticação para `pyjwt` e `pwdlib[argon2]` seguindo guia moderno do FastAPI | Antigravity | `[x]` Concluído |
