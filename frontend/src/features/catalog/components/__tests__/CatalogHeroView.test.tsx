@@ -65,4 +65,23 @@ describe('CatalogHeroView', () => {
 
     expect(handleSearchChange).toHaveBeenCalledWith('')
   })
+
+  it('dispara onOpenCommandPalette ao clicar no botão ⌘K', () => {
+    const handleOpenCommandPalette = vi.fn()
+
+    render(
+      <SearchVisibilityProvider>
+        <CatalogHeroView
+          initialSearch=""
+          onSearchChange={vi.fn()}
+          onOpenCommandPalette={handleOpenCommandPalette}
+        />
+      </SearchVisibilityProvider>
+    )
+
+    const cmdkBtn = screen.getByRole('button', { name: /⌘k/i })
+    fireEvent.click(cmdkBtn)
+
+    expect(handleOpenCommandPalette).toHaveBeenCalledTimes(1)
+  })
 })

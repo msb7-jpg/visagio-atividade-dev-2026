@@ -8,9 +8,14 @@ export const SearchVisibilityProvider: React.FC<{ children: React.ReactNode }> =
   const [searchQuery, setSearchQuery] = useState('')
   const [isFetching, setIsFetching] = useState(false)
   const [clearSearchHandler, setClearSearchHandler] = useState<(() => void) | undefined>(undefined)
+  const [searchChangeHandler, setSearchChangeHandler] = useState<((query: string) => void) | undefined>(undefined)
 
   const setOnClearSearch = useCallback((cb: (() => void) | undefined) => {
     setClearSearchHandler(() => cb)
+  }, [])
+
+  const setOnSearchChange = useCallback((cb: ((query: string) => void) | undefined) => {
+    setSearchChangeHandler(() => cb)
   }, [])
 
   const value = useMemo(
@@ -22,9 +27,19 @@ export const SearchVisibilityProvider: React.FC<{ children: React.ReactNode }> =
       isFetching,
       setIsFetching,
       onClearSearch: clearSearchHandler,
-      setOnClearSearch
+      setOnClearSearch,
+      onSearchChange: searchChangeHandler,
+      setOnSearchChange
     }),
-    [isHeroSearchVisible, searchQuery, isFetching, clearSearchHandler, setOnClearSearch]
+    [
+      isHeroSearchVisible,
+      searchQuery,
+      isFetching,
+      clearSearchHandler,
+      setOnClearSearch,
+      searchChangeHandler,
+      setOnSearchChange
+    ]
   )
 
   return (

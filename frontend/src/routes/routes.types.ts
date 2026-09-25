@@ -24,5 +24,6 @@ export const routes = {
   home: () => '/' as const,
   login: () => '/login' as const,
   movieDetail: (id: string | number): DynamicMovieRoute => `/filmes/${id}`,
-  catalogGenre: (genre: string): FilteredCatalogRoute => `/?genre=${encodeURIComponent(genre)}`
+  catalogGenre: (genre: string): FilteredCatalogRoute => `/?genre=${encodeURIComponent(genre)}`,
+  catalogSearch: (query: string): FilteredCatalogRoute => `/?q=${encodeURIComponent(query)}`
 } as const

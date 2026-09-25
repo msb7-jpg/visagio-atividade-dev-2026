@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Search, Loader2, X, Film, LogIn, LogOut, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Kbd } from '@/components/ui/kbd'
+import { Input } from '@/components/ui/input'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useSearchVisibility } from '@/context/useSearchVisibility'
 import { cn } from '@/lib/utils'
+import React, { useEffect, useRef } from 'react'
 
 interface NavbarProps {
   onOpenCommandPalette: () => void
@@ -14,8 +15,58 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
   const { isAuthenticated, user, logout } = useAuth()
-  const { isHeroSearchVisible, searchQuery, isFetching, onClearSearch } = useSearchVisibility()
+  const {
+    isHeroSearchVisible,
+    searchQuery,
+    setSearchQuery,
+    isFetching,
+    onClearSearch,
+    onSearchChange
+  } = useSearchVisibility()
   const navigate = useNavigate()
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setSearchQuery(val)
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    debounceRef.current = setTimeout(() => {
+      if (onSearchChange) {
+        onSearchChange(val)
+      }
+    }, 350)
+  }
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+      if (onSearchChange) {
+        onSearchChange(searchQuery)
+      } else {
+        navigate(routes.catalogSearch(searchQuery))
+      }
+    }
+  }
+
+  const handleClear = () => {
+    setSearchQuery('')
+    onClearSearch?.()
+    onSearchChange?.('')
+  }
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+    }
+  }, [])
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-xl">
@@ -38,62 +89,61 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
           </div>
         </Link>
 
-        {/* Botão Gatilho da Command Palette (Central / Direita com Sincronização) */}
+        {/* Barra de Busca da Navbar com Padronização Visual e Proporcional do CatalogHeroView */}
         <div
+          data-testid="navbar-search-bar"
           className={cn(
-            'mx-4 hidden max-w-md flex-1 transition-all duration-300 md:block',
+            'group relative mx-4 hidden max-w-md flex-1 items-center rounded-lg shadow-sm transition-all duration-300 md:flex',
+            isFetching
+              ? 'shadow-[0_0_15px_rgba(234,179,8,0.2)] ring-1 ring-primary/40'
+              : 'hover:border-white/30',
             isHeroSearchVisible
               ? 'pointer-events-none -translate-y-1 scale-95 opacity-0'
               : 'pointer-events-auto translate-y-0 scale-100 opacity-100'
           )}
         >
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onOpenCommandPalette}
-            className="group flex h-9 w-full cursor-pointer items-center justify-between rounded-lg border-white/10 bg-white/5 px-3.5 py-1.5 text-sm text-muted-foreground shadow-xs transition-all hover:border-white/20 hover:bg-white/10 hover:text-foreground"
-          >
-            <div className="flex min-w-0 items-center gap-2">
-              {isFetching ? (
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" />
-              ) : (
-                <Search className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-              )}
-              <span
-                className={cn(
-                  'truncate text-left',
-                  searchQuery ? 'font-medium text-foreground' : 'text-muted-foreground'
-                )}
+          {isFetching ? (
+            <Loader2 className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 animate-spin text-primary transition-colors" />
+          ) : (
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+          )}
+
+          <Input
+            type="text"
+            value={searchQuery}
+            onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            placeholder="Buscar filmes, diretores, gêneros..."
+            className="h-9 w-full rounded-lg border-white/15 bg-black/50 py-1.5 pr-20 pl-9 text-sm transition-all placeholder:text-muted-foreground/60 hover:border-white/30 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/40"
+            aria-label="Buscar filmes, diretores, gêneros..."
+          />
+
+          <div className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-1.5">
+            {searchQuery && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleClear}
+                className="h-6 w-6 text-muted-foreground hover:text-white"
+                aria-label="Limpar busca da navbar"
               >
-                {searchQuery || 'Buscar filmes, diretores, gêneros...'}
-              </span>
-            </div>
-            <div className="flex shrink-0 items-center gap-1.5">
-              {searchQuery && (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onClearSearch?.()
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.stopPropagation()
-                      onClearSearch?.()
-                    }
-                  }}
-                  className="rounded-xs p-0.5 text-muted-foreground hover:bg-white/10 hover:text-white"
-                  aria-label="Limpar busca da navbar"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </span>
-              )}
-              <Kbd className="border border-white/10 bg-white/10 font-mono text-[10px] text-white">
-                ⌘K
-              </Kbd>
-            </div>
-          </Button>
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            )}
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onOpenCommandPalette}
+              className="flex h-6 items-center gap-1 rounded-md border-white/10 bg-white/5 px-1.5 font-mono text-[11px] text-white/80 hover:bg-white/10"
+              aria-label="Abrir command palette"
+              title="Abrir busca rápida (⌘K)"
+            >
+              <span>⌘K</span>
+            </Button>
+          </div>
         </div>
 
         {/* Ações / Autenticação */}

@@ -25,7 +25,8 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
     setIsHeroSearchVisible,
     setSearchQuery,
     setIsFetching: setContextFetching,
-    setOnClearSearch
+    setOnClearSearch,
+    setOnSearchChange
   } = useSearchVisibility()
 
   // Sincroniza estado se initialSearch mudar externamente (ex: url params)
@@ -80,6 +81,11 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
     setOnClearSearch(handleClear)
     return () => setOnClearSearch(undefined)
   }, [handleClear, setOnClearSearch])
+
+  useEffect(() => {
+    setOnSearchChange(onSearchChange)
+    return () => setOnSearchChange(undefined)
+  }, [onSearchChange, setOnSearchChange])
 
   // O loading visual só inicia quando o TanStack indicar que iniciou a consulta (isFetching)
   const isSearching = Boolean(isFetching)
@@ -145,7 +151,9 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
               variant="outline"
               size="sm"
               onClick={onOpenCommandPalette}
-              className="hidden h-8 items-center gap-1 border-white/10 bg-white/5 px-2 font-mono text-xs text-white/80 hover:bg-white/10 sm:flex"
+              className="flex h-8 items-center gap-1 border-white/10 bg-white/5 px-2 font-mono text-xs text-white/80 hover:bg-white/10"
+              aria-label="Abrir busca rápida (⌘K)"
+              title="Abrir busca rápida (⌘K)"
             >
               <span>⌘K</span>
             </Button>
