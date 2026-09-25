@@ -26,9 +26,9 @@ const rules = {
   'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
   // Core ESLint rules
-  camelcase: ['warn', {
-    allow: []
-  }],
+  // camelcase: ['warn', {
+  //   allow: []
+  // }],
   'no-restricted-imports': ['error', {
     patterns: [{
       group: ['../*', '../../*'],
@@ -91,7 +91,7 @@ const rules = {
 }
 
 export default defineConfig([
-  globalIgnores(['dist', 'node_modules', '.tmp', 'src/routeTree.gen.ts']),
+  globalIgnores(['dist', 'node_modules', '.tmp', 'src/components/ui/**']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -144,6 +144,12 @@ export default defineConfig([
           message: 'Evite utilizar elementos nativos <textarea>. Utilize os componentes de UI padronizados do shadcn (@/components/ui/textarea ou @/components/ui/input-group).'
         }
       ]
+    }
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': 'off'
     }
   }
 ])

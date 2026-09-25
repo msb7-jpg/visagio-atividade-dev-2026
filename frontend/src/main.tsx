@@ -2,7 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { App } from '@/App'
+import { AppLayout } from '@/components/layout/AppLayout'
+import { CatalogContainer } from '@/features/catalog/components/CatalogContainer'
 import { AuthProvider } from '@/features/auth/hooks/useAuth'
 import { LoginContainer } from '@/features/auth/components/LoginContainer'
 import '@/index.css'
@@ -24,7 +25,9 @@ createRoot(rootElement).render(
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<App />} />
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<CatalogContainer />} />
+            </Route>
             <Route path="/login" element={<LoginContainer />} />
           </Routes>
         </BrowserRouter>

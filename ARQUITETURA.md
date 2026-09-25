@@ -181,18 +181,27 @@ Para garantir que os componentes permaneçam limpos, testáveis e fáceis de est
 ```text
 src/features/<feature-name>/
 ├── api/                           # 1. Chamadas HTTP puras (axios/fetch)
-│   └── [feature]Api.ts
+│   ├── [feature]Api.ts
+│   └── __tests__/                 # Testes unitários de API co-localizados
 ├── hooks/                         # 2. Lógica de negócio, TanStack Query/Form, Router State
 │   ├── use[Feature]Query.ts
-│   └── use[Feature]Form.ts
+│   ├── use[Feature]Form.ts
+│   └── __tests__/                 # Testes de hooks co-localizados
 ├── schemas/                       # 3. Validação e Contratos (Zod + TypeScript Types)
 │   ├── [feature].schema.ts
 │   └── [feature].types.ts
+├── utils/                         # Utilitários e helpers puros da feature
+│   └── __tests__/                 # Testes de helpers co-localizados
 └── components/                    # 4. Componentes UI (Separados em Contêiner e Apresentação)
     ├── [Feature]Container.tsx     # Smart / Orquestrador (liga hooks aos componentes visuais)
     ├── [Feature]View.tsx          # Dumb / Presentational principal (apenas JSX, Tailwind, Props)
-    └── subcomponents/             # Microcomponentes puramente visuais da tela
+    ├── subcomponents/             # Microcomponentes puramente visuais da tela
+    └── __tests__/                 # Testes de componentes co-localizados (o mais próximo possível dos alvos)
 ```
+
+> **Diretriz de Co-localização de Testes & Importações:**
+> - As pastas `__tests__/` residem **sempre imediatamente dentro do subdiretório** do arquivo sob teste (ex: `components/__tests__/`, `hooks/__tests__/`, `utils/__tests__/`, `api/__tests__/`). Evita-se pastas de teste distantes ou isoladas na raiz da feature.
+> - **Importações Relativas em Testes:** Arquivos de teste (`**/*.test.{ts,tsx}`) têm permissão explícita para utilizar importações relativas (`../`) para referenciar o módulo adjacente testado, preservando a portabilidade do subdiretório.
 
 ### 4.1 Estrutura Completa de Pastas do Frontend
 

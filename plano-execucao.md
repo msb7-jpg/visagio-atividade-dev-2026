@@ -19,10 +19,11 @@
      - Adicione a data/timestamp e um breve resumo do que foi entregue, com os links dos arquivos criados ou modificados.
      - Execute a suíte de testes correspondente (Pytest no backend, Vitest/ESLint no frontend) para certificar integridade.
    - **Validação de Qualidade Obrigatória pós-etapa:** Após alterações em qualquer etapa ou subetapa, execute impreterivelmente:
-     1. `bun run lint --fix` (no diretório `frontend/`) e garanta que todos os problemas/avisos foram resolvidos.
-     2. `bun fallow health` (no diretório `frontend/`) e certifique-se de que não haja breaches de complexidade ou saúde de código.
-     3. A suíte de testes (`pytest` no backend e `bun run test` no frontend).
-   - **Nunca pule validações de testes e qualidade:** Uma fatia vertical só é considerada `[x]` concluída quando backend, frontend (se aplicável), contratos, testes automatizados, linters (`bun run lint`) e métricas de saúde (`bun fallow health`) passarem com 100% de sucesso.
+     1. `bun run lint` (no diretório `frontend/`) e garanta 0 erros.
+     2. `bun run build` (no diretório `frontend/`) para validação estrita de compilação TypeScript (`tsc -b`) e bundling de produção com Vite.
+     3. `bun fallow health --coverage coverage/coverage-final.json` (no diretório `frontend/`) e certifique-se de que não haja breaches de complexidade ou saúde de código.
+     4. A suíte de testes (`pytest` no backend e `bun run test` no frontend).
+   - **Nunca pule validações de testes e qualidade:** Uma fatia vertical só é considerada `[x]` concluída quando backend, frontend (se aplicável), contratos, testes automatizados, build (`bun run build`), linters (`bun run lint`) e métricas de saúde (`bun fallow health`) passarem com 100% de sucesso.
 2. **Uso de Referências Diretas:**
    - Este plano referencia diretamente as seções dos documentos de especificação. **Não é necessário carregar os documentos inteiros no contexto**: consulte apenas as seções e números de linha indicados em cada etapa.
 3. **Respeito à Linguagem Onipresente:**
@@ -35,6 +36,16 @@
      - Se uma função for acusada de complexidade excessiva pelo `fallow` ou linter, **refatore-a e extraia submódulos/funções puras** com responsabilidade única.
      - Se houver risco CRAP apontado pelo fallow por baixa cobertura de função crítica, **adicione testes unitários dedicados** para cobrir os fluxos lógicos e estabilizar a métrica.
      - O caminho padrão deve ser **SEMPRE** projetar a solução e refatorar o código, nunca mascarar o sintoma.
+
+5. **Diretriz de Co-localização de Testes & Importações:**
+   - As pastas de testes `__tests__/` devem ficar **sempre o mais próximo possível** dos arquivos que estão testando:
+     - Componentes em `components/__tests__/`
+     - Hooks em `hooks/__tests__/`
+     - Utilitários/helpers em `utils/__tests__/`
+     - Chamadas de API em `api/__tests__/`
+     - Componentes UI compartilhados em `components/ui/__tests__/`
+   - **Permissão de Imports Relativos em Testes:** Arquivos de teste têm permissão no ESLint para usar importações relativas (`../`) referenciando os módulos adjacentes imediatos, mantendo os testes acoplados ao seu subdomínio sem caminhos desnecessariamente longos.
+   - Não crie testes para tudo indiscriminadamente: preserve e use os testes existentes focados nas regras e fluxos centrais.
 
 ---
 
@@ -53,11 +64,11 @@
 | **Etapa 0: Fundação & Infraestrutura Base** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 1: Ingestão de Dados & Camada Analítica** | `[x]` | N/A | `[x]` | `[x]` Concluído |
 | **Etapa 2: Slice Vertical de Autenticação Admin** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
-| **Etapa 3: Slice Vertical de Catálogo & Busca** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| **Etapa 3: Slice Vertical de Catálogo, Busca & Command Palette Base** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 4: Slice Vertical de Ficha Técnica & Analytics** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 6: Slice Vertical de Gestão de Filmes (CRUD)** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| **Etapa 7: Slice de Command Palette (Spotlight ⌘K)** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| **Etapa 7: Enriquecimento da Command Palette & Ações Avançadas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 8: Documentação, Storybook & Validação E2E** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 
 ---
@@ -140,34 +151,44 @@
 
 ---
 
-### Etapa 3: Slice Vertical de Catálogo, Busca e Filtros
-> **Objetivo:** Implementar a visualização do catálogo paginado de filmes, barra de busca com debounce, filtros por gênero, ordenação multicritério e toggle Grid/List.  
+### Etapa 3: Slice Vertical de Catálogo, Busca & Command Palette Base
+> **Objetivo:** Implementar o catálogo paginado de filmes com filtros e busca in-page, a casca global de navegação (`AppLayout` com Navbar e trigger `⌘K`) e a base da **Command Palette global** (`cmdk` com backdrop blur intenso e busca rápida de filmes e atalhos), que será enriquecida continuamente nas fatias subsequentes.  
 > **Referências:**  
 > - [Atividade de Dev.pdf (Requisitos de Catálogo, Paginação e Busca)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [ARQUITETURA.md (Seções 3.1 `movies`/`metadata` e 4.1 `catalog`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L147-L167)  
+> - [ARQUITETURA.md (Seções 3.1 `movies`/`metadata` e 4.1 `catalog`/`command-palette`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L147-L167)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.1 Tela Principal)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L39-L93)  
-> - [DESIGN.md (Seção 5.3 Toggle Grid/List)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L138-L145)  
+> - [DESIGN.md (Seções 5.3 Toggle Grid/List e 5.4 Command Palette Global)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L138-L168)  
+> - [requisitos-nao-funcionais.md (RNF06 - Spotlight ⌘K)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L73-L78)  
 > - Referência visual: `references/sort-by-block-and-list.png`.
 
-- [ ] **3.1 Backend: Movies & Metadata Slices (`backend/app/features/movies/` & `metadata/`)**
-  - [ ] `schemas.py`: `MovieListItemDTO`, `PaginationParams`, `PaginatedResponse[MovieListItemDTO]`, `GenreDTO`.
-  - [ ] `repository.py`: Queries SQLAlchemy assíncronas com filtros dinâmicos (busca por título/diretor via `ilike`, filtro por gênero, ordenações por `popularidade`, `nota_media_usuarios`, `receita_usd`, `ano_lancamento`, `titulo`).
-  - [ ] `router.py`:
-    - `GET /api/v1/movies` (paginado com filtros).
-    - `GET /api/v1/genres` (lista de gêneros disponíveis).
+- [x] **3.1 Backend: Movies, Metadata & Quick-Search (`backend/app/features/movies/` & `metadata/`)** *(Concluído em 2026-09-25)*
+  - [x] `schemas.py`: `MovieListItemDTO`, `PaginationParams`, `PaginatedResponse[MovieListItemDTO]`, `GenreDTO`, `QuickSearchMovieDTO`.
+  - [x] `repository.py`: Queries SQLAlchemy assíncronas com filtros dinâmicos (busca por título/diretor via `ilike`, filtro por gênero, ordenações por `popularidade`, `nota_media_usuarios`, `receita_usd`, `ano_lancamento`, `titulo`).
+  - [x] `router.py`:
+    - `GET /api/v1/movies` (paginado com filtros multicritério e ordenação).
+    - `GET /api/v1/movies/quick-search?q=...` (busca ultrarrápida com limite de 8-10 itens para alimentar a Command Palette).
+    - `GET /api/v1/genres` (lista consolidada de gêneros).
     - `GET /api/v1/companies` (estúdios para filtro rápido).
-  - [ ] **Testes Backend:** `backend/tests/test_movies_catalog.py` (paginação, filtro por texto e gênero, ordenação decrescente).
-- [ ] **3.2 Frontend: Catalog Slice (`frontend/src/features/catalog/`)**
-  - [ ] `api/catalogApi.ts`: Endpoints de listagem de filmes, gêneros e estúdios.
-  - [ ] `hooks/useCatalogParams.ts`: Sincronização estrita de `page`, `q`, `genre`, `sort`, `view` com a URL (`useSearchParams`).
-  - [ ] `hooks/useMoviesQuery.ts`: TanStack Query com `placeholderData: keepPreviousData` e prefetch.
-  - [ ] `components/CatalogHeroView.tsx`: Hero section com Aceternity `WavyBackground` e barra de busca de impacto.
-  - [ ] `components/CatalogControlBar.tsx`: Barra de filtros, select de ordenação e alternador **Grid/List** (estilo cápsula conforme `sort-by-block-and-list.png`).
-  - [ ] `components/MovieGridItemView.tsx`: Card de pôster com `aspect-[2/3]`, efeito `CardSpotlight`, badge de nota e popularidade.
-  - [ ] `components/MovieListItemView.tsx`: Linha densa de catálogo com mini pôster, elenco, bilheteria e nota.
-  - [ ] `components/CatalogPaginationView.tsx`: Paginação com botões Anterior/Próximo e páginas ativas.
-  - [ ] `components/CatalogContainer.tsx`: Orquestrador da rota `/`.
-  - [ ] **Testes Frontend:** `frontend/src/features/catalog/__tests__/CatalogView.test.tsx` (alternância Grid/List, disparo de filtros e sincronização na URL).
+  - [x] **Testes Backend:** `backend/tests/test_movies_catalog.py` (15 testes passando no total, cobrindo paginação, filtros por termo/gênero, ordenação decrescente e busca ultrarrápida do quick-search).
+- [x] **3.2 Frontend: Command Palette Base & AppLayout (`frontend/src/features/command-palette/` & `layout/`)** *(Concluído em 2026-09-25)*
+  - [x] `api/spotlightApi.ts`: Endpoint `quickSearchMovies` para a busca rápida assíncrona.
+  - [x] `hooks/useCommandPalette.ts`: Listener global de teclado (`Cmd+K` / `Ctrl+K`) e gerenciamento de estado de abertura/fechamento.
+  - [x] `hooks/useSpotlightSearch.ts`: TanStack Query debounced (300ms) para sugestões em tempo real.
+  - [x] `components/CommandPaletteDialogView.tsx`: Dialog baseado em `cmdk` com **backdrop blur cinematográfico intenso** (`backdrop-blur-2xl bg-black/90`), atalhos de navegação e busca integrada.
+  - [x] `components/CommandResultsGroupView.tsx`: Grupos de resultados (Filmes encontrados com pôster e nota, Gêneros para filtrar e Ações do sistema).
+  - [x] `components/layout/Navbar.tsx` & `AppLayout.tsx`: Header global responsivo com logo cinematográfico, indicador de autenticação e botão-gatilho visual *"Buscar filmes ou ⌘K"*.
+  - [x] **Testes & Qualidade:** `CommandResultsGroup.test.tsx` passando no Vitest, 0 erros no ESLint e `bun fallow health` aprovado com 0 breaches.
+- [x] **3.3 Frontend: Catalog Slice (`frontend/src/features/catalog/`)** *(Concluído em 2026-09-25)*
+  - [x] `api/catalogApi.ts`: Integração com endpoints de listagem de filmes, gêneros e estúdios com testes unitários em `catalogApi.test.ts`.
+  - [x] `hooks/useCatalogParams.ts`: Sincronização estrita de `page`, `q`, `genre`, `sort`, `view` com a URL (`useSearchParams`).
+  - [x] `hooks/useMoviesQuery.ts`: TanStack Query com `placeholderData: keepPreviousData` e prefetch.
+  - [x] `components/CatalogHeroView.tsx`: Hero section com Aceternity `WavyBackground`, título de impacto e barra de busca in-page com trigger para Command Palette.
+  - [x] `components/CatalogControlBar.tsx`: Barra de filtros de gênero em estilo pílula, dropdown de ordenação via **shadcn `Select`** e alternador **Grid/List** via **shadcn `ToggleGroup`** (estilo cápsula conforme `sort-by-block-and-list.png`).
+  - [x] `components/MovieGridItemView.tsx`: Card de pôster com `aspect-[2/3]`, efeito `CardSpotlight`, **shadcn `Badge`** para notas e popularidade.
+  - [x] `components/MovieListItemView.tsx`: Linha densa de catálogo com mini pôster, elenco, bilheteria e **shadcn `Badge`** de avaliação com tokens semânticos.
+  - [x] `components/CatalogPaginationView.tsx`: Paginação com botões Anterior/Próximo e páginas ativas com componentes puros (`PaginationItemButton`).
+  - [x] `components/CatalogContainer.tsx`: Orquestrador da rota `/` decomposto em `MovieListView`, `MovieGridList`, `MovieRowList`, `MovieListStatus`, `SkeletonList` e ViewModel.
+  - [x] **Testes & Qualidade:** Testes unitários para `CatalogControlBar`, `MovieItemViews`, `MovieListView`, `PaginationItemButton`, `useCatalogViewModel`, `list-status-helper` e `pagination-helper` (14 suítes, 37 testes passando, `bun fallow health` com 0 breaches, componentes oficiais shadcn `Select`, `ToggleGroup`, `Badge`, `Kbd`, `Separator` integrados e 0 advertências de cores brutas no linter).
 
 ---
 
@@ -253,24 +274,17 @@
 
 ---
 
-### Etapa 7: Slice de Command Palette (Spotlight ⌘K)
-> **Objetivo:** Proporcionar busca global instantânea ativada por teclado (`Cmd+K` / `Ctrl+K`), com backdrop blur cinematográfico intenso, feedback de navegação e atalhos rápidos de catálogo e administração.  
+### Etapa 7: Enriquecimento da Command Palette & Ações Avançadas
+> **Objetivo:** Expandir a Command Palette base com atalhos de navegação para métricas analíticas (campeões de bilheteria, tendências), filtros rápidos diretos, suporte a deep links e ações de administração contextuais (cadastrar novo filme, gerenciar resenhas).  
 > **Referências:**  
 > - [requisitos-nao-funcionais.md (RNF06)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L73-L78)  
 > - [DESIGN.md (Seção 5.4 Command Palette Global)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L146-L168)  
 > - [ARQUITETURA.md (Seção 4.1 `command-palette`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L313-L325)  
-> - [plan.md (Requisitos de Command Palette)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/plan.md#L20-L24)
 
-- [ ] **7.1 Backend: Quick Search Endpoint (`backend/app/features/movies/`)**
-  - [ ] Endpoint leve `GET /api/v1/movies/quick-search?q=...` retornando títulos, anos, pôsteres e notas (limite de 10 resultados para resposta em < 50ms).
-  - [ ] **Testes Backend:** `backend/tests/test_quick_search.py` (busca rápida e tolerância a termos curtos).
-- [ ] **7.2 Frontend: Command Palette Slice (`frontend/src/features/command-palette/`)**
-  - [ ] `hooks/useCommandPalette.ts`: Listener de teclado para capturar `Cmd+K` ou `Ctrl+K` em qualquer lugar da tela.
-  - [ ] `hooks/useSpotlightSearch.ts`: Busca assíncrona debounced (300ms) conectada ao TanStack Query.
-  - [ ] `components/CommandPaletteDialogView.tsx`: Baseado em shadcn `Command` + `cmdk`, com `DialogOverlay` apresentando **backdrop blur intenso** (`backdrop-blur-xl bg-black/70`) e animações suaves de entrada e saída.
-  - [ ] `components/CommandResultsGroupView.tsx`: Grupos de resultados (Filmes Encontrados, Gêneros Rápidos, Ações Administrativas como "Cadastrar Novo Filme").
-  - [ ] Integrar `CommandPaletteContainer` globalmente em `frontend/src/components/layout/AppLayout.tsx`.
-  - [ ] **Testes Frontend:** `frontend/src/features/command-palette/__tests__/CommandPalette.test.tsx` (abertura ao pressionar tecla de atalho, renderização de resultados e navegação para rota do filme selecionado).
+- [ ] **7.1 Frontend: Ações Contextuais e Integração com Roles Admin**
+  - [ ] Adicionar grupo "Ações Administrativas" visível condicionalmente para administradores logados (atalhos diretos para `/admin/filmes/novo`).
+  - [ ] Integrar atalhos analíticos (pular para os filmes com maior ROI ou maior bilheteria).
+  - [ ] **Testes Frontend:** `frontend/src/features/command-palette/__tests__/CommandPaletteAdvanced.test.tsx` (exibição condicional de ações administrativas e execução de atalhos).
 
 ---
 

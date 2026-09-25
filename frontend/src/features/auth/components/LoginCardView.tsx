@@ -32,9 +32,8 @@ export function LoginCardView({
   onFillDemoAdmin
 }: LoginCardViewProps) {
   return (
-    <div className="flex h-[560px] w-full max-w-md flex-col justify-between rounded-2xl border border-white/10 bg-card/85 p-8 shadow-2xl backdrop-blur-xl">
+    <div className="flex h-140 w-full max-w-md flex-col justify-between rounded-2xl border border-white/10 bg-card/85 p-8 shadow-2xl backdrop-blur-xl">
       <div>
-        {/* Brand & Heading */}
         <div className="mb-6 space-y-2">
           <div className="inline-flex items-center gap-2 text-base font-bold tracking-wider text-primary">
             <Clapperboard className="size-5" />
@@ -48,16 +47,14 @@ export function LoginCardView({
           </p>
         </div>
 
-        {/* Global Server Error Message */}
+        {/* Global Server Error Message - TODO: use a toast instead*/}
         {serverError && (
           <div className="mb-4 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-medium text-destructive">
             {serverError}
           </div>
         )}
 
-        {/* Login Form */}
         <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-          {/* Email Field */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="email"
@@ -90,7 +87,6 @@ export function LoginCardView({
             )}
           </div>
 
-          {/* Password Field */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="password"
@@ -123,7 +119,6 @@ export function LoginCardView({
             )}
           </div>
 
-          {/* Aceternity StatefulButton para submissão */}
           <div className="mt-2">
             <StatefulButton
               type="submit"
@@ -137,7 +132,6 @@ export function LoginCardView({
         </form>
       </div>
 
-      {/* Demo Credentials Quick Fill Helper */}
       <div className="mt-4 flex flex-col items-center gap-1.5 border-t border-white/5 pt-3 text-center">
         <p className="text-xs text-muted-foreground">
           Alo visagiano, clica aq
