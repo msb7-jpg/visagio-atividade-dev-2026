@@ -48,7 +48,7 @@ export const MovieListView: React.FC<MovieListViewProps> = ({
         animate={{ opacity: isFetching ? 0.75 : 1, y: 0 }}
         exit={{ opacity: 0, y: -8 }}
         transition={{ duration: 0.22, ease: 'easeOut' }}
-        className="w-full"
+        className="min-h-140 w-full"
       >
         {isGrid ? <MovieGridList movies={movies} /> : <MovieRowList movies={movies} />}
       </motion.div>

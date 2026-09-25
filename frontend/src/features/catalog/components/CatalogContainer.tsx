@@ -9,6 +9,24 @@ import { useCommandPalette } from '@/features/command-palette/hooks/useCommandPa
 export const CatalogContainer: React.FC = () => {
   const vm = useCatalogViewModel()
   const { open: openCommandPalette } = useCommandPalette()
+  const catalogRef = React.useRef<HTMLDivElement>(null)
+
+  const handlePageChange = React.useCallback(
+    (newPage: number) => {
+      vm.setPage(newPage)
+      if (catalogRef.current) {
+        const navHeight = 70 // Compensação da altura da barra de navegação superior
+        const elementPosition = catalogRef.current.getBoundingClientRect().top
+        const offsetPosition = elementPosition + window.pageYOffset - navHeight
+
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth'
+        })
+      }
+    },
+    [vm]
+  )
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -26,7 +44,10 @@ export const CatalogContainer: React.FC = () => {
         )}
       </div>
 
-      <div className="container mx-auto flex flex-1 flex-col px-4 py-6 sm:px-6">
+      <div
+        ref={catalogRef}
+        className="container mx-auto flex flex-1 flex-col px-4 py-6 sm:px-6"
+      >
         <CatalogControlBar
           genres={vm.genres}
           selectedGenre={vm.genre}
@@ -52,7 +73,7 @@ export const CatalogContainer: React.FC = () => {
         <CatalogPaginationView
           currentPage={vm.page}
           totalPages={vm.totalPages}
-          onPageChange={vm.setPage}
+          onPageChange={handlePageChange}
         />
       </div>
     </div>

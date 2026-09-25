@@ -125,6 +125,7 @@ A paleta respeita o padrão de tokens semânticos do Tailwind CSS v4 e shadcn/ui
 - **Variant `outline`:** Borda sutil de vidro `border border-white/15 bg-white/5 hover:bg-white/10 text-foreground`.
 - **Variant `ghost`:** Transparente, ganha fundo `bg-white/5` no hover.
 - **Variant `destructive`:** `bg-destructive/15 text-destructive border border-destructive/30 hover:bg-destructive/25`.
+- **Variant `pill` / `pill-active`:** Formato pílula (`rounded-full`) para chips de filtro de gêneros e tags interativas (`border border-white/10 bg-white/5` inativo, e `bg-primary font-semibold text-primary-foreground shadow-xs` ativo). Tamanho dedicado `size="pill"` com padding `px-3.5 py-1 text-xs`.
 
 ### 5.2 Campos de Formulário e Indicador Obrigatório (`Required Fields`)
 - **Barra de Destaque Vertical:** Todo campo obrigatório exibe uma sutil barra vertical de status na lateral esquerda (`border-l-4 border-l-amber-500/80`).
@@ -136,8 +137,8 @@ A paleta respeita o padrão de tokens semânticos do Tailwind CSS v4 e shadcn/ui
 
 ### 5.3 Alternador de Exibição Grid / List (`Toggle View`)
 Seguindo estritamente a referência `references/sort-by-block-and-list.png`:
-- Contêiner arredondado pílula/cápsula com fundo escuro `bg-black/40 border border-white/10 p-1 flex items-center gap-1`.
-- Dois botões de ícone: `LayoutGrid` (blocos de 4 quadrados) e `List` (linhas com marcadores).
+- Contêiner arredondado pílula/cápsula com fundo escuro através da variante encapsulada `<ToggleGroup variant="cinema">` (`bg-black/40 border border-white/10 p-0.5`).
+- Dois botões de ícone: `LayoutGrid` (blocos de 4 quadrados) e `List` (linhas com marcadores) com tamanho `size="icon-sm"`.
 - O botão ativo ganha fundo elevado `bg-white/15 text-white shadow-xs rounded-md`.
 - O botão inativo permanece com opacidade reduzida `text-white/40 hover:text-white/80`.
 - A alternância sincroniza instantaneamente na URL via parâmetro `?view=grid` ou `?view=list`.
@@ -164,3 +165,35 @@ Requisitos específicos atendidos:
    - Ícones de estrela preenchida com gradiente dourado, com suporte a microanimação de "bounce" suave ao clicar para selecionar nota de 0 a 10. com um rosto animada que vai mudando o conforme a nota que o usuário seleciona, para mais triste ou mais feliz
 3. **Skeleton Loading:**
    - Efeito shimmer suave cinza escuro (`bg-white/5 via-white/10 to-white/5 animate-pulse rounded-lg`) mantendo exatamente o aspect-ratio dos pôsteres durante o cache do TanStack Query.
+
+---
+
+## 7. Governança do Design System & Políticas de Linting (`@shadcn/lint`)
+
+Para preservar a consistência visual cinematográfica e evitar proliferação de estilos pontuais inline (*utility class bloat*), adotamos a governança via `@shadcn/lint` integrado ao ESLint.
+
+### 7.1 Filosofia de Encapsulamento de Componentes UI
+Componentes atômicos do diretório `@/components/ui/` (`Button`, `Input`, `ToggleGroup`, `Badge`, `Select`, `Command`, etc.) são **proprietários de sua própria aparência, espaçamento interno, bordas e tipografia**.
+
+1. **Variantes Nomeadas vs. Classes Inline Bloated:**
+   - Se um botão ou elemento de controle precisa de um estilo recorrente (ex: visual pílula/cápsula de gêneros, botões de paginação ou botão ativo com brilho), essa aparência deve ser modelada como uma **variante** (`variant`) ou tamanho (`size`) no arquivo do componente (`@/components/ui/button.tsx`), em vez de receber dezenas de classes utilitárias no ponto de chamada (`className="relative h-auto shrink-0 rounded-full px-3.5 py-1 text-xs ..."`).
+   - O callers nos módulos de negócio (`features/*`) devem apenas compor props semânticas: `<Button variant="pill" size="sm">` ou `<ToggleGroup variant="capsule">`.
+
+2. **Alternador Grid / List (`ToggleGroup`):**
+   - O contêiner de cápsula e seus itens devem carregar o padrão cinematográfico (`bg-black/40 border border-white/10`, itens com realce ativo `bg-white/15 text-white`) como padrão ou variante dentro de `@/components/ui/toggle-group.tsx` e `@/components/ui/toggle.tsx`.
+
+3. **Cores Semânticas Obrigatórias:**
+   - Cores brutas (*raw colors* como `text-pink-500`, `bg-[#123456]`, etc.) são proibidas fora de variáveis CSS. Use estritamente os tokens de design do Tailwind v4 (`primary`, `primary-foreground`, `secondary`, `muted`, `accent`, `border`, `card`, `background`, `foreground`).
+
+### 7.2 Regras Disponíveis no `@shadcn/lint`
+O `@shadcn/lint` opera no [eslint.config.js](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/frontend/eslint.config.js) com as seguintes regras de governança:
+- `shadcn/no-raw-colors`: Bloqueia o uso de classes de cores utilitárias não semânticas (garantindo fidelidade aos tokens do tema).
+- `shadcn/no-inline-styles`: Bloqueia estilos inline `style={{ ... }}` e tags `<style>`.
+- `shadcn/no-restyle`: Bloqueia sobrescritas indevidas de aparência, cor, espaçamento e tipografia em componentes de design system (`Button`, `ToggleGroupItem`, `SelectContent`, etc.), exigindo o uso de variantes ou contratos permitidos (`contracts`).
+- `shadcn/no-arbitrary-values`: Bloqueia valores arbitrários (como `p-[13px]`, `w-[320px]`).
+- `shadcn/no-unknown-classes`: Impede classes inexistentes ou erros tipográficos em classes Tailwind.
+- `shadcn/require-static-classes`: Garante que classes dinâmicas sejam analisáveis estaticamente pelo linter.
+
+### 7.3 Configuração de Contratos (`contracts`)
+Quando um componente do design system precisa deliberadamente conceder flexibilidade de posicionamento ou tipografia ao caller (por exemplo, `CardTitle` aceitar escala tipográfica ou `DialogContent` aceitar layout), definem-se **contratos** com `pattern`, `allow` e `deny` na regra `shadcn/no-restyle` no arquivo de configuração do ESLint.
+

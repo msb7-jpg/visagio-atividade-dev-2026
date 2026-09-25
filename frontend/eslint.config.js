@@ -60,11 +60,12 @@ const rules = {
     before: false,
     after: true,
     overrides: {
-      arrow: {
-        before: true,
-        after: true
-      }
+      arrow: 'ignore'
     }
+  }],
+  '@stylistic/arrow-spacing': ['error', {
+    before: true,
+    after: true
   }],
 
   // TypeScript rules
@@ -87,7 +88,28 @@ const rules = {
 
   // Shadcn rules
   'shadcn/no-raw-colors': 'warn',
-  'shadcn/no-inline-styles': 'warn'
+  'shadcn/no-inline-styles': 'warn',
+  'shadcn/no-restyle': ['error', {
+    allow: ['layout'],
+    contracts: [
+      {
+        pattern: 'Badge',
+        allow: ['layout', 'spacing']
+      },
+      {
+        pattern: 'CommandDialog',
+        allow: ['layout', 'spacing', 'color', 'shape', 'effects']
+      },
+      {
+        pattern: 'InputGroup',
+        allow: ['layout', 'spacing', 'shape', 'color', 'motion']
+      },
+      {
+        pattern: 'StatefulButton',
+        allow: ['layout', 'spacing', 'typography', 'shape', 'color']
+      }
+    ]
+  }]
 }
 
 export default defineConfig([
@@ -114,6 +136,9 @@ export default defineConfig([
     settings: {
       tailwindcss: {
         cssConfigPath: 'src/index.css'
+      },
+      shadcn: {
+        note: 'Consulte DESIGN.md e README.md. Adicione variantes ou tamanhos em src/components/ui em vez de sobrescrever estilos.'
       }
     },
     plugins,

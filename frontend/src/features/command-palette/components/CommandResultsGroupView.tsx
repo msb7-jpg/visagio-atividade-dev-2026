@@ -53,7 +53,8 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
               key={movie.sk_movie_id}
               value={`movie-${movie.titulo}-${movie.ano_lancamento}`}
               onSelect={() => onSelectMovie(movie)}
-              className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-white/10"
+              variant="cinema"
+              className="cursor-pointer"
             >
               <div className="h-12 w-8 shrink-0 overflow-hidden rounded border border-white/10 bg-white/5">
                 <BlurImage
@@ -81,8 +82,8 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
                   {movie.generos.slice(0, 2).map((g) => (
                     <Badge
                       key={g}
-                      variant="secondary"
-                      className="border-0 bg-white/5 px-1.5 py-0.5 text-[10px] text-white/70"
+                      variant="tag"
+                      size="sm"
                     >
                       {g}
                     </Badge>
@@ -95,7 +96,7 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
         </CommandGroup>
       )}
 
-      {movies.length > 0 && <CommandSeparator className="my-1 border-white/10" />}
+      {movies.length > 0 && <CommandSeparator variant="cinema" />}
 
       <CommandGroup heading="Gêneros & Categorias">
         <div className="grid grid-cols-2 gap-2 px-1 py-1.5 sm:grid-cols-4">
@@ -104,7 +105,7 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
               key={genre}
               value={`genre-${genre}`}
               onSelect={() => onSelectGenre(genre)}
-              className="group flex cursor-pointer items-center gap-2 rounded-lg border border-white/5 bg-white/3 px-3 py-2 text-xs font-medium text-white/80 transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-white"
+              variant="category"
             >
               <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70 transition-transform group-hover:scale-110" />
               <span className="truncate">{genre}</span>
@@ -113,13 +114,14 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
         </div>
       </CommandGroup>
 
-      <CommandSeparator className="my-1 border-white/10" />
+      <CommandSeparator variant="cinema" />
 
       <CommandGroup heading="Navegação & Ações Rápidas">
         <CommandItem
           value="action-home"
           onSelect={() => onSelectAction('/')}
-          className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10"
+          variant="cinema"
+          className="cursor-pointer"
         >
           <Compass className="h-4 w-4" />
           <span>Explorar Catálogo Completo</span>
@@ -128,7 +130,8 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
           <CommandItem
             value="action-logout"
             onSelect={() => onSelectAction('logout')}
-            className="/10 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors"
+            variant="cinema"
+            className="cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
             <span>Sair</span>
@@ -137,7 +140,8 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
           <CommandItem
             value="action-login"
             onSelect={() => onSelectAction('/login')}
-            className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10"
+            variant="cinema"
+            className="cursor-pointer"
           >
             <LogIn className="h-4 w-4 text-primary" />
             <span>Área Administrativa (Login)</span>

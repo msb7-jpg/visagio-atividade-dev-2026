@@ -62,8 +62,9 @@ export const MovieListItemView: React.FC<MovieListItemViewProps> = ({ movie }) =
       <div className="flex shrink-0 items-center gap-4">
         {movie.nota_media_usuarios !== null ? (
           <Badge
-            variant="outline"
-            className="h-auto gap-1.5 border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-primary sm:text-sm"
+            variant="star"
+            size="md"
+            className="gap-1.5"
           >
             <Star className="size-3.5 fill-primary text-primary" />
             <span>{movie.nota_media_usuarios.toFixed(1)}</span>

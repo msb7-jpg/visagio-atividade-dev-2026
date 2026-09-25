@@ -62,8 +62,6 @@ export function SyncVisualShowcase() {
             words={WORDS_LIST}
             duration={3800}
             onIndexChange={(nextIndex) => setActiveIndex(nextIndex)}
-            textClassName="text-xl md:text-2xl font-bold text-foreground"
-            wordClassName="text-xl md:text-2xl border-primary/20 bg-primary/10 text-primary shadow-none"
           />
         </div>
       </div>

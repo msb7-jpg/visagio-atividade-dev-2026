@@ -41,13 +41,13 @@ export const BlurImage: React.FC<BlurImageProps> = ({
   return (
     <div
       className={cn(
-        'relative h-full w-full overflow-hidden bg-white/5',
+        'relative h-full w-full overflow-hidden bg-black backface-hidden transform-[translateZ(0)]',
         containerClassName
       )}
     >
       {/* Shimmer / Skeleton Placeholder enquanto carrega */}
       {!isLoaded && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-tr from-white/5 via-white/10 to-white/5 backdrop-blur-md" />
+        <div className="absolute inset-0 animate-pulse bg-linear-to-tr from-white/5 via-white/10 to-white/5 backdrop-blur-md" />
       )}
 
       {/* Imagem com transição Blur-Up */}
@@ -58,7 +58,7 @@ export const BlurImage: React.FC<BlurImageProps> = ({
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
         className={cn(
-          'h-full w-full object-cover transition-all duration-500 ease-out',
+          'h-full w-full object-cover transition-all duration-500 ease-out backface-hidden transform-[translateZ(0)]',
           isLoaded ? 'blur-0 scale-100 opacity-100' : 'blur-md scale-105 opacity-0',
           className
         )}

@@ -70,3 +70,31 @@ cd backend
 
 O banco padrão é SQLite local em `backend/rocketlab.db`. Ajuste
 `DATABASE_URL` no arquivo `.env` para usar outro banco compatível.
+
+---
+
+## Design System & Governança de UI (Frontend)
+
+O frontend utiliza **Tailwind CSS v4** e **shadcn/ui** integrados sob a especificação detalhada em [DESIGN.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md).
+
+### 🚫 Regra Anti-Sobrescrita Arbitrária para Agentes e Desenvolvedores
+
+Componentes de UI localizados em `src/components/ui/` (`Button`, `ToggleGroup`, `Badge`, `Input`, `Select`, `Command`, etc.) são **proprietários de sua própria aparência, espaçamento, cor, formato e tipografia**:
+
+1. **Proibido Sobrescrever Estilos Arbitrariamente via `className`:**
+   - **NÃO** adicione classes de cor (`text-white`, `bg-primary`), padding/dimensões (`p-0`, `h-7`, `w-7`), bordas (`border-white/10`) ou tipografia (`text-xs`) no ponto de chamada do componente.
+   - Componentes devem ser consumidos usando suas propriedades e variantes semânticas nativas (`variant`, `size`, `orientation`).
+
+2. **Quando Precisar de um Novo Tratamento Visual:**
+   - Caso um componente precise de uma aparência específica e recorrente (ex: botões pílula de gêneros, alternador Grid/List estilo cápsula cinematográfica, botões de paginação numérica), **adicione uma nova variante ou tamanho diretamente no arquivo do componente** em `src/components/ui/` (usando `cva` e tokens semânticos).
+   - Não infle as páginas e features com classes ad-hoc repetidas.
+
+3. **Verificação Obrigatória via `@shadcn/lint`:**
+   - O projeto possui `@shadcn/lint` configurado para detectar infrações de design system (`shadcn/no-restyle`, `shadcn/no-raw-colors`, `shadcn/no-inline-styles`).
+   - Após qualquer alteração no frontend, execute obrigatoriamente:
+     ```bash
+     cd frontend
+     bun run lint
+     ```
+   - Nenhum erro ou violação de contrato de estilo deve ser aceito.
+

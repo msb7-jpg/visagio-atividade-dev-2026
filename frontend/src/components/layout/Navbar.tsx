@@ -110,11 +110,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
 
           <Input
             type="text"
+            variant="glass"
+            size="navbar"
             value={searchQuery}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="Buscar filmes, diretores, gêneros..."
-            className="h-9 w-full rounded-lg border-white/15 bg-black/50 py-1.5 pr-20 pl-9 text-sm transition-all placeholder:text-muted-foreground/60 hover:border-white/30 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/40"
+            className="w-full"
             aria-label="Buscar filmes, diretores, gêneros..."
           />
 
@@ -123,9 +125,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
+                size="icon-xs"
                 onClick={handleClear}
-                className="h-6 w-6 text-muted-foreground hover:text-white"
                 aria-label="Limpar busca da navbar"
               >
                 <X className="h-3.5 w-3.5" />
@@ -134,10 +135,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
 
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              variant="cmdk"
+              size="xs"
               onClick={onOpenCommandPalette}
-              className="flex h-6 items-center gap-1 rounded-md border-white/10 bg-white/5 px-1.5 font-mono text-[11px] text-white/80 hover:bg-white/10"
               aria-label="Abrir command palette"
               title="Abrir busca rápida (⌘K)"
             >
@@ -149,33 +149,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
         {/* Ações / Autenticação */}
         <div className="flex items-center gap-2">
           {/* Botão de busca mobile com feedback de loading */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onOpenCommandPalette}
+          <div
             className={cn(
-              'text-muted-foreground transition-all duration-300 hover:text-foreground md:hidden',
+              'md:hidden',
               isHeroSearchVisible
                 ? 'pointer-events-none scale-75 opacity-0'
                 : 'pointer-events-auto scale-100 opacity-100'
             )}
-            aria-label="Abrir busca"
           >
-            {isFetching ? (
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            ) : (
-              <Search className="h-5 w-5" />
-            )}
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onOpenCommandPalette}
+              aria-label="Abrir busca"
+            >
+              {isFetching ? (
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              ) : (
+                <Search className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
               <Badge
-                variant="outline"
-                className="hidden items-center gap-1.5 rounded-full border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary sm:flex"
+                variant="admin"
+                className="hidden items-center gap-1.5 sm:flex"
               >
                 <ShieldCheck className="size-3.5 text-primary" />
-                <span className="max-w-30 truncate font-medium">
+                <span className="max-w-30 truncate">
                   {user?.nome || 'Admin'}
                 </span>
               </Badge>
@@ -183,7 +186,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
                 variant="ghost"
                 size="sm"
                 onClick={logout}
-                className="gap-1.5 text-xs text-white/70 hover:bg-white/10 hover:text-white"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sair</span>
@@ -194,7 +196,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
               variant="outline"
               size="sm"
               onClick={() => navigate(routes.login())}
-              className="gap-1.5 border-white/15 bg-white/5 text-xs text-white hover:bg-white/10"
             >
               <LogIn className="h-4 w-4 text-primary" />
               <span>Entrar</span>

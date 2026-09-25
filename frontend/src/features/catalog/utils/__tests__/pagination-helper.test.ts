@@ -10,11 +10,21 @@ describe('calculatePageNumbers', () => {
   it('retorna todas as páginas quando total é pequeno', () => {
     expect(calculatePageNumbers(1, 4)).toEqual([1, 2, 3, 4])
     expect(calculatePageNumbers(3, 5)).toEqual([1, 2, 3, 4, 5])
+    expect(calculatePageNumbers(2, 7)).toEqual([1, 2, 3, 4, 5, 6, 7])
   })
 
-  it('insere elipses corretamente quando há muitas páginas', () => {
-    expect(calculatePageNumbers(1, 10)).toEqual([1, 2, 3, '...', 10])
-    expect(calculatePageNumbers(5, 10)).toEqual([1, '...', 3, 4, 5, 6, 7, '...', 10])
-    expect(calculatePageNumbers(10, 10)).toEqual([1, '...', 8, 9, 10])
+  it('insere elipses e mantém blocos estáveis quando há muitas páginas', () => {
+    // Bloco 1-5 (página 1 a 5)
+    expect(calculatePageNumbers(1, 10)).toEqual([1, 2, 3, 4, 5, '...', 10])
+    expect(calculatePageNumbers(3, 10)).toEqual([1, 2, 3, 4, 5, '...', 10])
+    expect(calculatePageNumbers(5, 10)).toEqual([1, 2, 3, 4, 5, '...', 10])
+
+    // Bloco 6-10 (página 6 a 10)
+    expect(calculatePageNumbers(6, 10)).toEqual([1, '...', 6, 7, 8, 9, 10])
+    expect(calculatePageNumbers(8, 10)).toEqual([1, '...', 6, 7, 8, 9, 10])
+    expect(calculatePageNumbers(10, 10)).toEqual([1, '...', 6, 7, 8, 9, 10])
+
+    // Bloco intermediário com páginas altas (ex: 3981-3985 em 4000 páginas)
+    expect(calculatePageNumbers(3984, 4000)).toEqual([1, '...', 3981, 3982, 3983, 3984, 3985, '...', 4000])
   })
 })

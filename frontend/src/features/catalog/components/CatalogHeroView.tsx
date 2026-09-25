@@ -123,13 +123,15 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
 
           <Input
             type="text"
+            variant="hero"
+            size="lg"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value)
               setSearchQuery(e.target.value)
             }}
             placeholder="Digite o título do filme, diretor ou ator..."
-            className="w-full rounded-xl border-white/20 bg-black/60 py-6 pr-24 pl-12 text-base transition-all placeholder:text-muted-foreground/60 focus-visible:border-primary"
+            className="w-full"
           />
 
           <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1.5">
@@ -139,7 +141,6 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={handleClear}
-                className="h-8 w-8 text-muted-foreground hover:text-white"
                 aria-label="Limpar busca"
               >
                 <X className="h-4 w-4" />
@@ -148,10 +149,9 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
 
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              variant="cmdk"
+              size="default"
               onClick={onOpenCommandPalette}
-              className="flex h-8 items-center gap-1 border-white/10 bg-white/5 px-2 font-mono text-xs text-white/80 hover:bg-white/10"
               aria-label="Abrir busca rápida (⌘K)"
               title="Abrir busca rápida (⌘K)"
             >

@@ -1,5 +1,6 @@
-import React from 'react'
 import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
+import React from 'react'
 
 interface PaginationItemButtonProps {
   page: number | string
@@ -31,16 +32,20 @@ export const PaginationItemButton: React.FC<PaginationItemButtonProps> = ({
   return (
     <Button
       type="button"
-      variant={isActive ? 'default' : 'ghost'}
-      size="sm"
+      variant="ghost"
+      size="pagination"
       onClick={() => onPageChange(pageNum)}
-      className={`h-8 w-8 rounded-md p-0 text-xs ${
-        isActive
-          ? 'bg-primary font-semibold text-primary-foreground shadow-xs'
-          : 'text-muted-foreground hover:bg-white/10 hover:text-foreground'
-      }`}
     >
-      {pageNum}
+      {isActive && (
+        <motion.span
+          layoutId="activePageIndicator"
+          className="absolute inset-0 rounded-lg bg-primary shadow-xs"
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
+        />
+      )}
+      <span className={isActive ? 'relative z-10 font-semibold text-primary-foreground' : 'relative z-10'}>
+        {pageNum}
+      </span>
     </Button>
   )
 }

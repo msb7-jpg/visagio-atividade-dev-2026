@@ -68,7 +68,7 @@ export function LoginCardView(props: LoginCardViewProps) {
                 placeholder="admin@rocketfilms.com"
                 disabled={props.isLoading}
                 aria-invalid={!!props.emailError}
-                className="text-sm placeholder:text-muted-foreground/40"
+                className="placeholder:text-muted-foreground/40"
               />
             </InputGroup>
             {props.emailError && (
@@ -100,7 +100,7 @@ export function LoginCardView(props: LoginCardViewProps) {
                 placeholder="••••••••"
                 disabled={props.isLoading}
                 aria-invalid={!!props.passwordError}
-                className="text-sm placeholder:text-muted-foreground/40"
+                className="placeholder:text-muted-foreground/40"
               />
             </InputGroup>
             {props.passwordError && (
@@ -136,9 +136,12 @@ export function LoginCardView(props: LoginCardViewProps) {
           }
         >
           <Button
+            type="button"
+            variant="outline"
+            size="sm"
             onClick={props.onFillDemoAdmin}
             disabled={props.isLoading}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-secondary/40 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="cursor-pointer"
           >
             <Sparkles className="size-3.5 text-primary" />
             <span>Preencher credencial de teste</span>

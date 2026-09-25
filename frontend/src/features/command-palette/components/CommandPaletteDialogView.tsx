@@ -57,14 +57,13 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
     <CommandDialog
       open={isOpen}
       onOpenChange={onOpenChange}
-      className="w-[95vw] overflow-hidden border border-white/15 bg-black/90 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl sm:max-w-2xl"
+      className="w-[95vw] sm:max-w-2xl"
     >
       <div className="relative">
         <CommandInput
           placeholder="Busque por filme, gênero ou ação..."
           value={query}
           onValueChange={setQuery}
-          className="h-14 text-base"
         />
         {(isLoading || isDebouncing) && (
           <div className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-1.5 text-xs text-muted-foreground">
@@ -73,8 +72,8 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
         )}
       </div>
 
-      <CommandList className="max-h-96 scrollbar-thin scrollbar-thumb-white/20 overflow-y-auto p-2">
-        <CommandEmpty className="py-8 text-center text-sm text-muted-foreground">
+      <CommandList>
+        <CommandEmpty>
           {query.trim().length < 2
             ? 'Digite pelo menos 2 caracteres para pesquisar filmes...'
             : 'Nenhum filme ou atalho encontrado.'}
@@ -91,25 +90,25 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
         />
       </CommandList>
 
-      <Separator className="border-white/10" />
+      <Separator variant="cinema" />
 
       <div className="flex items-center justify-between bg-white/2 px-4 py-2.5 text-[11px] text-muted-foreground">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
-            <Kbd className="bg-white/10 font-mono text-[10px] text-white">
+            <Kbd variant="cinema">
               ↑↓
             </Kbd>
             <span>Navegar</span>
           </span>
           <span className="flex items-center gap-1">
-            <Kbd className="bg-white/10 font-mono text-[10px] text-white">
+            <Kbd variant="cinema">
               ↵
             </Kbd>
             <span>Selecionar</span>
           </span>
         </div>
         <span className="flex items-center gap-1">
-          <Kbd className="bg-white/10 font-mono text-[10px] text-white">
+          <Kbd variant="cinema">
             ESC
           </Kbd>
           <span>Fechar</span>

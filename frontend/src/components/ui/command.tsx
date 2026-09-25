@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { Command as CommandPrimitive } from 'cmdk'
 import { cn } from '@/lib/utils'
 
@@ -91,7 +92,7 @@ function CommandList({
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        'no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none',
+        'max-h-96 scrollbar-thin scrollbar-thumb-white/20 scroll-py-1 overflow-x-hidden overflow-y-auto p-2 outline-none',
         className
       )}
       {...props}
@@ -106,7 +107,7 @@ function CommandEmpty({
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn('py-6 text-center text-sm', className)}
+      className={cn('py-8 text-center text-sm text-muted-foreground', className)}
       {...props}
     />
   )
@@ -128,31 +129,64 @@ function CommandGroup({
   )
 }
 
+const commandSeparatorVariants = cva('-mx-1 h-px bg-border', {
+  variants: {
+    variant: {
+      default: '',
+      cinema: 'my-1 border-white/10 bg-white/10'
+    }
+  },
+  defaultVariants: {
+    variant: 'default'
+  }
+})
+
 function CommandSeparator({
   className,
+  variant = 'default',
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Separator>) {
+}: React.ComponentProps<typeof CommandPrimitive.Separator> &
+  VariantProps<typeof commandSeparatorVariants>) {
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
-      className={cn('-mx-1 h-px bg-border', className)}
+      data-variant={variant}
+      className={cn(commandSeparatorVariants({ variant }), className)}
       {...props}
     />
   )
 }
 
+const commandItemVariants = cva(
+  "group/command-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-lg! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-foreground",
+  {
+    variants: {
+      variant: {
+        default: '',
+        cinema:
+          'gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/90 transition-colors hover:bg-white/10 hover:text-white data-selected:bg-white/15 data-selected:text-white data-selected:shadow-xs data-selected:ring-1 data-selected:ring-white/10 data-selected:*:[svg]:text-primary',
+        category:
+          'group flex cursor-pointer items-center gap-2 rounded-lg border border-white/5 bg-white/3 px-3 py-2 text-xs font-medium text-white/80 transition-all hover:border-primary/40 hover:bg-white/10 hover:text-white data-selected:border-primary/50 data-selected:bg-white/15 data-selected:text-white data-selected:shadow-xs data-selected:*:[svg]:text-primary'
+      }
+    },
+    defaultVariants: {
+      variant: 'default'
+    }
+  }
+)
+
 function CommandItem({
   className,
   children,
+  variant = 'default',
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Item>) {
+}: React.ComponentProps<typeof CommandPrimitive.Item> &
+  VariantProps<typeof commandItemVariants>) {
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
-      className={cn(
-        "group/command-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-lg! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-foreground",
-        className
-      )}
+      data-variant={variant}
+      className={cn(commandItemVariants({ variant }), className)}
       {...props}
     >
       {children}
@@ -186,5 +220,7 @@ export {
   CommandGroup,
   CommandItem,
   CommandShortcut,
-  CommandSeparator
+  CommandSeparator,
+  commandSeparatorVariants,
+  commandItemVariants
 }

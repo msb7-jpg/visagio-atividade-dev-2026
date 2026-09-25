@@ -10,7 +10,6 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { GenreItem } from '@/features/catalog/api/catalogApi'
 import type { SortByOption, ViewModeOption } from '@/features/catalog/hooks/useCatalogParams'
-import { cn } from '@/lib/utils'
 import { ArrowDownUp, LayoutGrid, List } from 'lucide-react'
 import { motion } from 'framer-motion'
 import React from 'react'
@@ -50,15 +49,10 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
       <div className="no-scrollbar flex items-center gap-2 overflow-x-auto scroll-smooth py-1">
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant={!selectedGenre ? 'pill-active' : 'pill'}
+          size="pill"
           onClick={() => onSelectGenre('')}
-          className={cn(
-            'relative h-auto shrink-0 rounded-full px-3.5 py-1 text-xs font-medium transition-colors duration-200',
-            !selectedGenre
-              ? 'font-semibold text-primary-foreground hover:bg-transparent hover:text-primary-foreground'
-              : 'border border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground'
-          )}
+          className="relative"
         >
           {!selectedGenre && (
             <motion.span
@@ -76,15 +70,10 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
             <Button
               key={g.sk_genre_id}
               type="button"
-              variant="ghost"
-              size="sm"
+              variant={isSelected ? 'pill-active' : 'pill'}
+              size="pill"
               onClick={() => onSelectGenre(isSelected ? '' : g.nome_genero)}
-              className={cn(
-                'relative h-auto shrink-0 rounded-full px-3.5 py-1 text-xs font-medium transition-colors duration-200',
-                isSelected
-                  ? 'font-semibold text-primary-foreground hover:bg-transparent hover:text-primary-foreground'
-                  : 'border border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground'
-              )}
+              className="relative"
             >
               {isSelected && (
                 <motion.span
@@ -112,20 +101,16 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
               value={sortBy}
               onValueChange={(val) => onSelectSortBy(val as SortByOption)}
             >
-              <SelectTrigger
-                size="sm"
-                className="gap-2 border-white/10 bg-white/5 text-xs text-foreground hover:bg-white/10"
-              >
+              <SelectTrigger size="sm">
                 <ArrowDownUp className="size-3.5 text-muted-foreground" />
                 <SelectValue placeholder="Ordenar por..." />
               </SelectTrigger>
-              <SelectContent className="border-white/10 bg-black/95 text-foreground backdrop-blur-xl">
+              <SelectContent>
                 <SelectGroup>
                   {SORT_OPTIONS.map((opt) => (
                     <SelectItem
                       key={opt.value}
                       value={opt.value}
-                      className="cursor-pointer text-xs focus:bg-white/10 focus:text-primary"
                     >
                       {opt.label}
                     </SelectItem>
@@ -138,30 +123,24 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
           {/* Alternador Grid / List Pílula Cápsula (Referência sort-by-block-and-list.png) */}
           <ToggleGroup
             type="single"
+            variant="cinema"
             value={viewMode}
             onValueChange={(val) => {
               if (val) onChangeViewMode(val as ViewModeOption)
             }}
-            className="rounded-lg border border-white/10 bg-black/40 p-0.5"
           >
             <ToggleGroupItem
               value="grid"
-              size="sm"
+              size="icon-sm"
               aria-label="Exibição em Grid"
-              className={cn(
-                'h-7 w-7 p-0 hover:text-white/80 data-[state=off]:text-white/40 data-[state=on]:bg-white/15 data-[state=on]:text-white'
-              )}
             >
               <LayoutGrid className="size-4" />
             </ToggleGroupItem>
 
             <ToggleGroupItem
               value="list"
-              size="sm"
+              size="icon-sm"
               aria-label="Exibição em Lista"
-              className={cn(
-                'h-7 w-7 p-0 hover:text-white/80 data-[state=off]:text-white/40 data-[state=on]:bg-white/15 data-[state=on]:text-white'
-              )}
             >
               <List className="size-4" />
             </ToggleGroupItem>

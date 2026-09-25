@@ -1,15 +1,15 @@
-import { routes } from '@/routes/routes.types'
+import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useGenresQuery } from '@/features/catalog/hooks/useMoviesQuery'
 import {
   COMMAND_ACTIONS,
   type CommandGenreItem,
   type CommandMovieItem,
   type CommandPaletteAction
 } from '@/features/command-palette/types/command-palette.types'
+import { routes } from '@/routes/routes.types'
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CommandPaletteDialogView } from './CommandPaletteDialogView'
-import { useGenresQuery } from '@/features/catalog/hooks/useMoviesQuery'
-import { useAuth } from '@/features/auth/hooks/useAuth'
 
 interface CommandPaletteContainerProps {
   isOpen: boolean
@@ -25,9 +25,9 @@ export const CommandPaletteContainer: React.FC<CommandPaletteContainerProps> = (
   const { data: genresData } = useGenresQuery()
 
   const availableGenres = useMemo(() => {
-    if (genresData && genresData.length > 0) {
+    if (genresData && genresData.length > 0)
       return genresData.map(genre => genre.nome_genero)
-    }
+
     return [
       'Action',
       'Comedy',
