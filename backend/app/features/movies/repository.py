@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -9,11 +11,13 @@ from app.features.movies.schemas import (
     SortOrder,
 )
 from app.movies.models import (
+    DimCompany,
     DimGenre,
     DimMovie,
     DimPerson,
     DimReview,
     FactMoviePerformance,
+    bridge_movie_company,
     bridge_movie_genre,
     bridge_movie_person,
 )
@@ -34,54 +38,91 @@ class MoviesRepository:
         order: SortOrder = "desc",
     ) -> PaginatedResponse[MovieListItemDTO]:
         """Consulta paginada com filtros dinâmicos e carregamento otimizado de relacionamentos."""
-        base_query = (
-            select(DimMovie)
-            .outerjoin(FactMoviePerformance, DimMovie.sk_movie_id == FactMoviePerformance.sk_movie_id)
-            .outerjoin(DimReview, DimMovie.sk_movie_id == DimReview.sk_movie_id)
-        )
+        filters = []
 
         if query and query.strip():
             term = f"%{query.strip()}%"
-            # Busca por título ou por nome de diretor/ator
-            person_subq = (
-                select(bridge_movie_person.c.sk_movie_id)
-                .join(DimPerson, bridge_movie_person.c.sk_person_id == DimPerson.sk_person_id)
+            # Subqueries em cascata usando chaves indexadas para evitar full scans com JOIN
+            person_ids_subq = (
+                select(DimPerson.sk_person_id)
                 .where(DimPerson.nome_pessoa.ilike(term))
             )
-            base_query = base_query.where(
-                (DimMovie.titulo.ilike(term)) | (DimMovie.sk_movie_id.in_(person_subq))
+            person_movie_ids_subq = (
+                select(bridge_movie_person.c.sk_movie_id)
+                .where(bridge_movie_person.c.sk_person_id.in_(person_ids_subq))
+            )
+            filters.append(
+                (DimMovie.titulo.ilike(term))
+                | (DimMovie.sk_movie_id.in_(person_movie_ids_subq))
             )
 
         if genre and genre.strip():
-            genre_subq = (
-                select(bridge_movie_genre.c.sk_movie_id)
-                .join(DimGenre, bridge_movie_genre.c.sk_genre_id == DimGenre.sk_genre_id)
+            genre_ids_subq = (
+                select(DimGenre.sk_genre_id)
                 .where(DimGenre.nome_genero.ilike(genre.strip()))
             )
-            base_query = base_query.where(DimMovie.sk_movie_id.in_(genre_subq))
+            genre_movie_ids_subq = (
+                select(bridge_movie_genre.c.sk_movie_id)
+                .where(bridge_movie_genre.c.sk_genre_id.in_(genre_ids_subq))
+            )
+            filters.append(DimMovie.sk_movie_id.in_(genre_movie_ids_subq))
 
-        # Contagem total
-        count_stmt = select(func.count()).select_from(base_query.subquery())
+        if company and company.strip():
+            company_ids_subq = (
+                select(DimCompany.sk_company_id)
+                .where(DimCompany.nome_produtora.ilike(company.strip()))
+            )
+            company_movie_ids_subq = (
+                select(bridge_movie_company.c.sk_movie_id)
+                .where(bridge_movie_company.c.sk_company_id.in_(company_ids_subq))
+            )
+            filters.append(DimMovie.sk_movie_id.in_(company_movie_ids_subq))
+
+        # Contagem total ultra rápida sem outer joins redundantes
+        count_stmt = select(func.count(DimMovie.sk_movie_id))
+        if filters:
+            count_stmt = count_stmt.where(*filters)
         total = (await self.session.execute(count_stmt)).scalar() or 0
 
-        # Ordenação
-        sort_col = {
-            "popularidade": func.coalesce(FactMoviePerformance.popularidade, 0.0),
-            "nota_media_usuarios": func.coalesce(DimReview.nota_media_usuarios, 0.0),
-            "receita_usd": func.coalesce(FactMoviePerformance.receita_usd, 0),
-            "ano_lancamento": func.coalesce(DimMovie.ano_lancamento, 0),
-            "titulo": DimMovie.titulo,
-        }.get(sort_by, func.coalesce(FactMoviePerformance.popularidade, 0.0))
+        if total == 0:
+            return PaginatedResponse.create(items=[], total=0, params=params)
+
+        # Configuração da consulta de itens paginados
+        items_query = select(DimMovie)
+
+        # Adiciona joins apenas conforme o critério de ordenação selecionado
+        if sort_by in ("popularidade", "receita_usd"):
+            items_query = items_query.outerjoin(
+                FactMoviePerformance,
+                DimMovie.sk_movie_id == FactMoviePerformance.sk_movie_id,
+            )
+            sort_col = (
+                func.coalesce(FactMoviePerformance.popularidade, 0.0)
+                if sort_by == "popularidade"
+                else func.coalesce(FactMoviePerformance.receita_usd, 0)
+            )
+        elif sort_by == "nota_media_usuarios":
+            items_query = items_query.outerjoin(
+                DimReview,
+                DimMovie.sk_movie_id == DimReview.sk_movie_id,
+            )
+            sort_col = func.coalesce(DimReview.nota_media_usuarios, 0.0)
+        elif sort_by == "ano_lancamento":
+            sort_col = func.coalesce(DimMovie.ano_lancamento, 0)
+        else:
+            sort_col = DimMovie.titulo
+
+        if filters:
+            items_query = items_query.where(*filters)
 
         direction = desc if order == "desc" else asc
         ordered_query = (
-            base_query.order_by(direction(sort_col), DimMovie.sk_movie_id)
+            items_query.order_by(direction(sort_col), DimMovie.sk_movie_id)
             .offset(params.offset)
             .limit(params.page_size)
             .options(
                 selectinload(DimMovie.genres),
                 selectinload(DimMovie.companies),
-                selectinload(DimMovie.people),
                 selectinload(DimMovie.performance),
                 selectinload(DimMovie.reviews_summary),
             )
@@ -90,51 +131,49 @@ class MoviesRepository:
         result = await self.session.execute(ordered_query)
         movies = result.scalars().all()
 
-        items: list[MovieListItemDTO] = []
-        for m in movies:
-            diretores = [
-                p.nome_pessoa for p in m.people if getattr(p, "tipo_pessoa", "") == "Diretor"
-            ]
-            generos = [g.nome_genero for g in m.genres]
-            produtoras = [c.nome_produtora for c in m.companies]
-
-            items.append(
-                MovieListItemDTO(
-                    sk_movie_id=m.sk_movie_id,
-                    id_filme=m.id_filme,
-                    titulo=m.titulo,
-                    ano_lancamento=m.ano_lancamento,
-                    duracao_minutos=m.duracao_minutos,
-                    sinopse=m.sinopse,
-                    url_poster=m.url_poster,
-                    url_backdrop=m.url_backdrop,
-                    generos=generos,
-                    diretores=diretores,
-                    produtoras=produtoras,
-                    popularidade=float(m.performance.popularidade) if m.performance and m.performance.popularidade is not None else 0.0,
-                    nota_media_usuarios=float(m.reviews_summary.nota_media_usuarios) if m.reviews_summary and m.reviews_summary.nota_media_usuarios is not None else None,
-                    qtd_avaliacoes_usuarios=m.reviews_summary.qtd_avaliacoes_usuarios if m.reviews_summary else 0,
-                    nota_tmdb=float(m.performance.nota_tmdb) if m.performance and m.performance.nota_tmdb is not None else None,
-                    nota_imdb=float(m.performance.nota_imdb) if m.performance and m.performance.nota_imdb is not None else None,
-                    receita_usd=m.performance.receita_usd if m.performance else None,
-                    receita_brl=m.performance.receita_brl if m.performance else None,
+        # Busca direcionada apenas para diretores da página, prevenindo overfetching de pessoas
+        directors_by_movie: dict[str, list[str]] = defaultdict(list)
+        if movies:
+            movie_ids = [m.sk_movie_id for m in movies]
+            directors_stmt = (
+                select(bridge_movie_person.c.sk_movie_id, DimPerson.nome_pessoa)
+                .join(DimPerson, bridge_movie_person.c.sk_person_id == DimPerson.sk_person_id)
+                .where(
+                    bridge_movie_person.c.sk_movie_id.in_(movie_ids),
+                    DimPerson.tipo_pessoa == "Diretor",
                 )
             )
+            directors_result = await self.session.execute(directors_stmt)
+            for movie_id, person_name in directors_result.all():
+                directors_by_movie[movie_id].append(person_name)
+
+        items = [
+            MovieListItemDTO.from_movie_model(
+                movie,
+                diretores=directors_by_movie.get(movie.sk_movie_id, []),
+            )
+            for movie in movies
+        ]
 
         return PaginatedResponse.create(items=items, total=total, params=params)
 
     async def quick_search(self, query: str, limit: int = 10) -> list[QuickSearchMovieDTO]:
-        """Busca ultrarrápida com foco em digitação e sugestões instantâneas para Spotlight / Command Palette."""
+        """Busca ultrarrápida com foco em digitação instantânea para Command Palette."""
         if not query or len(query.strip()) < 2:
             return []
 
         term = f"%{query.strip()}%"
         stmt = (
             select(DimMovie)
-            .outerjoin(FactMoviePerformance, DimMovie.sk_movie_id == FactMoviePerformance.sk_movie_id)
-            .outerjoin(DimReview, DimMovie.sk_movie_id == DimReview.sk_movie_id)
+            .outerjoin(
+                FactMoviePerformance,
+                DimMovie.sk_movie_id == FactMoviePerformance.sk_movie_id,
+            )
             .where(DimMovie.titulo.ilike(term))
-            .order_by(desc(func.coalesce(FactMoviePerformance.popularidade, 0.0)), DimMovie.titulo)
+            .order_by(
+                desc(func.coalesce(FactMoviePerformance.popularidade, 0.0)),
+                DimMovie.titulo,
+            )
             .limit(limit)
             .options(
                 selectinload(DimMovie.genres),
@@ -146,16 +185,4 @@ class MoviesRepository:
         result = await self.session.execute(stmt)
         movies = result.scalars().all()
 
-        return [
-            QuickSearchMovieDTO(
-                sk_movie_id=m.sk_movie_id,
-                id_filme=m.id_filme,
-                titulo=m.titulo,
-                ano_lancamento=m.ano_lancamento,
-                url_poster=m.url_poster,
-                nota_media_usuarios=float(m.reviews_summary.nota_media_usuarios) if m.reviews_summary and m.reviews_summary.nota_media_usuarios is not None else None,
-                popularidade=float(m.performance.popularidade) if m.performance and m.performance.popularidade is not None else 0.0,
-                generos=[g.nome_genero for g in m.genres],
-            )
-            for m in movies
-        ]
+        return [QuickSearchMovieDTO.from_movie_model(m) for m in movies]

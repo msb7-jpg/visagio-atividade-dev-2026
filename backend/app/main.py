@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.profiler import QueryProfilerMiddleware
 from app.db.session import engine
 
 configure_logging()
@@ -30,6 +31,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    app.add_middleware(QueryProfilerMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.backend_cors_origins,

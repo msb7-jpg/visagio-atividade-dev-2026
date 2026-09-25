@@ -1,5 +1,6 @@
 from decimal import Decimal
-from typing import Literal
+from typing import Any, Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -19,6 +20,7 @@ class CompanyDTO(BaseModel):
 
 class MovieListItemDTO(BaseModel):
     """Item resumido do catálogo de filmes para Grid ou List."""
+
     model_config = ConfigDict(from_attributes=True)
 
     sk_movie_id: str
@@ -29,7 +31,7 @@ class MovieListItemDTO(BaseModel):
     sinopse: str | None = None
     url_poster: str | None = None
     url_backdrop: str | None = None
-    
+
     # Metadados adicionais
     generos: list[str] = Field(default_factory=list)
     diretores: list[str] = Field(default_factory=list)
@@ -44,9 +46,59 @@ class MovieListItemDTO(BaseModel):
     receita_usd: Decimal | None = None
     receita_brl: Decimal | None = None
 
+    @classmethod
+    def from_movie_model(
+        cls,
+        m: Any,
+        generos: list[str] | None = None,
+        diretores: list[str] | None = None,
+        produtoras: list[str] | None = None,
+    ) -> "MovieListItemDTO":
+        """Constrói o DTO a partir do modelo ORM DimMovie tratando valores nulos e relações."""
+        perf = getattr(m, "performance", None)
+        rev = getattr(m, "reviews_summary", None)
+
+        pop_val = getattr(perf, "popularidade", None)
+        tmdb_val = getattr(perf, "nota_tmdb", None)
+        imdb_val = getattr(perf, "nota_imdb", None)
+        user_rating_val = getattr(rev, "nota_media_usuarios", None)
+
+        if generos is None:
+            generos = [g.nome_genero for g in getattr(m, "genres", [])]
+        if produtoras is None:
+            produtoras = [c.nome_produtora for c in getattr(m, "companies", [])]
+        if diretores is None:
+            diretores = [
+                p.nome_pessoa
+                for p in getattr(m, "people", [])
+                if getattr(p, "tipo_pessoa", "") == "Diretor"
+            ]
+
+        return cls(
+            sk_movie_id=m.sk_movie_id,
+            id_filme=m.id_filme,
+            titulo=m.titulo,
+            ano_lancamento=m.ano_lancamento,
+            duracao_minutos=m.duracao_minutos,
+            sinopse=m.sinopse,
+            url_poster=m.url_poster,
+            url_backdrop=m.url_backdrop,
+            generos=generos,
+            diretores=diretores,
+            produtoras=produtoras,
+            popularidade=float(pop_val) if pop_val is not None else 0.0,
+            nota_media_usuarios=float(user_rating_val) if user_rating_val is not None else None,
+            qtd_avaliacoes_usuarios=getattr(rev, "qtd_avaliacoes_usuarios", 0) or 0,
+            nota_tmdb=float(tmdb_val) if tmdb_val is not None else None,
+            nota_imdb=float(imdb_val) if imdb_val is not None else None,
+            receita_usd=getattr(perf, "receita_usd", None),
+            receita_brl=getattr(perf, "receita_brl", None),
+        )
+
 
 class QuickSearchMovieDTO(BaseModel):
     """Item ultraleve otimizado para Spotlight / Command Palette."""
+
     model_config = ConfigDict(from_attributes=True)
 
     sk_movie_id: str
@@ -57,6 +109,26 @@ class QuickSearchMovieDTO(BaseModel):
     nota_media_usuarios: float | None = None
     popularidade: float = 0.0
     generos: list[str] = Field(default_factory=list)
+
+    @classmethod
+    def from_movie_model(cls, m: Any) -> "QuickSearchMovieDTO":
+        """Constrói o DTO de busca rápida a partir de DimMovie."""
+        perf = getattr(m, "performance", None)
+        rev = getattr(m, "reviews_summary", None)
+
+        pop_val = getattr(perf, "popularidade", None)
+        user_rating_val = getattr(rev, "nota_media_usuarios", None)
+
+        return cls(
+            sk_movie_id=m.sk_movie_id,
+            id_filme=m.id_filme,
+            titulo=m.titulo,
+            ano_lancamento=m.ano_lancamento,
+            url_poster=m.url_poster,
+            nota_media_usuarios=float(user_rating_val) if user_rating_val is not None else None,
+            popularidade=float(pop_val) if pop_val is not None else 0.0,
+            generos=[g.nome_genero for g in getattr(m, "genres", [])],
+        )
 
 
 SortField = Literal[

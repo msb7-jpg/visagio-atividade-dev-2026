@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import get_settings
+from app.core.profiler import setup_query_profiler
 
 settings = get_settings()
 
@@ -24,8 +25,9 @@ def enable_sqlite_foreign_keys(async_engine: AsyncEngine) -> None:
         cursor.close()
 
 
-engine = create_async_engine(settings.database_url, echo=settings.environment == "local")
+engine = create_async_engine(settings.database_url, echo=False)
 enable_sqlite_foreign_keys(engine)
+setup_query_profiler(engine)
 AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
 

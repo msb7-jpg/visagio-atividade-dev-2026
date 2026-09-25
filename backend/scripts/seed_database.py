@@ -7,7 +7,6 @@ Executa a importação em lotes atômicos com tratamento de nulos e parsing adeq
 from __future__ import annotations
 
 import csv
-import os
 import sqlite3
 import sys
 import time
@@ -80,7 +79,7 @@ def seed_table(
     cols_str = ", ".join(columns)
     sql = f"INSERT OR IGNORE INTO {table_name} ({cols_str}) VALUES ({placeholders})"
 
-    with open(csv_file, mode="r", encoding="utf-8") as f:
+    with open(csv_file, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         batch = []
         for row in reader:
