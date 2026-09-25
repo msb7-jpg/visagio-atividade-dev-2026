@@ -118,7 +118,7 @@
   - [ ] `utils/token.ts`: Utilitário baseado em `jwt-decode` para inspeção segura de claims (`sub`, `role`, `exp`), cálculo proativo de expiração (`isTokenExpired`) com margem de segurança.
   - [ ] `hooks/useAuth.ts`: Gerenciamento de token no `localStorage` / React Context com checagem síncrona de expiração e estado `isAuthenticated`.
   - [ ] `hooks/useLoginForm.ts`: Integração do TanStack Form com Zod.
-  - [ ] `components/subcomponents/TextFlipHeader.tsx`: Efeito visual Aceternity `layout-text-flip` alternando gêneros ("Ficção Científica", "Cinema Noir", etc.).
+  - [ ] `components/subcomponents/TextFlipHeader.tsx`: Efeito visual Aceternity `layout-text-flip` alternando gêneros  (Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Music, Mystery,  Romance, Science Fiction, Thriller, Tv Movie, War ,Western).
   - [ ] `components/LoginCardView.tsx`: Cartão Glassmorphic visual puro com indicadores de campos obrigatórios (`RequiredFieldBadge`).
   - [ ] `components/LoginContainer.tsx`: Orquestrador de estado e redirecionamento.
   - [ ] Configurar rotas `/login` e guard `ProtectedRoute` em `frontend/src/routes/` com validação de expiração via `jwt-decode`.
@@ -184,7 +184,7 @@
 ---
 
 ### Etapa 5: Slice Vertical de Avaliações & Resenhas (Reviews)
-> **Objetivo:** Permitir aos usuários adicionar avaliações (nota de 1 a 5 estrelas / 0 a 10 e comentário em texto), recalcular atomicamente a média geral do filme e exibir o histórico com cards expansíveis fluidos.  
+> **Objetivo:** Permitir aos usuários adicionar avaliações (nota 0 a 10 e comentário em texto), recalcular atomicamente a média geral do filme e exibir o histórico com cards expansíveis fluidos.  
 > **Referências:**  
 > - [Atividade de Dev.pdf (Adicionar avaliação com nota e resenha, ver média geral e histórico)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/Atividade%20de%20Dev.pdf)  
 > - [ARQUITETURA.md (Seção 3.1 `reviews` e 4.1 `reviews` e 5 - Clean Component Pattern)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L158-L162)  
@@ -192,7 +192,7 @@
 > - Aceternity `expandable-card` e TanStack Form com indicadores obrigatórios.
 
 - [ ] **5.1 Backend: Reviews Slice (`backend/app/features/reviews/`)**
-  - [ ] `schemas.py`: `CreateReviewDTO` (`nome`, `nota`: 0 a 10 ou 1 a 5, `comentario`: 10 a 4000 caracteres), `ReviewResponseDTO`, `ReviewSummaryDTO`.
+  - [ ] `schemas.py`: `CreateReviewDTO` (`nome`, `nota`: 0 a 10, `comentario`: 10 a 4000 caracteres), `ReviewResponseDTO`, `ReviewSummaryDTO`.
   - [ ] `service.py`: Inserção atômica em `movies_reviews` e recálculo transacional de `dim_reviews` (`nota_media_usuarios`, `qtd_avaliacoes_usuarios`).
   - [ ] `router.py`:
     - `GET /api/v1/movies/{id}/reviews` (histórico de avaliações ordenado por data).

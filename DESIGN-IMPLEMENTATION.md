@@ -150,7 +150,7 @@ Exibir a ficha técnica completa do filme, métricas analíticas consolidadas, g
 5. **Histórico de Avaliações & Resenhas (Reviews Section - `MovieReview`):**
    - Botão em destaque: **"Escrever Avaliação"** (abre o modal de nova resenha).
    - **Aceternity `ExpandableCard` para Avaliações:**
-     - Cada review é renderizado como um card elegante contendo: autor (`nome`), data (`created_at`), nota (`nota`, 0 a 10 ou 1 a 5 estrelas correspondente) e as primeiras 3 linhas do comentário (`comentario`).
+     - Cada review é renderizado como um card elegante contendo: autor (`nome`), data (`created_at`), nota (`nota`, 0 a 10 correspondente) e as primeiras 3 linhas do comentário (`comentario`).
      - **Ao clicar na resenha:** O card expande organicamente no centro da tela (`framer-motion layoutId`), revelando o texto completo, data/hora formatada e avatar do autor sem recarregar a página. O fundo recebe blur sutil.
      - Botão `✕` ou clique fora fecha a expansão com animação reversa fluida.
 

@@ -86,7 +86,7 @@ A paleta respeita o padrão de tokens semânticos do Tailwind CSS v4 e shadcn/ui
 ```
 
 ### Paleta Funcional de Cinema & Dados Analíticos
-- **Star Rating Gold:** `rgb(245, 158, 11)` / `oklch(0.78 0.16 75)` — Avaliações de 1 a 5 estrelas / notas de usuários.
+- **Star Rating Gold:** `rgb(245, 158, 11)` / `oklch(0.78 0.16 75)` — Avaliações de 0 a 10 estrelas / notas de usuários.
 - **Popularity Fire / Trending:** `oklch(0.70 0.22 45)` (Laranja Chama) — Índice de popularidade do filme.
 - **Box Office Emerald / Profit:** `oklch(0.72 0.18 150)` (Verde Esmeralda Financeiro) — Receita, lucro em USD e BRL.
 - **Loss / Deficit:** `oklch(0.65 0.22 25)` (Coral Avermelhado) — Filmes com prejuízo operacional.
@@ -161,6 +161,6 @@ Requisitos específicos atendidos:
    - Efeito de elevação `hover:-translate-y-1.5 transition-all duration-300 ease-out`.
    - Brilho de borda translúcido com sombra profunda (`hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)] hover:border-white/30`).
 2. **Avaliação por Estrelas Interativa:**
-   - Ícones de estrela preenchida com gradiente dourado, com suporte a microanimação de "bounce" suave ao clicar para selecionar nota de 1 a 5.
+   - Ícones de estrela preenchida com gradiente dourado, com suporte a microanimação de "bounce" suave ao clicar para selecionar nota de 0 a 10. com um rosto animada que vai mudando o conforme a nota que o usuário seleciona, para mais triste ou mais feliz
 3. **Skeleton Loading:**
    - Efeito shimmer suave cinza escuro (`bg-white/5 via-white/10 to-white/5 animate-pulse rounded-lg`) mantendo exatamente o aspect-ratio dos pôsteres durante o cache do TanStack Query.

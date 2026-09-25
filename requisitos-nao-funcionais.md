@@ -22,7 +22,7 @@ O sistema é composto por duas aplicações principais desacopladas:
 | **RNF01** | **Tecnologia & Build** | Frontend SPA com Vite 6/8, React 19, TypeScript em modo estrito e Bun como package manager. | Alta |
 | **RNF02** | **Roteamento & URL State** | React Router v7 com sincronização declarativa de filtros/busca/ordenação/paginação diretamente na URL (`useSearchParams`). | Alta |
 | **RNF03** | **Gerenciamento de Estado & Cache** | TanStack Query v5 para cache de requisições, invalidação automática em mutações e prefetching na navegação. | Alta |
-| **RNF04** | **Formulários & Validação** | TanStack Form integrado ao Zod para validação síncrona/assíncrona de campos obrigatórios, regras de nota (1 a 5 ou 0 a 10) e feedback inline. | Alta |
+| **RNF04** | **Formulários & Validação** | TanStack Form integrado ao Zod para validação síncrona/assíncrona de campos obrigatórios, regras de nota (0 a 10) e feedback inline. | Alta |
 | **RNF05** | **Design System & Estilização** | Tailwind CSS v4 + shadcn/ui (estilo consistente com tokens semânticos) + componentes interativos da Aceternity UI. | Alta |
 | **RNF06** | **Command Palette (Spotlight)** | Barra de comandos global (`cmdk` / shadcn Command) acionável por teclado (`Cmd+K` / `Ctrl+K`), backdrop blur intenso, animações de entrada/saída e busca rápida. | Média |
 | **RNF07** | **Qualidade de Código & Linting** | ESLint 9+ Flat Config com regras estritas de tipagem (`@typescript-eslint`), padronização estilística (`@stylistic`), regras React modernas (`eslint-plugin-react-x`, `eslint-plugin-react-dom`), `@shadcn/lint` e TSDoc. | Alta |
@@ -201,7 +201,7 @@ cd backend
 | **Detalhes do filme & histórico de avaliações** | Rota `/filmes/:id`, cards expansíveis para resenhas longas | `React Router` + `TanStack Query` (detalhes + reviews) + Aceternity `expandable-card` |
 | **Barra de pesquisa & Command Palette** | Input com debounce de 300ms e Spotlight global via atalho `Cmd+K` | `cmdk` + `shadcn Command` com backdrop blur intenso e animações |
 | **Remover e atualizar filmes** (CRUD Administrador) | Diálogos de confirmação acessíveis e mutações com invalidação imediata de cache | `shadcn AlertDialog` + `TanStack Query` (`useMutation`) |
-| **Adicionar nova avaliação** (nota 1 a 5 / 0 a 10 e resenha) | Modal ou drawer com seletor interativo de estrelas e textarea validado | `TanStack Form` + `StarRating` + `shadcn Dialog` |
+| **Adicionar nova avaliação** (nota 0 a 10 e resenha) | Modal ou drawer com seletor interativo de estrelas e textarea validado | `TanStack Form` + `StarRating` + `shadcn Dialog` |
 | **Média geral das avaliações** | Cálculo no banco/backend exposto no schema Pydantic e badges visuais | `SQLAlchemy` (agregações `func.avg`) + `shadcn Badge` |
 | **Filtros e Responsividade** | Filtro por múltiplos gêneros e ordenação sincronizados na URL; layout mobile-first | `React Router` + `Tailwind CSS v4` |
 | **Caching de Consultas** | Persistência em memória de queries frequentes e prefetching no hover | `TanStack Query v5` (`staleTime: 5min`) |
