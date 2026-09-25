@@ -16,7 +16,15 @@ export const CatalogContainer: React.FC = () => {
         initialSearch={vm.q}
         onSearchChange={vm.setQ}
         onOpenCommandPalette={openCommandPalette}
+        isFetching={vm.isFetching}
       />
+
+      {/* Barra de Progresso Indeterminada ao atualizar dados em segundo plano */}
+      <div className="relative h-1 w-full overflow-hidden bg-transparent">
+        {vm.isFetching && !vm.isLoading && (
+          <div className="h-full w-full animate-pulse bg-linear-to-r from-transparent via-primary to-transparent" />
+        )}
+      </div>
 
       <div className="container mx-auto flex flex-1 flex-col px-4 py-6 sm:px-6">
         <CatalogControlBar
@@ -35,6 +43,7 @@ export const CatalogContainer: React.FC = () => {
             movies={vm.movies}
             viewMode={vm.viewMode}
             isLoading={vm.isLoading}
+            isFetching={vm.isFetching}
             isError={vm.isError}
             hasFilters={Boolean(vm.q || vm.genre)}
           />

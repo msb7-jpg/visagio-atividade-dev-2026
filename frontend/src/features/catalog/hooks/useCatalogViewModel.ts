@@ -4,7 +4,7 @@ import { useMoviesQuery, useGenresQuery } from '@/features/catalog/hooks/useMovi
 export function useCatalogViewModel() {
   const catalogParams = useCatalogParams()
 
-  const { data: moviesData, isLoading, isError } = useMoviesQuery({
+  const { data: moviesData, isLoading, isFetching, isError } = useMoviesQuery({
     page: catalogParams.page,
     pageSize: 24,
     q: catalogParams.q,
@@ -22,6 +22,7 @@ export function useCatalogViewModel() {
     totalPages: moviesData?.total_pages ?? 1,
     genres: genresData ?? [],
     isLoading,
+    isFetching,
     isError
   }
 }

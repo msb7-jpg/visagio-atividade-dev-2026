@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Command as CommandPrimitive } from 'cmdk'
-import { cn } from 'cn'
+import { cn } from '@/lib/utils'
 
 import {
   Dialog,
@@ -9,10 +9,6 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import {
-  InputGroup,
-  InputGroupAddon
-} from '@/components/ui/input-group'
 import { SearchIcon, CheckIcon } from 'lucide-react'
 
 function Command({
@@ -52,12 +48,14 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent
         className={cn(
-          'top-1/3 translate-y-0 overflow-hidden rounded-xl! p-0',
+          'top-[20%] translate-y-0 overflow-hidden rounded-2xl! p-0 sm:max-w-2xl border border-white/15 bg-black/95 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-3xl',
           className
         )}
         showCloseButton={showCloseButton}
       >
-        {children}
+        <Command className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1">
+          {children}
+        </Command>
       </DialogContent>
     </Dialog>
   )
@@ -68,20 +66,19 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
-        <CommandPrimitive.Input
-          data-slot="command-input"
-          className={cn(
-            'w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
-            className
-          )}
-          {...props}
-        />
-        <InputGroupAddon>
-          <SearchIcon className="size-4 shrink-0 opacity-50" />
-        </InputGroupAddon>
-      </InputGroup>
+    <div
+      data-slot="command-input-wrapper"
+      className="flex h-14 items-center border-b border-white/10 px-4"
+    >
+      <SearchIcon className="mr-3 size-5 shrink-0 text-muted-foreground" />
+      <CommandPrimitive.Input
+        data-slot="command-input"
+        className={cn(
+          'flex h-12 w-full rounded-md bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50',
+          className
+        )}
+        {...props}
+      />
     </div>
   )
 }

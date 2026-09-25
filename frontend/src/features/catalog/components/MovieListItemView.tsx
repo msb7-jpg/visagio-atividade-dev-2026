@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Film, Star, ArrowRight } from 'lucide-react'
+import { Star, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { BlurImage } from '@/components/ui/blur-image'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
 
 interface MovieListItemViewProps {
@@ -16,17 +17,12 @@ export const MovieListItemView: React.FC<MovieListItemViewProps> = ({ movie }) =
     >
       <div className="flex min-w-0 flex-1 items-center gap-4">
         {/* Mini Pôster */}
-        <div className="flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/5">
-          {movie.url_poster ? (
-            <img
-              src={movie.url_poster}
-              alt={movie.titulo}
-              loading="lazy"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <Film className="h-5 w-5 text-white/30" />
-          )}
+        <div className="h-16 w-12 shrink-0 overflow-hidden rounded-md border border-white/10 bg-white/5">
+          <BlurImage
+            src={movie.url_poster}
+            alt={movie.titulo}
+            className="group-hover:scale-105"
+          />
         </div>
 
         {/* Informações Centrais */}

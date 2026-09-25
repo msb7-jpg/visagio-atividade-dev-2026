@@ -1,12 +1,13 @@
+import { AppLayout } from '@/components/layout/AppLayout'
+import { LoginContainer } from '@/features/auth/components/LoginContainer'
+import { AuthProvider } from '@/features/auth/hooks/useAuth'
+import { CatalogContainer } from '@/features/catalog/components/CatalogContainer'
+import '@/index.css'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { AppLayout } from '@/components/layout/AppLayout'
-import { CatalogContainer } from '@/features/catalog/components/CatalogContainer'
-import { AuthProvider } from '@/features/auth/hooks/useAuth'
-import { LoginContainer } from '@/features/auth/components/LoginContainer'
-import '@/index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +23,8 @@ const rootElement = document.getElementById('root')!
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
+
       <AuthProvider>
         <BrowserRouter>
           <Routes>

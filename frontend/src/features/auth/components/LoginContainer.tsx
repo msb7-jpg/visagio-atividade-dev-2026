@@ -1,11 +1,11 @@
-import { useState, type FormEvent } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { loginSchema } from '@/features/auth/schemas/auth.schema'
 import { getLoginErrorMessage } from '@/features/auth/utils/login-error'
+import { useState, type SubmitEvent } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { LoginCardView } from './LoginCardView'
 import { SyncVisualShowcase } from './subcomponents/SyncVisualShowcase'
-import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation'
 
 export function LoginContainer() {
   const navigate = useNavigate()
@@ -59,7 +59,7 @@ export function LoginContainer() {
     }
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault()
     const validData = validateForm()
     if (!validData) return

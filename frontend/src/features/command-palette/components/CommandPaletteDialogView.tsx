@@ -18,6 +18,7 @@ interface CommandPaletteDialogViewProps {
   onSelectMovie: (movie: QuickSearchMovieItem) => void
   onSelectAction: (path: string) => void
   onSelectGenre: (genre: string) => void
+  genres?: string[]
 }
 
 export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> = ({
@@ -25,7 +26,8 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
   onOpenChange,
   onSelectMovie,
   onSelectAction,
-  onSelectGenre
+  onSelectGenre,
+  genres
 }) => {
   const [query, setQuery] = useState('')
   const { results, isLoading, isDebouncing } = useSpotlightSearch(query)
@@ -49,7 +51,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
     <CommandDialog
       open={isOpen}
       onOpenChange={onOpenChange}
-      className="max-w-2xl overflow-hidden border border-white/15 bg-black/90 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+      className="w-[95vw] overflow-hidden border border-white/15 bg-black/90 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl sm:max-w-2xl"
     >
       <div className="relative">
         <CommandInput
@@ -61,7 +63,6 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
         {(isLoading || isDebouncing) && (
           <div className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-1.5 text-xs text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span>Buscando...</span>
           </div>
         )}
       </div>
@@ -76,6 +77,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
         <CommandResultsGroupView
           movies={results}
           query={query}
+          genres={genres}
           onSelectMovie={handleSelectMovie}
           onSelectAction={handleSelectAction}
           onSelectGenre={handleSelectGenre}

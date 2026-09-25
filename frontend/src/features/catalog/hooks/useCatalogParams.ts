@@ -55,11 +55,16 @@ export function useCatalogParams() {
   const setQ = useCallback(
     (newQ: string) => {
       setSearchParams((prev) => {
+        const currentQ = prev.get('q') || ''
+        const trimmed = newQ.trim()
+        if (currentQ === trimmed) {
+          return prev
+        }
         const next = new URLSearchParams(prev)
-        if (!newQ.trim()) {
+        if (!trimmed) {
           next.delete('q')
         } else {
-          next.set('q', newQ.trim())
+          next.set('q', trimmed)
         }
         next.delete('page') // Reseta para a página 1 ao buscar
         return next
@@ -71,11 +76,16 @@ export function useCatalogParams() {
   const setGenre = useCallback(
     (newGenre: string) => {
       setSearchParams((prev) => {
+        const currentGenre = prev.get('genre') || ''
+        const targetGenre = newGenre === currentGenre ? '' : newGenre
+        if (currentGenre === targetGenre) {
+          return prev
+        }
         const next = new URLSearchParams(prev)
-        if (!newGenre || newGenre === prev.get('genre')) {
+        if (!targetGenre) {
           next.delete('genre')
         } else {
-          next.set('genre', newGenre)
+          next.set('genre', targetGenre)
         }
         next.delete('page') // Reseta para a página 1 ao filtrar
         return next
@@ -87,6 +97,10 @@ export function useCatalogParams() {
   const setSortBy = useCallback(
     (newSort: SortByOption) => {
       setSearchParams((prev) => {
+        const currentSort = prev.get('sort') || 'popularidade'
+        if (currentSort === newSort) {
+          return prev
+        }
         const next = new URLSearchParams(prev)
         if (newSort === 'popularidade') {
           next.delete('sort')
@@ -103,6 +117,10 @@ export function useCatalogParams() {
   const setViewMode = useCallback(
     (mode: ViewModeOption) => {
       setSearchParams((prev) => {
+        const currentView = prev.get('view') === 'list' ? 'list' : 'grid'
+        if (currentView === mode) {
+          return prev
+        }
         const next = new URLSearchParams(prev)
         if (mode === 'grid') {
           next.delete('view')

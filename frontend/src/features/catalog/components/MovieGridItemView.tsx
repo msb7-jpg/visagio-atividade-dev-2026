@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Film, Star, Flame } from 'lucide-react'
+import { Star, Flame } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { BlurImage } from '@/components/ui/blur-image'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
 
 interface MovieGridItemViewProps {
@@ -16,19 +17,11 @@ export const MovieGridItemView: React.FC<MovieGridItemViewProps> = ({ movie }) =
     >
       {/* Container de Imagem Poster com Proporção 2:3 */}
       <div className="relative aspect-2/3 w-full overflow-hidden bg-white/5">
-        {movie.url_poster ? (
-          <img
-            src={movie.url_poster}
-            alt={movie.titulo}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center p-4 text-muted-foreground">
-            <Film className="mb-2 h-10 w-10 opacity-30" />
-            <span className="text-center text-xs font-medium">Sem pôster</span>
-          </div>
-        )}
+        <BlurImage
+          src={movie.url_poster}
+          alt={movie.titulo}
+          className="group-hover:scale-105"
+        />
 
         {/* Gradiente sutil para legibilidade dos badges */}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/60" />

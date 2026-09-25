@@ -1,10 +1,12 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Search, Film, LogIn, LogOut, ShieldCheck } from 'lucide-react'
+import { Search, Loader2, X, Film, LogIn, LogOut, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Kbd } from '@/components/ui/kbd'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useSearchVisibility } from '@/context/useSearchVisibility'
+import { cn } from '@/lib/utils'
 
 interface NavbarProps {
   onOpenCommandPalette: () => void
@@ -12,6 +14,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
   const { isAuthenticated, user, logout } = useAuth()
+  const { isHeroSearchVisible, searchQuery, isFetching, onClearSearch } = useSearchVisibility()
   const navigate = useNavigate()
 
   return (
@@ -35,19 +38,57 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
           </div>
         </Link>
 
-        {/* Botão Gatilho da Command Palette (Central / Direita) */}
-        <div className="mx-4 hidden max-w-md flex-1 md:block">
+        {/* Botão Gatilho da Command Palette (Central / Direita com Sincronização) */}
+        <div
+          className={cn(
+            'mx-4 hidden max-w-md flex-1 transition-all duration-300 md:block',
+            isHeroSearchVisible
+              ? 'pointer-events-none -translate-y-1 scale-95 opacity-0'
+              : 'pointer-events-auto translate-y-0 scale-100 opacity-100'
+          )}
+        >
           <Button
             type="button"
             variant="outline"
             onClick={onOpenCommandPalette}
             className="group flex h-9 w-full cursor-pointer items-center justify-between rounded-lg border-white/10 bg-white/5 px-3.5 py-1.5 text-sm text-muted-foreground shadow-xs transition-all hover:border-white/20 hover:bg-white/10 hover:text-foreground"
           >
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
-              <span>Buscar filmes, diretores, gêneros...</span>
+            <div className="flex min-w-0 items-center gap-2">
+              {isFetching ? (
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" />
+              ) : (
+                <Search className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+              )}
+              <span
+                className={cn(
+                  'truncate text-left',
+                  searchQuery ? 'font-medium text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                {searchQuery || 'Buscar filmes, diretores, gêneros...'}
+              </span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1.5">
+              {searchQuery && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onClearSearch?.()
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation()
+                      onClearSearch?.()
+                    }
+                  }}
+                  className="rounded-xs p-0.5 text-muted-foreground hover:bg-white/10 hover:text-white"
+                  aria-label="Limpar busca da navbar"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </span>
+              )}
               <Kbd className="border border-white/10 bg-white/10 font-mono text-[10px] text-white">
                 ⌘K
               </Kbd>
@@ -57,15 +98,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
 
         {/* Ações / Autenticação */}
         <div className="flex items-center gap-2">
-          {/* Botão de busca mobile */}
+          {/* Botão de busca mobile com feedback de loading */}
           <Button
             variant="ghost"
             size="icon"
             onClick={onOpenCommandPalette}
-            className="text-muted-foreground hover:text-foreground md:hidden"
+            className={cn(
+              'text-muted-foreground transition-all duration-300 hover:text-foreground md:hidden',
+              isHeroSearchVisible
+                ? 'pointer-events-none scale-75 opacity-0'
+                : 'pointer-events-auto scale-100 opacity-100'
+            )}
             aria-label="Abrir busca"
           >
-            <Search className="h-5 w-5" />
+            {isFetching ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : (
+              <Search className="h-5 w-5" />
+            )}
           </Button>
 
           {isAuthenticated ? (

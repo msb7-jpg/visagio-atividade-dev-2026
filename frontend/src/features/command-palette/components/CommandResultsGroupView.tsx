@@ -4,8 +4,9 @@ import {
   CommandSeparator
 } from '@/components/ui/command'
 import { Badge } from '@/components/ui/badge'
+import { BlurImage } from '@/components/ui/blur-image'
 import type { QuickSearchMovieItem } from '@/features/command-palette/api/spotlightApi'
-import { ArrowRight, Compass, Film, LogIn, Sparkles } from 'lucide-react'
+import { ArrowRight, Compass, LogIn, Sparkles } from 'lucide-react'
 import React from 'react'
 
 interface CommandResultsGroupViewProps {
@@ -14,15 +15,18 @@ interface CommandResultsGroupViewProps {
   onSelectMovie: (movie: QuickSearchMovieItem) => void
   onSelectAction: (path: string) => void
   onSelectGenre: (genre: string) => void
+  genres?: string[]
 }
 
-const POPULAR_GENRES = [
-  'Ação',
-  'Comédia',
+const DEFAULT_POPULAR_GENRES = [
+  'Action',
+  'Comedy',
   'Drama',
-  'Ficção Científica',
-  'Terror',
-  'Animação'
+  'Science Fiction',
+  'Horror',
+  'Animation',
+  'Adventure',
+  'Thriller'
 ]
 
 export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = ({
@@ -30,8 +34,10 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
   query: _query,
   onSelectMovie,
   onSelectAction,
-  onSelectGenre
+  onSelectGenre,
+  genres
 }) => {
+  const displayedGenres = genres && genres.length > 0 ? genres.slice(0, 8) : DEFAULT_POPULAR_GENRES
   return (
     <>
       {movies.length > 0 && (
@@ -43,17 +49,11 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
               onSelect={() => onSelectMovie(movie)}
               className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-white/10"
             >
-              <div className="flex h-12 w-8 shrink-0 items-center justify-center overflow-hidden rounded border border-white/10 bg-white/5">
-                {movie.url_poster ? (
-                  <img
-                    src={movie.url_poster}
-                    alt={movie.titulo}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <Film className="h-4 w-4 text-white/40" />
-                )}
+              <div className="h-12 w-8 shrink-0 overflow-hidden rounded border border-white/10 bg-white/5">
+                <BlurImage
+                  src={movie.url_poster}
+                  alt={movie.titulo}
+                />
               </div>
               <div className="flex min-w-0 flex-1 flex-col">
                 <div className="flex items-center gap-2">
@@ -92,16 +92,16 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
       {movies.length > 0 && <CommandSeparator className="my-1 border-white/10" />}
 
       <CommandGroup heading="Gêneros & Categorias">
-        <div className="grid grid-cols-2 gap-1 px-1 py-1">
-          {POPULAR_GENRES.map((genre) => (
+        <div className="grid grid-cols-2 gap-2 px-1 py-1.5 sm:grid-cols-4">
+          {displayedGenres.map((genre) => (
             <CommandItem
               key={genre}
               value={`genre-${genre}`}
               onSelect={() => onSelectGenre(genre)}
-              className="flex cursor-pointer items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-white/80 transition-colors hover:bg-white/10"
+              className="group flex cursor-pointer items-center gap-2 rounded-lg border border-white/5 bg-white/3 px-3 py-2 text-xs font-medium text-white/80 transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-white"
             >
-              <Sparkles className="h-3.5 w-3.5 text-primary/80" />
-              <span>{genre}</span>
+              <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70 transition-transform group-hover:scale-110" />
+              <span className="truncate">{genre}</span>
             </CommandItem>
           ))}
         </div>

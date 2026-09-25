@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Command, CommandList } from '@/components/ui/command'
 import { CommandResultsGroupView } from '@/features/command-palette/components/CommandResultsGroupView'
 import type { QuickSearchMovieItem } from '@/features/command-palette/api/spotlightApi'
@@ -62,7 +62,11 @@ describe('CommandResultsGroupView', () => {
     )
 
     expect(screen.getByText('Gêneros & Categorias')).toBeDefined()
+    expect(screen.getByText('Action')).toBeDefined()
     expect(screen.getByText('Navegação & Ações Rápidas')).toBeDefined()
     expect(screen.getByText('Explorar Catálogo Completo')).toBeDefined()
+
+    fireEvent.click(screen.getByText('Action'))
+    expect(handleSelectGenre).toHaveBeenCalledWith('Action')
   })
 })

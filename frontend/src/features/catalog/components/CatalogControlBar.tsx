@@ -12,6 +12,7 @@ import type { GenreItem } from '@/features/catalog/api/catalogApi'
 import type { SortByOption, ViewModeOption } from '@/features/catalog/hooks/useCatalogParams'
 import { cn } from '@/lib/utils'
 import { ArrowDownUp, LayoutGrid, List } from 'lucide-react'
+import { motion } from 'framer-motion'
 import React from 'react'
 
 interface CatalogControlBarProps {
@@ -45,7 +46,7 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
 }) => {
   return (
     <div className="flex w-full flex-col gap-4 border-b border-white/10 bg-background/50 py-4">
-      {/* Linha de Gêneros (Chips pílula roláveis horizontalmente) */}
+      {/* Linha de Gêneros (Chips pílula roláveis horizontalmente com transição fluida) */}
       <div className="no-scrollbar flex items-center gap-2 overflow-x-auto scroll-smooth py-1">
         <Button
           type="button"
@@ -53,14 +54,22 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
           size="sm"
           onClick={() => onSelectGenre('')}
           className={cn(
-            'shrink-0 rounded-full px-3.5 py-1 text-xs font-medium transition-all',
+            'relative h-auto shrink-0 rounded-full px-3.5 py-1 text-xs font-medium transition-colors duration-200',
             !selectedGenre
-              ? 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90'
+              ? 'font-semibold text-primary-foreground hover:bg-transparent hover:text-primary-foreground'
               : 'border border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground'
           )}
         >
-          Todos os Gêneros
+          {!selectedGenre && (
+            <motion.span
+              layoutId="activeGenrePill"
+              className="absolute inset-0 rounded-full bg-primary shadow-xs"
+              transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
+            />
+          )}
+          <span className="relative z-10">Todos os Gêneros</span>
         </Button>
+
         {genres.map((g) => {
           const isSelected = selectedGenre.toLowerCase() === g.nome_genero.toLowerCase()
           return (
@@ -71,13 +80,20 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
               size="sm"
               onClick={() => onSelectGenre(isSelected ? '' : g.nome_genero)}
               className={cn(
-                'shrink-0 rounded-full px-3.5 py-1 text-xs font-medium transition-all',
+                'relative h-auto shrink-0 rounded-full px-3.5 py-1 text-xs font-medium transition-colors duration-200',
                 isSelected
-                  ? 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90'
+                  ? 'font-semibold text-primary-foreground hover:bg-transparent hover:text-primary-foreground'
                   : 'border border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground'
               )}
             >
-              {g.nome_genero}
+              {isSelected && (
+                <motion.span
+                  layoutId="activeGenrePill"
+                  className="absolute inset-0 rounded-full bg-primary shadow-xs"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
+                />
+              )}
+              <span className="relative z-10">{g.nome_genero}</span>
             </Button>
           )
         })}
