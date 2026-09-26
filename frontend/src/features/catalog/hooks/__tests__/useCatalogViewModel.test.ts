@@ -10,12 +10,14 @@ describe('useCatalogViewModel', () => {
       page: 1,
       q: 'Matrix',
       genre: 'Ação',
+      year: undefined,
       sortBy: 'popularidade',
       sortOrder: 'desc',
       viewMode: 'grid',
       setPage: vi.fn(),
       setQ: vi.fn(),
       setGenre: vi.fn(),
+      setYear: vi.fn(),
       setSortBy: vi.fn(),
       setSortOrder: vi.fn(),
       toggleSort: vi.fn(),
@@ -58,6 +60,10 @@ describe('useCatalogViewModel', () => {
     vi.spyOn(moviesQueryHook, 'useGenresQuery').mockReturnValue({
       data: [{ sk_genre_id: 'g-1', nome_genero: 'Ação' }]
     } as unknown as ReturnType<typeof moviesQueryHook.useGenresQuery>)
+
+    vi.spyOn(moviesQueryHook, 'useAvailableYearsQuery').mockReturnValue({
+      data: [2024, 2023, 1999]
+    } as unknown as ReturnType<typeof moviesQueryHook.useAvailableYearsQuery>)
 
     const { result } = renderHook(() => useCatalogViewModel())
 

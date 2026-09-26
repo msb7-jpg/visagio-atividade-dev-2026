@@ -16,7 +16,6 @@ describe('CommandPaletteDialogView', () => {
     const handleOpenChange = vi.fn()
     const handleSelectMovie = vi.fn()
     const handleSelectAction = vi.fn()
-    const handleSelectGenre = vi.fn()
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -25,12 +24,11 @@ describe('CommandPaletteDialogView', () => {
           onOpenChange={handleOpenChange}
           onSelectMovie={handleSelectMovie}
           onSelectAction={handleSelectAction}
-          onSelectGenre={handleSelectGenre}
         />
       </QueryClientProvider>
     )
 
-    const input = screen.getByPlaceholderText(/Busque por filme, gênero ou ação/)
+    const input = screen.getByPlaceholderText(/Busque filmes pelo título ou navegue por atalhos/)
     expect(input).toBeDefined()
     expect(screen.getByText('Navegar')).toBeDefined()
     expect(screen.getByText('Selecionar')).toBeDefined()

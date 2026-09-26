@@ -15,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Tooltip } from '@/components/ui/tooltip-card'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
 import { DeleteMovieConfirmDialog } from '@/features/movie-admin/components/DeleteMovieConfirmDialog'
@@ -28,12 +27,13 @@ import {
 } from '@/features/reviews/hooks/useMovieReviews'
 import { useUserMovieReview } from '@/features/reviews/hooks/useUserMovieReview'
 import type { ReviewFormValues } from '@/features/reviews/schemas/review.schema'
+import { useUserLibrary } from '@/features/user-library/hooks/useUserLibrary'
 import { cn } from '@/lib/utils'
 import { routes } from '@/routes/routes.types'
 import {
+  Bookmark,
   Check,
   Edit3,
-  Eye,
   Film,
   Heart,
   MoreHorizontal,
@@ -47,7 +47,15 @@ import { useNavigate } from 'react-router-dom'
 
 interface MovieQuickActionsMenuProps {
   movie: MovieListItem
-  children: React.ReactNode | ((props: { trigger: React.ReactNode }) => React.ReactNode)
+  children:
+    | React.ReactNode
+    | ((props: {
+      trigger: React.ReactNode
+      isFavorite: boolean
+      inWatchlist: boolean
+      toggleFavorite: () => void
+      toggleWatchlist: () => void
+    }) => React.ReactNode)
   triggerClassName?: string
   className?: string
 }
@@ -61,6 +69,10 @@ export function MovieQuickActionsMenu({
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
   const authorName = user?.nome || 'Cinéfilo'
+
+  const { isFavorite, inWatchlist, toggleFavorite, toggleWatchlist } = useUserLibrary()
+  const isFav = isFavorite(movie.sk_movie_id)
+  const inWatch = inWatchlist(movie.sk_movie_id)
 
   const { userReview, hasReviewed, recordReview } = useUserMovieReview(movie.sk_movie_id)
 
@@ -200,7 +212,7 @@ export function MovieQuickActionsMenu({
                 <span>Nota {(quickRatingSuccess / 2).toFixed(1)} salva!</span>
               </span>
             ) : hasReviewed ? (
-              <span className="text-primary">
+              <span>
                 Sua avaliação ({((userReview?.nota ?? 0) / 2).toFixed(1)} ★)
               </span>
             ) : (
@@ -209,13 +221,12 @@ export function MovieQuickActionsMenu({
           </span>
 
           {/* Ícone de botão direito exclusivo do menu de contexto com tooltip explicativo */}
-          <Tooltip content="Clique com botão direito no card para abrir o menu">
-            <div className="flex items-center">
-              <span className="flex cursor-help items-center text-white/40 transition-colors hover:text-white/70">
-                <MouseRight className="size-3.5" />
-              </span>
-            </div>
-          </Tooltip>
+          <span
+            className="flex cursor-help items-center text-white/40 transition-colors hover:text-white/70"
+            title="Clique com botão direito no card para abrir o menu"
+          >
+            <MouseRight className="size-3.5" />
+          </span>
         </LabelComponent>
 
         <div className="px-1 py-1.5">
@@ -260,20 +271,44 @@ export function MovieQuickActionsMenu({
               handleOpenNewReview()
             }}
           >
-            <Film className="size-3.5 text-primary" />
+            <Film className="size-3.5 text-muted-foreground" />
             <span>Escrever resenha completa...</span>
           </ItemComponent>
         )}
 
-        {/* Slots futuros reservados (Watchlist e Curtir) conforme Letterboxd */}
-        <ItemComponent disabled>
-          <Eye className="size-3.5" />
-          <span>Marcar como visto (em breve)</span>
+        {/* Favoritar e Watchlist (Letterboxd Style - Apenas cores default do tema) */}
+        <ItemComponent
+          onSelect={(e) => {
+            e.preventDefault()
+            toggleFavorite(movie.sk_movie_id)
+          }}
+        >
+          <Heart
+            className={cn(
+              'size-3.5',
+              isFav ? 'fill-primary text-primary' : 'text-muted-foreground'
+            )}
+          />
+          <span className={cn(isFav && 'font-medium text-primary')}>
+            {isFav ? 'Remover dos favoritos' : 'Favoritar filme'}
+          </span>
         </ItemComponent>
 
-        <ItemComponent disabled>
-          <Heart className="size-3.5" />
-          <span>Favoritar (em breve)</span>
+        <ItemComponent
+          onSelect={(e) => {
+            e.preventDefault()
+            toggleWatchlist(movie.sk_movie_id)
+          }}
+        >
+          <Bookmark
+            className={cn(
+              'size-3.5',
+              inWatch ? 'fill-primary text-primary' : 'text-muted-foreground'
+            )}
+          />
+          <span className={cn(inWatch && 'font-medium text-primary')}>
+            {inWatch ? 'Remover da watchlist' : 'Adicionar à watchlist'}
+          </span>
         </ItemComponent>
 
         {/* Ações de Administração (quando autenticado) */}
@@ -308,41 +343,74 @@ export function MovieQuickActionsMenu({
     )
   }
 
-  // Botão original de 3 pontinhos com hover
+  // Pílula flutuante de ações rápidas (Letterboxd Style: Favoritar, Watchlist e ···)
   const trigger = (
     <div
       className={cn(
-        'z-20 transition-opacity duration-200',
+        'z-20 transition-all duration-200',
         triggerClassName ??
           'pointer-events-none absolute right-2.5 bottom-2.5 opacity-0 group-hover:pointer-events-auto group-hover:opacity-100'
       )}
     >
-      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="secondary"
-            size="icon-sm"
-            aria-label={`Ações rápidas para ${movie.titulo}`}
+      <div className="flex items-center gap-0.5 rounded-full border border-white/10 bg-black/85 p-0.5 shadow-lg backdrop-blur-md">
+        {/* Botão Rápido Favoritar */}
+        <Button
+          type="button"
+          variant={isFav ? 'action-pill-active' : 'action-pill'}
+          size="action-pill"
+          aria-label={isFav ? 'Remover dos favoritos' : 'Favoritar'}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            toggleFavorite(movie.sk_movie_id)
+          }}
+        >
+          <Heart className={cn('size-3.5', isFav && 'fill-primary text-primary')} />
+        </Button>
+
+        {/* Botão Rápido Watchlist */}
+        <Button
+          type="button"
+          variant={inWatch ? 'action-pill-active' : 'action-pill'}
+          size="action-pill"
+          aria-label={inWatch ? 'Remover da watchlist' : 'Adicionar à watchlist'}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            toggleWatchlist(movie.sk_movie_id)
+          }}
+        >
+          <Bookmark className={cn('size-3.5', inWatch && 'fill-primary text-primary')} />
+        </Button>
+
+        {/* Botão de 3 pontinhos para abrir Dropdown Menu */}
+        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="action-pill"
+              size="action-pill"
+              aria-label={`Ações rápidas para ${movie.titulo}`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+            >
+              <MoreHorizontal className="size-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent
+            align="end"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
             }}
           >
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent
-          align="end"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-        >
-          {renderMenuInner(false)}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            {renderMenuInner(false)}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   )
 
@@ -353,7 +421,15 @@ export function MovieQuickActionsMenu({
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div className={cn('group/quick relative', className ?? 'h-full')}>
-            {isFunctionChildren ? children({ trigger }) : children}
+            {isFunctionChildren
+              ? children({
+                trigger,
+                isFavorite: isFav,
+                inWatchlist: inWatch,
+                toggleFavorite: () => toggleFavorite(movie.sk_movie_id),
+                toggleWatchlist: () => toggleWatchlist(movie.sk_movie_id)
+              })
+              : children}
             {!isFunctionChildren && trigger}
           </div>
         </ContextMenuTrigger>

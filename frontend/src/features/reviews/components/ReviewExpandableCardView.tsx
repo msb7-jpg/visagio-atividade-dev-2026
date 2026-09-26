@@ -84,9 +84,9 @@ export function ReviewExpandableCardView({
                   }}
                   aria-label="Editar minha resenha..."
                   title="Editar minha resenha..."
-                  className="size-6 text-muted-foreground hover:text-primary"
+                  className="size-6"
                 >
-                  <PencilLine className="size-3.5" />
+                  <PencilLine className="size-3.5 text-muted-foreground transition-colors hover:text-primary" />
                 </Button>
               )}
             </div>

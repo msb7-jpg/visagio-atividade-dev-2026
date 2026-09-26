@@ -6,11 +6,11 @@ import {
   CommandSeparator
 } from '@/components/ui/command'
 import {
-  type CommandGenreItem,
   type CommandMovieItem,
   type CommandPaletteAction
 } from '@/features/command-palette/types/command-palette.types'
-import { ArrowRight, Compass, LogIn, LogOut, Plus, Sparkles } from 'lucide-react'
+import { routes } from '@/routes/routes.types'
+import { ArrowRight, Bookmark, Compass, Heart, LogIn, LogOut, Plus } from 'lucide-react'
 import React from 'react'
 
 interface CommandResultsGroupViewProps {
@@ -18,32 +18,16 @@ interface CommandResultsGroupViewProps {
   query?: string
   onSelectMovie: (movie: CommandMovieItem) => void
   onSelectAction: (action: CommandPaletteAction) => void
-  onSelectGenre: (genre: CommandGenreItem) => void
-  genres?: CommandGenreItem[]
   isAuthenticated?: boolean
 }
-
-const DEFAULT_POPULAR_GENRES = [
-  'Action',
-  'Comedy',
-  'Drama',
-  'Science Fiction',
-  'Horror',
-  'Animation',
-  'Adventure',
-  'Thriller'
-]
 
 export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = ({
   movies,
   query: _query,
   onSelectMovie,
   onSelectAction,
-  onSelectGenre,
-  genres,
   isAuthenticated = false
 }) => {
-  const displayedGenres = genres && genres.length > 0 ? genres.slice(0, 8) : DEFAULT_POPULAR_GENRES
   return (
     <>
       {movies.length > 0 && (
@@ -98,28 +82,12 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
 
       {movies.length > 0 && <CommandSeparator variant="cinema" />}
 
-      <CommandGroup heading="Gêneros & Categorias">
-        <div className="grid grid-cols-2 gap-2 px-1 py-1.5 sm:grid-cols-4">
-          {displayedGenres.map((genre) => (
-            <CommandItem
-              key={genre}
-              value={`genre-${genre}`}
-              onSelect={() => onSelectGenre(genre)}
-              variant="category"
-            >
-              <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70 transition-transform group-hover:scale-110" />
-              <span className="truncate">{genre}</span>
-            </CommandItem>
-          ))}
-        </div>
-      </CommandGroup>
-
-      <CommandSeparator variant="cinema" />
+      {movies.length > 0 && <CommandSeparator variant="cinema" />}
 
       <CommandGroup heading="Navegação & Ações Rápidas">
         <CommandItem
           value="action-home"
-          onSelect={() => onSelectAction('/')}
+          onSelect={() => onSelectAction(routes.home())}
           variant="cinema"
           className="cursor-pointer"
         >
@@ -129,12 +97,30 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
         {isAuthenticated ? (
           <>
             <CommandItem
-              value="action-create-movie"
-              onSelect={() => onSelectAction('/admin/filmes/novo')}
+              value="action-my-favorites"
+              onSelect={() => onSelectAction(routes.userLibrary('favorites'))}
               variant="cinema"
               className="cursor-pointer"
             >
-              <Plus className="h-4 w-4 " />
+              <Heart className="h-4 w-4" />
+              <span>Minha Biblioteca: Favoritos</span>
+            </CommandItem>
+            <CommandItem
+              value="action-my-watchlist"
+              onSelect={() => onSelectAction(routes.userLibrary('watchlist'))}
+              variant="cinema"
+              className="cursor-pointer"
+            >
+              <Bookmark className="h-4 w-4" />
+              <span>Minha Biblioteca: Watchlist</span>
+            </CommandItem>
+            <CommandItem
+              value="action-create-movie"
+              onSelect={() => onSelectAction(routes.adminMovieCreate())}
+              variant="cinema"
+              className="cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
               <span>Cadastrar Filme</span>
             </CommandItem>
             <CommandItem
@@ -150,7 +136,7 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
         ) : (
           <CommandItem
             value="action-login"
-            onSelect={() => onSelectAction('/login')}
+            onSelect={() => onSelectAction(routes.login())}
             variant="cinema"
             className="cursor-pointer"
           >

@@ -28,12 +28,12 @@ export const ValidatedImageUrlInput: React.FC<ValidatedImageUrlInputProps> = ({
   const [resolvedUrl, setResolvedUrl] = React.useState<{ url: string; success: boolean } | null>(null)
   const trimmedUrl = value?.trim() || ''
 
+  const MAX_URL_LENGTH = 2048
+
   const isValidHttpFormat = Boolean(
     trimmedUrl &&
-      (trimmedUrl.startsWith('http://') ||
-        trimmedUrl.startsWith('https://') ||
-        trimmedUrl.startsWith('/') ||
-        trimmedUrl.startsWith('data:image/'))
+      trimmedUrl.length <= MAX_URL_LENGTH &&
+      (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://'))
   )
 
   React.useEffect(() => {

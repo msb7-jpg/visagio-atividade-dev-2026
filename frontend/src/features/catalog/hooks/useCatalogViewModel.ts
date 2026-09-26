@@ -1,5 +1,9 @@
 import { useCatalogParams } from '@/features/catalog/hooks/useCatalogParams'
-import { useMoviesQuery, useGenresQuery } from '@/features/catalog/hooks/useMoviesQuery'
+import {
+  useMoviesQuery,
+  useGenresQuery,
+  useAvailableYearsQuery
+} from '@/features/catalog/hooks/useMoviesQuery'
 
 export function useCatalogViewModel() {
   const catalogParams = useCatalogParams()
@@ -9,11 +13,13 @@ export function useCatalogViewModel() {
     pageSize: 24,
     q: catalogParams.q,
     genre: catalogParams.genre,
+    year: catalogParams.year,
     sortBy: catalogParams.sortBy,
     order: catalogParams.sortOrder
   })
 
   const { data: genresData } = useGenresQuery()
+  const { data: availableYearsData } = useAvailableYearsQuery()
 
   return {
     ...catalogParams,
@@ -21,6 +27,7 @@ export function useCatalogViewModel() {
     total: moviesData?.total ?? 0,
     totalPages: moviesData?.total_pages ?? 1,
     genres: genresData ?? [],
+    availableYears: availableYearsData ?? [],
     isLoading,
     isFetching,
     isError

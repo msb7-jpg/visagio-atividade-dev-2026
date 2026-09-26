@@ -39,8 +39,16 @@ class FinancialMetricsDTO(BaseModel):
             lucro_brl=getattr(perf, "lucro_brl", None),
             roi_percentual=roi,
             popularidade=float(getattr(perf, "popularidade", 0.0) or 0.0),
-            nota_tmdb=float(getattr(perf, "nota_tmdb", None)) if getattr(perf, "nota_tmdb", None) is not None else None,
+            nota_tmdb=(
+                float(getattr(perf, "nota_tmdb", None))
+                if getattr(perf, "nota_tmdb", None) is not None
+                else None
+            ),
             qtd_tmdb=getattr(perf, "qtd_tmdb", None),
-            nota_imdb=float(getattr(perf, "nota_imdb", None)) if getattr(perf, "nota_imdb", None) is not None else None,
+            nota_imdb=(
+                float(getattr(perf, "nota_imdb", None))
+                if getattr(perf, "nota_imdb", None) is not None
+                else None
+            ),
             qtd_imdb=getattr(perf, "qtd_imdb", None),
         )

@@ -61,6 +61,9 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
 
   const form = useForm({
     defaultValues,
+    validators: {
+      onSubmit: movieFormSchema
+    },
     onSubmit: async ({ value }) => {
       const validated = movieFormSchema.parse(value)
       await onSubmit(validated)
@@ -150,7 +153,7 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={handleAttemptCancel}
+          onClick={onCancel}
         >
           <span className="flex items-center gap-2">
             <ArrowLeft className="size-4" />
@@ -396,46 +399,70 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
 
             {/* URLs de Imagens: Pôster e Backdrop */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <form.Field name="url_poster">
-                {(field) => (
-                  <div className="flex flex-col gap-2">
-                    <label
-                      htmlFor={field.name}
-                      className="text-xs font-semibold tracking-wider text-foreground/90 uppercase"
-                    >
-                      URL do Pôster (2:3)
-                    </label>
-                    <ValidatedImageUrlInput
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(val) => field.handleChange(val)}
-                      placeholder="https://image.tmdb.org/t/p/w500/..."
-                    />
-                  </div>
-                )}
+              <form.Field
+                name="url_poster"
+                validators={{
+                  onChange: ({ value }) => {
+                    const result = movieFormSchema.shape.url_poster.safeParse(value)
+                    return result.success ? undefined : result.error.errors[0]?.message
+                  }
+                }}
+              >
+                {(field) => {
+                  const error = extractFirstErrorMessage(field.state.meta.errors)
+                  return (
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor={field.name}
+                        className="text-xs font-semibold tracking-wider text-foreground/90 uppercase"
+                      >
+                        URL do Pôster (2:3)
+                      </label>
+                      <ValidatedImageUrlInput
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(val) => field.handleChange(val)}
+                        placeholder="https://image.tmdb.org/t/p/w500/..."
+                        error={error}
+                      />
+                    </div>
+                  )
+                }}
               </form.Field>
 
-              <form.Field name="url_backdrop">
-                {(field) => (
-                  <div className="flex flex-col gap-2">
-                    <label
-                      htmlFor={field.name}
-                      className="text-xs font-semibold tracking-wider text-foreground/90 uppercase"
-                    >
-                      URL do Backdrop (Panorâmica)
-                    </label>
-                    <ValidatedImageUrlInput
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(val) => field.handleChange(val)}
-                      placeholder="https://image.tmdb.org/t/p/w1280/..."
-                    />
-                  </div>
-                )}
+              <form.Field
+                name="url_backdrop"
+                validators={{
+                  onChange: ({ value }) => {
+                    const result = movieFormSchema.shape.url_backdrop.safeParse(value)
+                    return result.success ? undefined : result.error.errors[0]?.message
+                  }
+                }}
+              >
+                {(field) => {
+                  const error = extractFirstErrorMessage(field.state.meta.errors)
+                  return (
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor={field.name}
+                        className="text-xs font-semibold tracking-wider text-foreground/90 uppercase"
+                      >
+                        URL do Backdrop (Panorâmica)
+                      </label>
+                      <ValidatedImageUrlInput
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(val) => field.handleChange(val)}
+                        placeholder="https://image.tmdb.org/t/p/w1280/..."
+                        error={error}
+                      />
+                    </div>
+                  )
+                }}
               </form.Field>
             </div>
 

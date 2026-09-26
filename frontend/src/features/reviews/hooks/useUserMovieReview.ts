@@ -38,20 +38,20 @@ export function useUserMovieReview(movieId: string) {
   const { user, isAuthenticated } = useAuth()
   const { data: reviews, isLoading } = useMovieReviewsQuery(movieId)
 
-  const [anonReview, setAnonReview] = React.useState<UserMovieReviewData | null>(() =>
-    getAnonymousReview(movieId)
-  )
+  const [localAnonReview, setLocalAnonReview] = React.useState<{ movieId: string; review: UserMovieReviewData | null }>(() => ({
+    movieId,
+    review: getAnonymousReview(movieId)
+  }))
 
-  // Recarrega do localStorage caso o movieId mude
-  React.useEffect(() => {
-    setAnonReview(getAnonymousReview(movieId))
-  }, [movieId])
+  const effectiveAnonReview = localAnonReview.movieId === movieId ? localAnonReview.review : getAnonymousReview(movieId)
+
+  const userName = user?.nome
 
   const userReview = React.useMemo<UserMovieReviewData | null>(() => {
-    if (isAuthenticated && user?.nome && reviews) {
+    if (isAuthenticated && userName && reviews) {
       // Procura avaliação feita pelo usuário logado
       const found = reviews.find(
-        (r: MovieReviewDTO) => r.nome.trim().toLowerCase() === user.nome.trim().toLowerCase()
+        (r: MovieReviewDTO) => r.nome.trim().toLowerCase() === userName.trim().toLowerCase()
       )
       if (found) {
         return {
@@ -65,18 +65,18 @@ export function useUserMovieReview(movieId: string) {
     }
 
     // Se não for logado ou não encontrou no backend pelo nome, verifica se há no localStorage
-    if (anonReview) {
-      return anonReview
+    if (effectiveAnonReview) {
+      return effectiveAnonReview
     }
 
     return null
-  }, [isAuthenticated, user?.nome, reviews, anonReview])
+  }, [isAuthenticated, userName, reviews, effectiveAnonReview])
 
   const recordReview = React.useCallback(
     (data: UserMovieReviewData) => {
       if (!isAuthenticated) {
         saveAnonymousReview(movieId, data)
-        setAnonReview(data)
+        setLocalAnonReview({ movieId, review: data })
       }
     },
     [isAuthenticated, movieId]

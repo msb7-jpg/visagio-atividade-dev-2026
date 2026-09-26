@@ -60,8 +60,9 @@ describe('MovieItemViews', () => {
     const titleElement = screen.getByText('The Matrix')
     fireEvent.contextMenu(titleElement)
 
-    expect(await screen.findByText('Avaliação Rápida (1 clique)')).toBeInTheDocument()
-    expect(screen.getByTitle('Clique com botão direito no card para abrir o menu')).toBeInTheDocument()
+    expect(await screen.findByText('Assistiu? Deixe sua nota')).toBeInTheDocument()
+    expect(screen.getByText('Favoritar filme')).toBeInTheDocument()
+    expect(screen.getByText('Adicionar à watchlist')).toBeInTheDocument()
   })
 
   it('MovieListItemView renderiza linha com nota, diretores e gêneros', () => {

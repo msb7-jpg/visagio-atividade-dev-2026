@@ -79,8 +79,10 @@ describe('MovieQuickActionsMenu', () => {
     fireEvent.pointerDown(triggerButton)
 
     // Menu exibido
-    expect(await screen.findByText('Avaliação Rápida (1 clique)')).toBeInTheDocument()
+    expect(await screen.findByText('Assistiu? Deixe sua nota')).toBeInTheDocument()
     expect(screen.getByText('Escrever resenha completa...')).toBeInTheDocument()
+    expect(screen.getByText('Favoritar filme')).toBeInTheDocument()
+    expect(screen.getByText('Adicionar à watchlist')).toBeInTheDocument()
 
     // Clica na 4ª estrela (nota 8.0)
     const fourStarsButton = screen.getByLabelText('4 estrelas')
@@ -101,8 +103,10 @@ describe('MovieQuickActionsMenu', () => {
     const poster = screen.getByTestId('poster-mock')
     fireEvent.contextMenu(poster)
 
-    expect(await screen.findByText('Avaliação Rápida (1 clique)')).toBeInTheDocument()
+    expect(await screen.findByText('Assistiu? Deixe sua nota')).toBeInTheDocument()
     expect(screen.getByText('Escrever resenha completa...')).toBeInTheDocument()
+    expect(screen.getByText('Favoritar filme')).toBeInTheDocument()
+    expect(screen.getByText('Adicionar à watchlist')).toBeInTheDocument()
   })
 
   it('exibe opções de editar e adicionar nova resenha caso o usuário já tenha avaliado', async () => {

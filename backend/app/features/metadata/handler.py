@@ -14,7 +14,9 @@ async def get_top_companies(session: AsyncSession, limit: int = 50) -> list[DimC
     result = await session.execute(stmt)
     return list(result.scalars().all())
 
-async def search_directors(session: AsyncSession, search: str = "", limit: int = 20) -> list[DimPerson]:
+async def search_directors(
+    session: AsyncSession, search: str = "", limit: int = 20
+) -> list[DimPerson]:
     stmt = select(DimPerson).where(DimPerson.tipo_pessoa == "Diretor")
     if search and search.strip():
         stmt = stmt.where(DimPerson.nome_pessoa.ilike(f"%{search.strip()}%"))

@@ -158,9 +158,9 @@ export function ReviewsSectionContainer({
               variant="outline"
               size="sm"
               onClick={() => handleOpenEditModal()}
-              className="shrink-0 gap-1.5"
+              className="shrink-0"
             >
-              <PencilLine className="size-3.5 text-primary" />
+              <PencilLine className="size-3.5 text-muted-foreground" />
               <span>Editar Última Avaliação</span>
             </Button>
           )}
@@ -170,7 +170,7 @@ export function ReviewsSectionContainer({
             variant="default"
             size="sm"
             onClick={handleOpenCreateModal}
-            className="shrink-0 gap-1.5"
+            className="shrink-0"
           >
             <MessageSquarePlus className="size-3.5" />
             <span>{hasReviewed ? 'Nova Avaliação' : 'Escrever Avaliação'}</span>
@@ -200,7 +200,7 @@ export function ReviewsSectionContainer({
             variant="outline"
             size="sm"
             onClick={handleOpenCreateModal}
-            className="mt-4 gap-1.5"
+            className="mt-4"
           >
             <MessageSquarePlus className="size-3.5" />
             <span>Avaliar agora</span>

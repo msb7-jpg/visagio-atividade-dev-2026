@@ -1,4 +1,11 @@
-import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { GenreItem } from '@/features/catalog/api/catalogApi'
 import type {
@@ -6,14 +13,16 @@ import type {
   SortOrderOption,
   ViewModeOption
 } from '@/features/catalog/hooks/useCatalogParams'
-import { motion } from 'framer-motion'
-import { ArrowDown, ArrowUpDown, LayoutGrid, List } from 'lucide-react'
+import { ArrowDownUp, Calendar, Clapperboard, LayoutGrid, List } from 'lucide-react'
 import React from 'react'
 
 interface CatalogControlBarProps {
   genres: GenreItem[]
   selectedGenre: string
   onSelectGenre: (genre: string) => void
+  availableYears?: number[]
+  selectedYear?: number
+  onSelectYear?: (year: number | undefined) => void
   sortBy: SortByOption
   sortOrder?: SortOrderOption
   onSelectSortBy: (sort: SortByOption) => void
@@ -24,143 +33,133 @@ interface CatalogControlBarProps {
 }
 
 const SORT_OPTIONS: { label: string; value: SortByOption }[] = [
-  { label: 'Popularidade', value: 'popularidade' },
-  { label: 'Avaliações', value: 'nota_media_usuarios' },
-  { label: 'Bilheteria', value: 'receita_usd' },
-  { label: 'Ano', value: 'ano_lancamento' },
-  { label: 'Título', value: 'titulo' }
+  { label: 'Mais Populares', value: 'popularidade' },
+  { label: 'Maior Nota dos Usuários', value: 'nota_media_usuarios' },
+  { label: 'Maior Bilheteria (USD)', value: 'receita_usd' },
+  { label: 'Ano de Lançamento', value: 'ano_lancamento' },
+  { label: 'Título (A-Z)', value: 'titulo' }
 ]
 
 export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
   genres,
   selectedGenre,
   onSelectGenre,
+  availableYears = [],
+  selectedYear,
+  onSelectYear,
   sortBy,
-  sortOrder = 'desc',
+  sortOrder: _sortOrder,
   onSelectSortBy,
-  onToggleSort,
+  onToggleSort: _onToggleSort,
   viewMode,
   onChangeViewMode,
   totalCount
 }) => {
-  const handleSortClick = (sortValue: SortByOption) => {
-    if (onToggleSort) {
-      onToggleSort(sortValue)
-    } else {
-      onSelectSortBy(sortValue)
-    }
-  }
-
   return (
     <div className="flex w-full flex-col gap-4 border-b border-white/10 bg-background/40 py-4 backdrop-blur-md">
-      {/* Linha de Gêneros (Chips pílula roláveis horizontalmente com transição fluida) */}
-      <div className="no-scrollbar flex items-center gap-2 overflow-x-auto scroll-smooth py-1">
-        <Button
-          type="button"
-          variant={!selectedGenre ? 'pill-active' : 'pill'}
-          size="pill"
-          onClick={() => onSelectGenre('')}
-          className="relative"
-        >
-          {!selectedGenre && (
-            <motion.span
-              layoutId="activeGenrePill"
-              className="absolute inset-0 rounded-full bg-primary shadow-xs"
-              transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
-            />
-          )}
-          <span className="relative z-10">Todos os Gêneros</span>
-        </Button>
-
-        {genres.map((g) => {
-          const isSelected = selectedGenre.toLowerCase() === g.nome_genero.toLowerCase()
-          return (
-            <Button
-              key={g.sk_genre_id}
-              type="button"
-              variant={isSelected ? 'pill-active' : 'pill'}
-              size="pill"
-              onClick={() => onSelectGenre(isSelected ? '' : g.nome_genero)}
-              className="relative"
-            >
-              {isSelected && (
-                <motion.span
-                  layoutId="activeGenrePill"
-                  className="absolute inset-0 rounded-full bg-primary shadow-xs"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
-                />
-              )}
-              <span className="relative z-10">{g.nome_genero}</span>
-            </Button>
-          )
-        })}
-      </div>
-
-      {/* Linha de Controles: Contagem de filmes, Itens Clicáveis de Ordenação e Toggle Grid/List */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        {/* Contagem total de filmes */}
         <div className="text-xs text-muted-foreground">
           Mostrando <span className="font-semibold text-foreground">{totalCount.toLocaleString('pt-BR')}</span> filmes encontrados
         </div>
 
+        {/* Controles: Dropdowns de Filtro (Gênero, Ano) e Ordenação + Toggle Grid/List */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* Ordenação Interativa via botões clicáveis com animação aceternity / smooth pill */}
-          <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 p-1 backdrop-blur-md">
-            <span className="flex items-center gap-1 px-2 text-xs font-medium text-white/50">
-              <ArrowUpDown className="size-3 text-white/40" />
-              <span className="hidden sm:inline">Ordenar:</span>
-            </span>
-
-            <div className="no-scrollbar flex items-center gap-1 overflow-x-auto">
-              {SORT_OPTIONS.map((opt) => {
-                const isActive = sortBy === opt.value
-                const isAsc = sortOrder === 'asc'
-
-                return (
-                  <Button
-                    key={opt.value}
-                    type="button"
-                    variant={isActive ? 'sort-active' : 'sort'}
-                    size="sort-pill"
-                    onClick={() => handleSortClick(opt.value)}
-                    aria-label={`Ordenar por ${opt.label} (${isActive ? (isAsc ? 'crescente' : 'decrescente') : 'clique para ordenar'})`}
-                    className="group relative"
-                  >
-                    {/* Fundo ativo animado (Aceternity pill style com Framer Motion - Âmbar Suave / Translúcido) */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeSortPill"
-                        className="absolute inset-0 rounded-full border border-primary/30 bg-primary/15 shadow-[0_0_12px_rgba(234,179,8,0.15)]"
-                        transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
-                      />
-                    )}
-
-                    <span className="relative z-10">{opt.label}</span>
-
-                    {/* Seta animada com rotação suave ao alternar asc/desc */}
-                    {isActive ? (
-                      <motion.div
-                        key={`${opt.value}-${sortOrder}`}
-                        initial={{ scale: 0.6, rotate: isAsc ? 180 : 0, opacity: 0 }}
-                        animate={{ scale: 1, rotate: isAsc ? 180 : 0, opacity: 1 }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 25
-                        }}
-                        className="relative z-10 flex items-center justify-center"
-                      >
-                        <ArrowDown className="size-3 stroke-[2.5]" />
-                      </motion.div>
-                    ) : (
-                      <ArrowUpDown className="relative z-10 size-2.5 opacity-0 transition-opacity group-hover:opacity-60" />
-                    )}
-                  </Button>
-                )
-              })}
-            </div>
+          {/* Dropdown de Gênero */}
+          <div className="flex items-center gap-1.5">
+            <Select
+              value={selectedGenre || 'all'}
+              onValueChange={(val) => onSelectGenre(val === 'all' ? '' : val)}
+            >
+              <SelectTrigger
+                size="sm"
+                aria-label="Filtrar por gênero"
+              >
+                <Clapperboard className="size-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Todos os Gêneros" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectGroup>
+                  <SelectItem value="all">
+                    Todos os Gêneros
+                  </SelectItem>
+                  {genres.map((g) => (
+                    <SelectItem
+                      key={g.sk_genre_id}
+                      value={g.nome_genero}
+                    >
+                      {g.nome_genero}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Alternador Grid / List Pílula Cápsula (Referência sort-by-block-and-list.png) */}
+          {/* Dropdown de Ano de Lançamento (baseado nos anos distintos do banco) */}
+          {availableYears.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <Select
+                value={selectedYear ? String(selectedYear) : 'all'}
+                onValueChange={(val) =>
+                  onSelectYear?.(val === 'all' ? undefined : Number(val))
+                }
+              >
+                <SelectTrigger
+                  size="sm"
+                  aria-label="Filtrar por ano"
+                >
+                  <Calendar className="size-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Todos os Anos" />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  <SelectGroup>
+                    <SelectItem value="all">
+                      Todos os Anos
+                    </SelectItem>
+                    {availableYears.map((yr) => (
+                      <SelectItem
+                        key={yr}
+                        value={String(yr)}
+                      >
+                        {yr}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Dropdown Clássico de Ordenação */}
+          <div className="flex items-center gap-1.5">
+            <Select
+              value={sortBy}
+              onValueChange={(val) => onSelectSortBy(val as SortByOption)}
+            >
+              <SelectTrigger
+                size="sm"
+                aria-label="Ordenar catálogo"
+              >
+                <ArrowDownUp className="size-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Ordenar por..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {SORT_OPTIONS.map((opt) => (
+                    <SelectItem
+                      key={opt.value}
+                      value={opt.value}
+                    >
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Alternador Grid / List Pílula Cápsula */}
           <ToggleGroup
             type="single"
             variant="cinema"

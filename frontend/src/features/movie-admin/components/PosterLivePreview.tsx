@@ -30,11 +30,18 @@ export const PosterLivePreview: React.FC<PosterLivePreviewProps> = ({
   const trimmedPosterUrl = urlPoster?.trim()
   const trimmedBackdropUrl = urlBackdrop?.trim()
 
-  const isPosterFailed = Boolean(trimmedPosterUrl && failedPosterUrl === trimmedPosterUrl)
-  const hasValidPosterUrl = Boolean(trimmedPosterUrl && !isPosterFailed)
+  const isValidHttpUrl = (url?: string) =>
+    Boolean(url && url.length <= 2048 && (url.startsWith('http://') || url.startsWith('https://')))
 
-  const isBackdropFailed = Boolean(trimmedBackdropUrl && failedBackdropUrl === trimmedBackdropUrl)
-  const hasValidBackdropUrl = Boolean(trimmedBackdropUrl && !isBackdropFailed)
+  const isPosterFailed = Boolean(
+    trimmedPosterUrl && (!isValidHttpUrl(trimmedPosterUrl) || failedPosterUrl === trimmedPosterUrl)
+  )
+  const hasValidPosterUrl = Boolean(trimmedPosterUrl && isValidHttpUrl(trimmedPosterUrl) && !isPosterFailed)
+
+  const isBackdropFailed = Boolean(
+    trimmedBackdropUrl && (!isValidHttpUrl(trimmedBackdropUrl) || failedBackdropUrl === trimmedBackdropUrl)
+  )
+  const hasValidBackdropUrl = Boolean(trimmedBackdropUrl && isValidHttpUrl(trimmedBackdropUrl) && !isBackdropFailed)
 
   return (
     <div className={cn('flex flex-col items-center gap-3', className)}>

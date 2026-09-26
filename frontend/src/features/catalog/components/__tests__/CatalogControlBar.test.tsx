@@ -13,7 +13,7 @@ describe('CatalogControlBar', () => {
     { sk_genre_id: 'g-2', nome_genero: 'Drama' }
   ]
 
-  it('renderiza gêneros e permite alternar seleção', () => {
+  it('renderiza Selects de gênero, ordenação e contagem de itens', () => {
     const handleSelectGenre = vi.fn()
     const handleSelectSortBy = vi.fn()
     const handleChangeViewMode = vi.fn()
@@ -31,13 +31,9 @@ describe('CatalogControlBar', () => {
       />
     )
 
-    expect(screen.getByText('Todos os Gêneros')).toBeDefined()
-    expect(screen.getByText('Ação')).toBeDefined()
-    expect(screen.getByText('Drama')).toBeDefined()
-
-    const acaoBtn = screen.getByText('Ação')
-    fireEvent.click(acaoBtn)
-    expect(handleSelectGenre).toHaveBeenCalledWith('Ação')
+    expect(screen.getByText(/150/)).toBeDefined()
+    expect(screen.getByLabelText('Filtrar por gênero')).toBeDefined()
+    expect(screen.getByLabelText('Ordenar catálogo')).toBeDefined()
   })
 
   it('permite alternar entre os modos Grid e List', () => {
@@ -63,33 +59,26 @@ describe('CatalogControlBar', () => {
     expect(handleChangeViewMode).toHaveBeenCalledWith('list')
   })
 
-  it('permite clicar em opções de ordenação e acionar alternância de ordenação', () => {
-    const handleSelectGenre = vi.fn()
-    const handleSelectSortBy = vi.fn()
-    const handleToggleSort = vi.fn()
-    const handleChangeViewMode = vi.fn()
+  it('renderiza Select de anos quando availableYears é fornecido', () => {
+    const handleSelectYear = vi.fn()
 
     render(
       <CatalogControlBar
         genres={mockGenres}
         selectedGenre=""
-        onSelectGenre={handleSelectGenre}
+        onSelectGenre={vi.fn()}
+        availableYears={[2024, 2023, 1999]}
+        selectedYear={2024}
+        onSelectYear={handleSelectYear}
         sortBy="popularidade"
         sortOrder="desc"
-        onSelectSortBy={handleSelectSortBy}
-        onToggleSort={handleToggleSort}
+        onSelectSortBy={vi.fn()}
         viewMode="grid"
-        onChangeViewMode={handleChangeViewMode}
-        totalCount={150}
+        onChangeViewMode={vi.fn()}
+        totalCount={85}
       />
     )
 
-    const avaliacoesBtn = screen.getByRole('button', { name: /Avaliações/i })
-    fireEvent.click(avaliacoesBtn)
-    expect(handleToggleSort).toHaveBeenCalledWith('nota_media_usuarios')
-
-    const popularidadeBtn = screen.getByRole('button', { name: /Popularidade/i })
-    fireEvent.click(popularidadeBtn)
-    expect(handleToggleSort).toHaveBeenCalledWith('popularidade')
+    expect(screen.getByLabelText('Filtrar por ano')).toBeDefined()
   })
 })

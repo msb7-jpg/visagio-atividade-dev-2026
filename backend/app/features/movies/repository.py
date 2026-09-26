@@ -74,6 +74,9 @@ class MoviesRepository:
             )
             query_filters.append(DimMovie.sk_movie_id.in_(company_movie_ids_subq))
 
+        if filters.year is not None:
+            query_filters.append(DimMovie.ano_lancamento == filters.year)
+
         # Contagem total ultra rápida sem outer joins redundantes
         count_stmt = select(func.count(DimMovie.sk_movie_id))
         if query_filters:
@@ -182,6 +185,18 @@ class MoviesRepository:
         movies = result.scalars().all()
 
         return [QuickSearchMovieDTO.from_movie_model(m) for m in movies]
+
+    async def get_available_years(self) -> list[int]:
+        """Retorna os anos distintos de lançamento disponíveis no catálogo ordenados
+        do mais recente ao mais antigo."""
+        stmt = (
+            select(DimMovie.ano_lancamento)
+            .where(DimMovie.ano_lancamento.isnot(None))
+            .distinct()
+            .order_by(desc(DimMovie.ano_lancamento))
+        )
+        result = await self.session.execute(stmt)
+        return [int(row[0]) for row in result.fetchall() if row[0] is not None]
 
     async def get_movie_by_id(self, movie_id: str) -> MovieDetailDTO | None:
         """Busca os detalhes completos de um filme pelo seu sk_movie_id ou id_filme."""

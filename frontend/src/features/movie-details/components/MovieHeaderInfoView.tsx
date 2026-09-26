@@ -13,6 +13,7 @@ interface MovieHeaderInfoViewProps {
   generos: GenreDTO[]
   onBack?: () => void
   adminActions?: React.ReactNode
+  userActions?: React.ReactNode
   children?: React.ReactNode
   onExpandPoster?: () => void
 }
@@ -26,6 +27,7 @@ export function MovieHeaderInfoView({
   generos,
   onBack,
   adminActions,
+  userActions,
   children,
   onExpandPoster
 }: MovieHeaderInfoViewProps) {
@@ -67,7 +69,7 @@ export function MovieHeaderInfoView({
 
       {/* Coluna descritiva e dados integrados */}
       <div className="flex flex-1 flex-col justify-start">
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           {onBack && (
             <Button
               variant="ghost"
@@ -78,7 +80,10 @@ export function MovieHeaderInfoView({
               ← Voltar ao catálogo
             </Button>
           )}
-          {adminActions}
+          <div className="flex flex-wrap items-center gap-2">
+            {userActions}
+            {adminActions}
+          </div>
         </div>
 
         <div className="mb-2 flex flex-wrap items-center gap-2">

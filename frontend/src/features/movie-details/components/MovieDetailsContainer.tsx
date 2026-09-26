@@ -13,14 +13,17 @@ import { MovieSynopsisView } from '@/features/movie-details/components/MovieSyno
 import { ScoreComparisonView } from '@/features/movie-details/components/ScoreComparisonView'
 import { useMovieDetailsViewModel } from '@/features/movie-details/hooks/useMovieDetailsViewModel'
 import { ReviewsSectionContainer } from '@/features/reviews/components/ReviewsSectionContainer'
+import { useUserLibrary } from '@/features/user-library/hooks/useUserLibrary'
+import { cn } from '@/lib/utils'
 import { routes } from '@/routes/routes.types'
-import { PencilLine, Trash2 } from 'lucide-react'
+import { Bookmark, Heart, PencilLine, Trash2 } from 'lucide-react'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function MovieDetailsContainer() {
   const vm = useMovieDetailsViewModel()
   const { isAuthenticated } = useAuth()
+  const { isFavorite, inWatchlist, toggleFavorite, toggleWatchlist } = useUserLibrary()
   const navigate = useNavigate()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [lightboxMedia, setLightboxMedia] = React.useState<'poster' | 'backdrop' | null>(null)
@@ -63,6 +66,44 @@ export function MovieDetailsContainer() {
           generos={movie.generos}
           onBack={vm.handleBack}
           onExpandPoster={() => setLightboxMedia('poster')}
+          userActions={
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => toggleFavorite(movie.sk_movie_id)}
+                aria-label={isFavorite(movie.sk_movie_id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+              >
+                <Heart
+                  className={cn(
+                    'size-3.5',
+                    isFavorite(movie.sk_movie_id) && 'fill-primary text-primary'
+                  )}
+                />
+                <span className={cn(isFavorite(movie.sk_movie_id) && 'font-medium text-primary')}>
+                  {isFavorite(movie.sk_movie_id) ? 'Favoritado' : 'Favoritar'}
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => toggleWatchlist(movie.sk_movie_id)}
+                aria-label={inWatchlist(movie.sk_movie_id) ? 'Remover da watchlist' : 'Adicionar à watchlist'}
+              >
+                <Bookmark
+                  className={cn(
+                    'size-3.5',
+                    inWatchlist(movie.sk_movie_id) ? 'fill-primary text-primary' : 'text-muted-foreground'
+                  )}
+                />
+                <span className={cn(inWatchlist(movie.sk_movie_id) && 'font-medium text-primary')}>
+                  {inWatchlist(movie.sk_movie_id) ? 'Na Watchlist' : 'Watchlist'}
+                </span>
+              </Button>
+            </div>
+          }
           adminActions={
             isAuthenticated ? (
               <div className="flex items-center gap-2">

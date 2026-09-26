@@ -77,7 +77,6 @@ export const MediaExpandedLightboxDialog: React.FC<MediaExpandedLightboxDialogPr
           <div className="flex items-center justify-between pr-8">
             <DialogTitle>
               <span className="flex items-center gap-2">
-                <Maximize2 className="size-4 text-primary" />
                 <span>{titulo}</span>
                 <span className="hidden text-sm font-normal text-muted-foreground sm:inline">
                   • Galeria de Artes

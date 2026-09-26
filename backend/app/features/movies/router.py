@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.features.auth.router import get_current_admin
 from app.features.auth.schemas import AdminUserDTO
 from app.features.movies.docs import (
+    AvailableYearsDoc,
     CreateMovieDoc,
     DeleteMovieDoc,
     GetMovieDetailDoc,
@@ -53,6 +54,14 @@ async def quick_search(
     limit: Annotated[int, Query(ge=1, le=20, description="Limite máximo de resultados")] = 10,
 ) -> list[QuickSearchMovieDTO]:
     return await repo.quick_search(query=q, limit=limit)
+
+
+@movies_router.get("/available-years", **AvailableYearsDoc.to_dict())
+async def get_available_years(
+    repo: MoviesRepo,
+) -> list[int]:
+    """Retorna os anos distintos de lançamento disponíveis no catálogo."""
+    return await repo.get_available_years()
 
 
 @movies_router.get("/{movie_id}", **GetMovieDetailDoc.to_dict())

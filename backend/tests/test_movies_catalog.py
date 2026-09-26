@@ -171,3 +171,30 @@ async def test_list_genres(seed_test_catalog):
         assert resp.status_code == 200
         genres = resp.json()
         assert any(g["nome_genero"] == "Ficção Científica" for g in genres)
+
+
+@pytest.mark.asyncio
+async def test_get_available_years(seed_test_catalog):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/api/v1/movies/available-years")
+        assert resp.status_code == 200
+        years = resp.json()
+        assert isinstance(years, list)
+        assert len(years) >= 2
+        # Deve conter os anos do seed (2014, 1999) ordenados decrescentemente
+        assert 2014 in years
+        assert 1999 in years
+        assert years == sorted(years, reverse=True)
+
+
+@pytest.mark.asyncio
+async def test_list_movies_filter_year(seed_test_catalog):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/api/v1/movies?year=1999")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data["items"]) >= 1
+        assert all(item["ano_lancamento"] == 1999 for item in data["items"])
+        assert any(item["titulo"] == "The Matrix" for item in data["items"])

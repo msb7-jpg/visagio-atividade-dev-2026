@@ -6,7 +6,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useHasMovieDraft } from '@/features/movie-admin/hooks/useMovieDraft'
 import { cn } from '@/lib/utils'
 import { routes } from '@/routes/routes.types'
-import { Film, Loader2, LogIn, LogOut, Plus, Search, ShieldCheck, X } from 'lucide-react'
+import { Bookmark, Film, Loader2, LogIn, LogOut, Plus, Search, ShieldCheck, X } from 'lucide-react'
 import React, { useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -175,6 +175,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(routes.userLibrary())}
+                aria-label="Acessar Minha Biblioteca"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Bookmark className="size-4" />
+                  <span className="hidden md:inline">Minha Biblioteca</span>
+                </span>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

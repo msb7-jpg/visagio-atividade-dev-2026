@@ -22,6 +22,8 @@ export type CommandPaletteAction = CommandRouteAction | CommandSystemAction
 export const COMMAND_ACTIONS = {
   NAVIGATE_HOME: '/' as const,
   NAVIGATE_LOGIN: '/login' as const,
+  NAVIGATE_LIBRARY_FAVORITES: '/minha-lista?tab=favorites' as const,
+  NAVIGATE_LIBRARY_WATCHLIST: '/minha-lista?tab=watchlist' as const,
   NAVIGATE_CREATE_MOVIE: '/admin/filmes/novo' as const,
   LOGOUT: 'logout' as const
 } as const

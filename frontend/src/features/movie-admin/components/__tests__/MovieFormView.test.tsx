@@ -141,4 +141,27 @@ describe('MovieFormView', () => {
 
     expect(handleCancel).toHaveBeenCalledTimes(1)
   })
+
+  it('exibe erro no formulário ao inserir URL de pôster inválida (como data URI ou formato sem http)', async () => {
+    renderWithProviders(
+      <MovieFormView
+        mode="create"
+        availableGenres={mockGenres}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+
+    const posterInput = screen.getByPlaceholderText('https://image.tmdb.org/t/p/w500/...')
+    fireEvent.change(posterInput, {
+      target: { value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' }
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('A URL do pôster deve começar com http:// ou https://')
+      ).toBeInTheDocument()
+    })
+  })
 })
+

@@ -14,6 +14,7 @@ def test_movie_schema_registers_expected_tables() -> None:
         "dim_reviews",
         "fact_movies_performance",
         "movie_reviews",
+        "user_movie_interactions",
     }
 
     assert set(Base.metadata.tables) == expected_tables

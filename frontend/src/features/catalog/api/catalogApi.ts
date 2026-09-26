@@ -45,6 +45,7 @@ export interface FetchMoviesParams {
   q?: string
   genre?: string
   company?: string
+  year?: number
   sortBy?: 'popularidade' | 'nota_media_usuarios' | 'receita_usd' | 'ano_lancamento' | 'titulo'
   order?: 'asc' | 'desc'
 }
@@ -59,6 +60,7 @@ export async function fetchMovies(
       q: params.q || undefined,
       genre: params.genre || undefined,
       company: params.company || undefined,
+      year: params.year || undefined,
       sort_by: params.sortBy ?? 'popularidade',
       order: params.order ?? 'desc'
     }
@@ -73,5 +75,10 @@ export async function fetchGenres(): Promise<GenreItem[]> {
 
 export async function fetchCompanies(): Promise<CompanyItem[]> {
   const response = await apiClient.get<CompanyItem[]>('/companies')
+  return response.data
+}
+
+export async function fetchAvailableYears(): Promise<number[]> {
+  const response = await apiClient.get<number[]>('/movies/available-years')
   return response.data
 }

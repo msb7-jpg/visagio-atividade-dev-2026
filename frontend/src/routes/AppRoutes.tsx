@@ -33,6 +33,12 @@ const MovieEditContainer = lazy(() =>
   }))
 )
 
+const UserLibraryContainer = lazy(() =>
+  import('@/features/user-library/components/UserLibraryContainer').then(module => ({
+    default: module.UserLibraryContainer
+  }))
+)
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -40,8 +46,9 @@ export function AppRoutes() {
         <Route path="/" element={<CatalogContainer />} />
         <Route path="/filmes/:id" element={<MovieDetailsContainer />} />
 
-        {/* Rotas restritas ao Administrador */}
+        {/* Rotas restritas ao Administrador e Usuários autenticados */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/minha-lista" element={<UserLibraryContainer />} />
           <Route path="/admin/filmes/novo" element={<MovieCreateContainer />} />
           <Route path="/admin/filmes/:id/editar" element={<MovieEditContainer />} />
         </Route>

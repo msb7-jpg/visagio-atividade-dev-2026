@@ -11,6 +11,7 @@ from typing import Literal
 from uuid import uuid4
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Column,
     Date,
@@ -124,6 +125,9 @@ class DimMovie(Base):
     )
     reviews: Mapped[list["MovieReview"]] = relationship(
         back_populates="movie", cascade="all, delete-orphan", order_by="MovieReview.created_at"
+    )
+    interactions: Mapped[list["UserMovieInteraction"]] = relationship(
+        back_populates="movie", cascade="all, delete-orphan"
     )
 
 
@@ -244,3 +248,31 @@ class DimReview(Base):
     nota_media_usuarios: Mapped[float | None] = mapped_column(Double, default=None)
 
     movie: Mapped[DimMovie] = relationship(back_populates="reviews_summary")
+
+
+class UserMovieInteraction(Base):
+    """Interações de lista do usuário com filmes: favoritos e watchlist."""
+
+    __tablename__ = "user_movie_interactions"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id", "sk_movie_id", name="uq_user_movie_interactions_user_id_sk_movie_id"
+        ),
+    )
+
+    sk_interaction_id: Mapped[str] = mapped_column(
+        String(64), primary_key=True, default=generate_surrogate_key
+    )
+    user_id: Mapped[str] = mapped_column(String(128), index=True)
+    sk_movie_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("dim_movies.sk_movie_id", ondelete="CASCADE"), index=True
+    )
+    is_favorite: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    in_watchlist: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), onupdate=func.now()
+    )
+
+    movie: Mapped[DimMovie] = relationship(back_populates="interactions")
+

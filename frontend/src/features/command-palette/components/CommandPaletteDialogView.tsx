@@ -8,7 +8,6 @@ import {
 import { CommandResultsGroupView } from './CommandResultsGroupView'
 import { useSpotlightSearch } from '@/features/command-palette/hooks/useSpotlightSearch'
 import type {
-  CommandGenreItem,
   CommandMovieItem,
   CommandPaletteAction
 } from '@/features/command-palette/types/command-palette.types'
@@ -21,8 +20,6 @@ interface CommandPaletteDialogViewProps {
   onOpenChange: (open: boolean) => void
   onSelectMovie: (movie: CommandMovieItem) => void
   onSelectAction: (action: CommandPaletteAction) => void
-  onSelectGenre: (genre: CommandGenreItem) => void
-  genres?: CommandGenreItem[]
   isAuthenticated?: boolean
 }
 
@@ -31,8 +28,6 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
   onOpenChange,
   onSelectMovie,
   onSelectAction,
-  onSelectGenre,
-  genres,
   isAuthenticated = false
 }) => {
   const [query, setQuery] = useState('')
@@ -48,11 +43,6 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
     onSelectAction(action)
   }
 
-  const handleSelectGenre = (genre: string) => {
-    onOpenChange(false)
-    onSelectGenre(genre)
-  }
-
   return (
     <CommandDialog
       open={isOpen}
@@ -61,7 +51,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
     >
       <div className="relative">
         <CommandInput
-          placeholder="Busque por filme, gênero ou ação..."
+          placeholder="Busque filmes pelo título ou navegue por atalhos..."
           value={query}
           onValueChange={setQuery}
         />
@@ -82,11 +72,9 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
         <CommandResultsGroupView
           movies={results}
           query={query}
-          genres={genres}
           isAuthenticated={isAuthenticated}
           onSelectMovie={handleSelectMovie}
           onSelectAction={handleSelectAction}
-          onSelectGenre={handleSelectGenre}
         />
       </CommandList>
 

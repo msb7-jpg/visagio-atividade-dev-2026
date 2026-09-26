@@ -21,7 +21,6 @@ describe('CommandResultsGroupView', () => {
   it('renderiza os filmes encontrados e dispara onSelectMovie ao clicar', () => {
     const handleSelectMovie = vi.fn()
     const handleSelectAction = vi.fn()
-    const handleSelectGenre = vi.fn()
 
     render(
       <Command>
@@ -31,7 +30,6 @@ describe('CommandResultsGroupView', () => {
             query="mat"
             onSelectMovie={handleSelectMovie}
             onSelectAction={handleSelectAction}
-            onSelectGenre={handleSelectGenre}
           />
         </CommandList>
       </Command>
@@ -42,10 +40,8 @@ describe('CommandResultsGroupView', () => {
     expect(screen.getByText('★ 8.7')).toBeDefined()
   })
 
-  it('renderiza atalhos de gêneros e ações rápidas', () => {
-    const handleSelectMovie = vi.fn()
+  it('renderiza atalhos de navegação e ações rápidas', () => {
     const handleSelectAction = vi.fn()
-    const handleSelectGenre = vi.fn()
 
     render(
       <Command>
@@ -53,21 +49,18 @@ describe('CommandResultsGroupView', () => {
           <CommandResultsGroupView
             movies={[]}
             query=""
-            onSelectMovie={handleSelectMovie}
+            onSelectMovie={vi.fn()}
             onSelectAction={handleSelectAction}
-            onSelectGenre={handleSelectGenre}
           />
         </CommandList>
       </Command>
     )
 
-    expect(screen.getByText('Gêneros & Categorias')).toBeDefined()
-    expect(screen.getByText('Action')).toBeDefined()
     expect(screen.getByText('Navegação & Ações Rápidas')).toBeDefined()
     expect(screen.getByText('Explorar Catálogo Completo')).toBeDefined()
 
-    fireEvent.click(screen.getByText('Action'))
-    expect(handleSelectGenre).toHaveBeenCalledWith('Action')
+    fireEvent.click(screen.getByText('Explorar Catálogo Completo'))
+    expect(handleSelectAction).toHaveBeenCalledWith('/')
   })
 
   it('renderiza Sair quando isAuthenticated for true e dispara logout ao clicar', () => {
@@ -81,7 +74,6 @@ describe('CommandResultsGroupView', () => {
             query=""
             onSelectMovie={vi.fn()}
             onSelectAction={handleSelectAction}
-            onSelectGenre={vi.fn()}
             isAuthenticated={true}
           />
         </CommandList>
@@ -91,5 +83,32 @@ describe('CommandResultsGroupView', () => {
     expect(screen.getByText('Sair')).toBeDefined()
     fireEvent.click(screen.getByText('Sair'))
     expect(handleSelectAction).toHaveBeenCalledWith('logout')
+  })
+
+  it('renderiza atalhos para Minha Biblioteca quando autenticado e dispara rota com tab', () => {
+    const handleSelectAction = vi.fn()
+
+    render(
+      <Command>
+        <CommandList>
+          <CommandResultsGroupView
+            movies={[]}
+            query=""
+            onSelectMovie={vi.fn()}
+            onSelectAction={handleSelectAction}
+            isAuthenticated={true}
+          />
+        </CommandList>
+      </Command>
+    )
+
+    expect(screen.getByText('Minha Biblioteca: Favoritos')).toBeDefined()
+    expect(screen.getByText('Minha Biblioteca: Watchlist')).toBeDefined()
+
+    fireEvent.click(screen.getByText('Minha Biblioteca: Favoritos'))
+    expect(handleSelectAction).toHaveBeenCalledWith('/minha-lista?tab=favorites')
+
+    fireEvent.click(screen.getByText('Minha Biblioteca: Watchlist'))
+    expect(handleSelectAction).toHaveBeenCalledWith('/minha-lista?tab=watchlist')
   })
 })

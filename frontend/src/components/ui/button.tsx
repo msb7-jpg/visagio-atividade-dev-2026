@@ -27,7 +27,9 @@ const buttonVariants = cva(
         'rating-active': 'border-primary/40 bg-primary/15 text-primary font-semibold',
         'rating-selected': 'bg-primary text-primary-foreground font-bold shadow-md',
         'media-thumb': 'h-auto p-1 border-2 border-white/10 bg-white/5 opacity-60 hover:opacity-100 rounded-lg overflow-hidden transition-all',
-        'media-thumb-active': 'h-auto p-1 border-2 border-primary bg-primary/10 opacity-100 rounded-lg overflow-hidden shadow-md transition-all'
+        'media-thumb-active': 'h-auto p-1 border-2 border-primary bg-primary/10 opacity-100 rounded-lg overflow-hidden shadow-md transition-all',
+        'action-pill': 'rounded-full text-white/60 hover:bg-white/10 hover:text-white',
+        'action-pill-active': 'rounded-full text-primary hover:bg-white/10 hover:text-primary'
       },
       size: {
         default:
@@ -44,7 +46,8 @@ const buttonVariants = cva(
           'size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg',
         'icon-lg': 'size-9',
         pagination: 'h-8 min-w-8 px-2 text-xs font-medium rounded-lg',
-        'rating-score': 'h-8 min-w-8 gap-0.5 rounded-lg px-1.5 text-xs font-medium'
+        'rating-score': 'h-8 min-w-8 gap-0.5 rounded-lg px-1.5 text-xs font-medium',
+        'action-pill': 'size-7 rounded-full p-0'
       }
     },
     defaultVariants: {

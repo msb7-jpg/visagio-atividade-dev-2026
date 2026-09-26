@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from app.db.session import AsyncSessionLocal
 from app.main import app
-from app.movies.models import DimMovie, DimReview, MovieReview
+from app.movies.models import DimMovie
 
 
 @pytest.fixture

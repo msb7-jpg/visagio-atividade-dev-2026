@@ -1,10 +1,10 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Star, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { BlurImage } from '@/components/ui/blur-image'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
 import { MovieQuickActionsMenu } from '@/features/catalog/components/MovieQuickActionsMenu'
+import { ArrowRight, Star } from 'lucide-react'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 interface MovieListItemViewProps {
   movie: MovieListItem
