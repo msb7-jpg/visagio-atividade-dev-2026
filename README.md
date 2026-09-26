@@ -1,189 +1,235 @@
 # CineFlow — Catálogo Cinematográfico & Hub Analítico
 
-Sistema moderno e completo para exploração cinematográfica, consulta analítica de desempenho de mercado (ROI, bilheteria, popularidade) e gestão de filmes e avaliações da comunidade.
+<div align="center">
 
-Construído sob a arquitetura **Vertical Slices**, separando domínios em fatias autônomas e desacopladas, com foco em alta performance, fidelidade editorial cinematográfica e governança estrita de código.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-UI_Components-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](https://tanstack.com/query)
+[![SQLite](https://img.shields.io/badge/SQLite-aiosqlite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![uv](https://img.shields.io/badge/Package_Manager-uv-DE5FE9?style=for-the-badge&logo=astral&logoColor=white)](https://docs.astral.sh/uv/)
+[![Bun](https://img.shields.io/badge/Runtime-Bun-F472B6?style=for-the-badge&logo=bun&logoColor=black)](https://bun.sh)
 
----
+Plataforma cinematográfica completa inspirada no Letterboxd, integrando catálogo analítico de alta performance, ficha técnica editorial, sistema de avaliações comunitárias, biblioteca pessoal e painel administrativo para gestão de obras.
 
-## 🛠️ Stack Tecnológica
-
-### Backend
-- **Python 3.11+** com gerenciamento de dependências via **uv**.
-- **FastAPI**: Endpoints assíncronos de alta performance, documentados automaticamente via Swagger/OpenAPI.
-- **SQLAlchemy 2.0 (Async)** com **aiosqlite** e **SQLite**.
-- **Alembic**: Versionamento e migrações relacionais contínuas.
-- **Autenticação**: Tokens JWT assinados com `pyjwt` e hash de senhas moderno via `pwdlib[argon2]`.
-- **Qualidade & Testes**: `pytest`, `pytest-asyncio`, `httpx` e `ruff`.
-
-### Frontend
-- **React 19** e **TypeScript 5.9+** alimentados por **Vite 8** e executados com **Bun**.
-- **Tailwind CSS v4** e componentes **shadcn/ui** integrados sob paleta escura cinematográfica e tipografia **Geist**.
-- **TanStack Query v5** (gerenciamento assíncrono de estado do servidor com cache) e **TanStack Form** (validação type-safe de formulários com **Zod**).
-- **Framer Motion**: Animações fluidas, transições orgânicas entre abas e microinterações.
-- **Command Palette (`cmdk`)**: Busca rápida (`⌘K`) por título, atalhos para a biblioteca (Favoritos, Watchlist), navegação e ações de administração.
-- **Qualidade & Testes**: **Vitest**, **Testing Library**, **ESLint 9+** (com plugins `@shadcn/lint`, `eslint-plugin-react-x`, `eslint-plugin-react-hooks`) e **Fallow**.
+</div>
 
 ---
 
-## 🚀 Passo a Passo de Execução
+## 🎬 Demonstração & Mídias da Aplicação
 
-### 1. Pré-Requisitos
-Certifique-se de ter instalado no sistema:
-- [Python](https://www.python.org/) 3.11 ou superior
-- [uv](https://docs.astral.sh/uv/) (gerenciador rápido de pacotes Python)
-- [Bun](https://bun.sh/) (runtime e gerenciador de pacotes JS/TS)
+### 🎥 Navegação & Visão Geral (Vídeos)
+
+| Visão Geral do Catálogo & Navegação | Ações Rápidas, Resenhas & Minha Lista |
+| :---: | :---: |
+| https://github.com/user-attachments/assets/media/catalog-page-overviewmp4.mp4 <br> *(Vídeo: `media/catalog-page-overviewmp4.mp4`)* | https://github.com/user-attachments/assets/media/catalog-page-context-menu-review-favorite-add-to-list.mp4 <br> *(Vídeo: `media/catalog-page-context-menu-review-favorite-add-to-list.mp4`)* |
+
+| Autenticação & Entrada de Administrador |
+| :---: |
+| https://github.com/user-attachments/assets/media/login-page-overview-mp4.mp4 <br> *(Vídeo: `media/login-page-overview-mp4.mp4`)* |
+
+> 💡 **Arquivos de vídeo locais:** Todos os vídeos em alta fidelidade estão disponíveis no diretório [`media/`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media):
+> - [`media/catalog-page-overviewmp4.mp4`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media/catalog-page-overviewmp4.mp4) — Exploração fluida do catálogo, paginação e alternância de modos.
+> - [`media/catalog-page-context-menu-review-favorite-add-to-list.mp4`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media/catalog-page-context-menu-review-favorite-add-to-list.mp4) — Menu de contexto (`···` e clique direito), adição de resenha, favoritar e watchlist.
+> - [`media/login-page-overview-mp4.mp4`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media/login-page-overview-mp4.mp4) — Experiência de login, ilustrações Storyset interativas e transições.
 
 ---
 
-### 2. Configuração e Inicialização do Backend
+### 📸 Telas e Fluxos Principais
 
-Abra um terminal no diretório raiz do projeto:
+#### Catálogo & Modos de Visualização
+| Catálogo em Grid (Pôsteres 2:3) | Catálogo em Lista Analítica |
+| :---: | :---: |
+| ![Catálogo Grid](media/catalog-page-block.png) | ![Catálogo Lista](media/catalog-page-list.png) |
+
+#### Command Palette (⌘K) & Busca Rápida
+| Command Palette no Catálogo | Busca Rápida de Filmes |
+| :---: | :---: |
+| ![Command Palette](media/catalog-page-command-pallete.png) | ![Busca na Biblioteca](media/my-list-page-command-pallete-searching-movies.png) |
+
+#### Ficha Técnica Editorial & Avaliações
+| Ficha Técnica & Backdrop Panorâmico | Avaliação & Nova Resenha |
+| :---: | :---: |
+| ![Ficha Técnica](media/films-page-overview.png) | ![Modal de Resenha](media/films-page-review-add-or-edit.png) |
+
+#### Gestão de Obras & Biblioteca Pessoal
+| Cadastro / Edição com Live Poster Preview | Minha Biblioteca (Favoritos & Watchlist) |
+| :---: | :---: |
+| ![Formulário de Filme](media/films-page-create-or-edit.png) | ![Minha Lista](media/my-list-page-overview.png) |
+
+---
+
+## 🎯 Histórias de Usuário & Funcionalidades
+
+O sistema foi desenhado a partir dos requisitos centrais da especificação oficial e expandido com recursos de ponta:
+
+- **Navegação no Catálogo Paginado:**
+  - Alternância imediata entre visualização em **Grid (Cards 2:3)** e **Lista Analítica**.
+  - Filtros dinâmicos por **Gênero** e **Ano de Lançamento** (alimentados diretamente do banco de dados).
+  - Ordenação multicritério por Popularidade, Nota dos Usuários, Bilheteria (USD), Ano de Lançamento e Título.
+- **Busca Global e Instantânea:**
+  - Barra de pesquisa integrada in-page e **Command Palette (`⌘K` / `Ctrl+K`)** para busca em tempo real com debouncing e navegação via teclado.
+- **Ficha Técnica & Comparativo Analítico:**
+  - Dados completos da obra (sinopse, duração formatada, diretor, roteiristas, estúdios e elenco principal).
+  - **Comparador de Notas:** Avaliação média interna do CineFlow vs. TMDb vs. IMDb.
+  - **Painel Financeiro & Métricas:** Orçamento, faturamento global, ROI consolidado (USD/BRL) e índice de popularidade.
+  - Lightbox para ampliação do pôster em alta definição.
+- **Comunidade & Avaliações:**
+  - Submissão de novas avaliações com notas de **1 a 10** e resenha em texto.
+  - Recálculo atômico e transacional da nota média e total de avaliações do filme.
+  - Histórico de resenhas com cards interativos e expansão suave de comentários longos.
+- **Biblioteca Pessoal do Usuário (Minha Lista):**
+  - Salvar em **Favoritos** e **Watchlist** em 1 clique (na pílula de hover do pôster, no menu de contexto ou na ficha técnica).
+  - **Optimistic Updates:** Feedback visual instantâneo sem congelar a interface.
+  - Aba unificada `/minha-lista` para gerenciar as obras salvas.
+- **Administração de Catálogo (CRUD Completo):**
+  - Autenticação segura com emissão de token JWT (`admin@rocketfilms.com` / `admin123`).
+  - Cadastro de novos filmes com validação em tempo real e **Live Poster Preview 2:3**.
+  - Edição de filmes existentes com recuperação de rascunhos.
+  - Exclusão segura com diálogo de confirmação destrutivo e remoção em cascata.
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### 1. Pré-Requisitos e Arquivos de Dados (CSV)
+
+O projeto depende de **Python 3.11+**, [**uv**](https://docs.astral.sh/uv/) e [**Bun**](https://bun.sh/).
+
+> ⚠️ **IMPORTANTE (Arquivos CSV Necessários):**  
+> A ingestão de dados analíticos requer que os arquivos CSV fornecidos estejam presentes no diretório raiz [`data/`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/data):
+> - `dim_movies.csv`
+> - `dim_genres.csv`
+> - `dim_companies.csv`
+> - `dim_people.csv`
+> - `bridge_movie_genre.csv`
+> - `bridge_movie_company.csv`
+> - `bridge_movie_person.csv`
+> - `fact_movies_performance.csv`
+> - `dim_reviews.csv`
+> - `movies_reviews.csv`
+
+---
+
+### 2. Configuração do Backend (FastAPI + SQLite + Alembic)
+
+No terminal, a partir da raiz do repositório:
 
 ```bash
 cd backend
 
-# 1. Configurar variáveis de ambiente
+# 1. Copiar variáveis de ambiente de exemplo
 cp .env.example .env
 
-# 2. Instalar dependências backend
+# 2. Sincronizar o ambiente virtual e instalar dependências via uv
 uv sync --all-extras
 
-# 3. Aplicar as migrações do banco relacional SQLite
+# 3. Aplicar as migrações do banco de dados relacional via Alembic
 uv run alembic upgrade head
 
-# 4. (Opcional/Inicial) Executar o seed dos dados analíticos (Diamond Layer + Reviews)
+# 4. Executar o script de seed para popular o banco com os CSVs de data/
 uv run python scripts/seed_database.py
 
 # 5. Iniciar o servidor de desenvolvimento FastAPI
 uv run uvicorn app.main:app --reload --port 8000
 ```
 
-> **API Disponível em:** `http://localhost:8000`  
-> **Documentação Swagger (OpenAPI):** `http://localhost:8000/docs`  
-> **Health Check:** `http://localhost:8000/health`
+- **API REST:** `http://localhost:8000`
+- **Documentação Interativa (Swagger/OpenAPI):** `http://localhost:8000/docs`
+- **Health Check:** `http://localhost:8000/health`
 
 ---
 
-### 3. Configuração e Inicialização do Frontend
+### 3. Configuração do Frontend (Vite + React 19 + Bun)
 
 Em outro terminal:
 
 ```bash
 cd frontend
 
-# 1. Instalar dependências frontend
+# 1. Instalar dependências com Bun
 bun install
 
-# 2. Iniciar o servidor Vite de desenvolvimento
+# 2. Iniciar o servidor de desenvolvimento Vite
 bun run dev
 ```
 
-> **Aplicação Web Disponível em:** `http://localhost:5173`
+- **Aplicação Web:** `http://localhost:5173`
 
----
-
-### 4. Credenciais de Acesso (Administrador)
-
-Para testar recursos exclusivos de administração (cadastro, edição e exclusão de filmes):
-- **Email:** `admin@cinema.com`
+#### Credenciais de Acesso (Administrador)
+- **E-mail:** `admin@rocketfilms.com`
 - **Senha:** `admin123`
-
 *(A tela de login possui botão de preenchimento automático para testes rápidos).*
 
 ---
 
-## 🧪 Execução da Suíte de Testes Automatizados
+### 4. Testes Automatizados & Qualidade de Código
 
-O projeto conta com ampla cobertura de testes unitários e de integração, garantindo o funcionamento de todas as regras de negócio:
-
-### Testes do Backend (Pytest)
 ```bash
-cd backend
-uv run pytest
-```
-> Executa 37 testes cobrindo autenticação JWT, catálogo paginado, filtros analíticos, busca rápida, ficha técnica completa, recalculo atômico de avaliações, CRUD transacional e persistência de biblioteca do usuário.
+# Testes do Backend (Pytest assíncrono - 37 testes)
+cd backend && uv run pytest
 
-### Testes do Frontend (Vitest)
-```bash
-cd frontend
-bun run test
-```
-> Executa 137 testes unitários e de componentes cobrindo formulários TanStack, hooks customizados, Command Palette, alternador de visualização, modais, estados vazios e biblioteca do usuário.
+# Testes do Frontend (Vitest - 143 testes)
+cd frontend && bun run test
 
----
-
-## 🔍 Auditoria de Qualidade & Linters
-
-Para verificar e garantir a aderência aos padrões de código:
-
-### Linter do Frontend (ESLint 9 + shadcn/lint)
-```bash
-cd frontend
-bun run lint
-```
-*(Garante 0 erros em contratos de design system, ausência de restilizações arbitrárias e pureza do React Compiler).*
-
-### Verificação de Tipos e Build de Produção
-```bash
-cd frontend
-bun run build
-```
-*(Executa a checagem estrita de tipos do TypeScript com `tsc -b` e compila os bundles otimizados com Vite).*
-
-### Linter do Backend (Ruff)
-```bash
-cd backend
-uv run ruff check .
-```
-*(Valida conformidade PEP 8, ordenação de imports e boas práticas Python).*
-
----
-
-## 📂 Estrutura Arquitetural
-
-```text
-.
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/          # Roteamento consolidado de endpoints REST
-│   │   ├── core/            # Configurações de ambiente, segurança e logging
-│   │   ├── db/              # Sessões assíncronas do SQLAlchemy e Base ORM
-│   │   ├── features/        # Slices verticais de negócio:
-│   │   │   ├── auth/        # Autenticação JWT e dependências de usuário
-│   │   │   ├── movies/      # Catálogo, detalhes, CRUD de filmes e métricas
-│   │   │   ├── reviews/     # Resenhas e recalculo transacional de notas
-│   │   │   ├── metadata/    # Gêneros, produtoras e busca de diretores
-│   │   │   └── user_library/# Biblioteca do usuário (Favoritos & Watchlist)
-│   │   ├── movies/models.py # Modelos ORM do domínio analítico cinematográfico
-│   │   └── shared/          # Utilitários de paginação, documentação e exceções
-│   ├── migrations/          # Histórico de revisões Alembic
-│   ├── scripts/             # Script de carga em lote (seed_database.py)
-│   └── tests/               # Suíte completa de testes assíncronos pytest
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/      # UI base (shadcn/ui), feedback e layout
-│   │   ├── features/        # Slices verticais de frontend:
-│   │   │   ├── auth/        # Login com Storyset SVGs animados e validação TanStack Form
-│   │   │   ├── catalog/     # Catálogo paginado, grid/list, ordenação e dropdowns
-│   │   │   ├── command-palette/ # Spotlight ⌘K para títulos e atalhos rápidos
-│   │   │   ├── movie-details/   # Ficha técnica editorial, KPIs, equipe e lightbox
-│   │   │   ├── movie-admin/     # Formulário de criação/edição com poster preview 2:3
-│   │   │   ├── reviews/         # Avaliações com selector de nota 1-10 e modal
-│   │   │   └── user-library/    # Minha Lista com abas Favoritos e Watchlist
-│   │   ├── lib/             # Clientes globais (api-client, query-client)
-│   │   └── routes/          # Definição e proteção de rotas (AppRoutes)
-│   └── eslint.config.js     # Configuração estrita de linter e design system
-│
-├── data/                    # CSVs da camada Diamond e reviews
-├── plano-execucao.md        # Documento vivo de rastreabilidade de todas as etapas
-└── README.md                # Este documento de referência
+# Linters e Checagem de Tipos
+cd backend && uv run ruff check .
+cd frontend && bun run lint && bun run build
 ```
 
 ---
 
-## 🎨 Design System e Diretrizes Visuais
-- **Identidade Visual**: Paleta cinematográfica escura com contrastes suaves (`bg-background`, `border-white/10`, `text-muted-foreground`), acentos dourados/âmbar (`primary`) e zero ruído visual.
-- **Anti-Cardite**: Layouts fluidos e contínuos que valorizam o conteúdo textual, dados e pôsteres, evitando o excesso de cartões com bordas pesadas.
-- **Governança de Componentes**: Primitivas shadcn encapsulam estilos e tamanhos próprios, prevenindo quebras de design por classes arbitrárias.
+## 🏛️ Arquitetura em Vertical Slices
+
+Ao invés de camadas horizontais que espalham a mesma funcionalidade por diretórios técnicos distantes, o CineFlow adota **Vertical Slice Architecture**. Cada domínio de funcionalidade agrupa suas próprias rotas, contratos de dados, regras de negócio e componentes de interface.
+
+```mermaid
+graph TD
+    subgraph UI ["Frontend (React 19 + TanStack + shadcn/ui)"]
+        CatalogSlice["Catalog Slice<br/>(Grid/List, Filtros, URL State)"]
+        DetailsSlice["Movie Details Slice<br/>(Ficha Técnica, Comparativo, KPIs)"]
+        ReviewsSlice["Reviews Slice<br/>(Modal TanStack Form, ExpandableCard)"]
+        AdminSlice["Movie Admin Slice<br/>(CRUD, Live Poster Preview 2:3)"]
+        LibrarySlice["User Library Slice<br/>(Favoritos, Watchlist, Optimistic Updates)"]
+        SpotlightSlice["Command Palette Slice<br/>(cmdk, Atalhos Globais ⌘K)"]
+    end
+
+    subgraph API ["Backend API (FastAPI)"]
+        MoviesEndpoint["/api/v1/movies<br/>(Catálogo, Filtros & Métricas)"]
+        ReviewsEndpoint["/api/v1/movies/:id/reviews<br/>(Histórico & Recálculo Atômico)"]
+        AdminEndpoint["/api/v1/movies [POST/PUT/DELETE]<br/>(CRUD Protegido por JWT)"]
+        LibraryEndpoint["/api/v1/user/library<br/>(Toggle Favoritos/Watchlist)"]
+        MetadataEndpoint["/api/v1/genres & /available-years<br/>(Metadados para Filtros)"]
+    end
+
+    subgraph Data ["Banco de Dados & Ingestão"]
+        SQLite[(SQLite + aiosqlite)]
+        Alembic["Alembic Migrations"]
+        Seed["seed_database.py (CSVs)"]
+    end
+
+    CatalogSlice --> MoviesEndpoint
+    CatalogSlice --> MetadataEndpoint
+    DetailsSlice --> MoviesEndpoint
+    ReviewsSlice --> ReviewsEndpoint
+    AdminSlice --> AdminEndpoint
+    LibrarySlice --> LibraryEndpoint
+    SpotlightSlice --> MoviesEndpoint
+
+    MoviesEndpoint --> SQLite
+    ReviewsEndpoint --> SQLite
+    AdminEndpoint --> SQLite
+    LibraryEndpoint --> SQLite
+    MetadataEndpoint --> SQLite
+    Alembic --> SQLite
+    Seed --> SQLite
+```
+
+### Princípios-Chave:
+1. **Linguagem Onipresente (Ubiquitous Language):** Os mesmos termos canônicos (`titulo`, `sinopse`, `ano_lancamento`, `duracao_minutos`, `url_poster`, `url_backdrop`, `nota_media_usuarios`, `comentario`) são rigorosamente preservados do banco SQLite até o TanStack Form.
+2. **Separação UI Pura vs. Orquestração:** Componentes visuais (`*View.tsx`) recebem apenas dados via props; a orquestração de queries, mutações e cache fica isolada em Containers e Hooks dedicados.
+3. **Design Editorial Anti-Cardite:** Experiência cinematográfica limpa com foco visual nas obras, tipografia Geist, contenção cromática e zero ruído visual.
