@@ -87,17 +87,17 @@ A paleta respeita o padrão de tokens semânticos do Tailwind CSS v4 e shadcn/ui
 
 ### Paleta Funcional de Cinema & Dados Analíticos
 - **Star Rating Gold:** `rgb(245, 158, 11)` / `oklch(0.78 0.16 75)` — Avaliações de 0 a 10 estrelas / notas de usuários.
-- **Popularity Fire / Trending:** `oklch(0.70 0.22 45)` (Laranja Chama) — Índice de popularidade do filme.
-- **Box Office Emerald / Profit:** `oklch(0.72 0.18 150)` (Verde Esmeralda Financeiro) — Receita, lucro em USD e BRL.
-- **Loss / Deficit:** `oklch(0.65 0.22 25)` (Coral Avermelhado) — Filmes com prejuízo operacional.
+- **Popularity Fire / Trending:** `oklch(0.70 0.18 45)` (Âmbar Suave) — Indicador sutil de popularidade, evitando laranjas estridentes.
+- **Box Office Emerald / Profit:** `oklch(0.72 0.14 150)` (Verde Sálvia/Esmeralda Orgânico) — Receita e lucro com saturação controlada para evitar halos de borda em dark mode.
+- **Loss / Deficit:** `oklch(0.65 0.18 25)` (Coral Suave) — Filmes com prejuízo operacional.
 - **External Ratings (TMDb / IMDb):**
-  - **TMDb Blue/Turquoise:** `oklch(0.65 0.18 200)` — Selo oficial com nota e quantidade de votos TMDb.
-  - **IMDb Gold:** `oklch(0.82 0.18 85)` — Badge amarelo com nota e quantidade de votos IMDb.
-- **Fresh Tomato / High Rating:** `oklch(0.68 0.20 145)` (Verde Neon Letterboxd) para médias $\ge 4.0$ (ou $\ge 8.0/10$).
-- **Average Rating:** `oklch(0.75 0.15 80)` (Âmbar suave) para médias entre $2.5$ e $3.9$.
-- **Low Rating:** `oklch(0.62 0.20 28)` (Coral) para médias $< 2.5$.
-- **Gêneros em Badges:** Efeito *glass capsule* com borda `border-white/10` e fundo translúcido `bg-white/5 hover:bg-white/10`.
-- **People / Cast Badges:** Chips para Diretores (destaque púrpura/ouro), Atores e Roteiristas.
+  - **TMDb Blue/Turquoise:** `oklch(0.65 0.14 200)` — Selo oficial com nota e quantidade de votos TMDb em tom ciano sutil.
+  - **IMDb Gold:** `oklch(0.80 0.15 85)` — Badge com nota e votos IMDb em harmonia com o dourado do tema.
+- **Fresh Tomato / High Rating:** `oklch(0.68 0.16 145)` (Verde Sálvia) para médias $\ge 8.0/10$.
+- **Average Rating:** `oklch(0.75 0.12 80)` (Âmbar suave) para médias entre $5.0$ e $7.9$.
+- **Low Rating:** `oklch(0.62 0.16 28)` (Coral) para médias $< 5.0$.
+- **Gêneros em Badges:** Efeito *glass capsule* discreto com fundo `bg-white/5` e borda ultrafina `border-white/10`.
+- **People / Cast Format:** Apresentação em texto editorial corrido separado por vírgula; reserva-se o uso de badges exclusivamente para elementos interativos.
 
 ---
 
@@ -196,4 +196,29 @@ O `@shadcn/lint` opera no [eslint.config.js](file:///home/miguelsb/workspace/vis
 
 ### 7.3 Configuração de Contratos (`contracts`)
 Quando um componente do design system precisa deliberadamente conceder flexibilidade de posicionamento ou tipografia ao caller (por exemplo, `CardTitle` aceitar escala tipográfica ou `DialogContent` aceitar layout), definem-se **contratos** com `pattern`, `allow` e `deny` na regra `shadcn/no-restyle` no arquivo de configuração do ESLint.
+
+---
+
+## 8. Princípios Editoriais & Anti-Cardite (Cinema Moderno)
+
+A partir da maturidade adquirida no desenvolvimento da aplicação, estabelecem-se as seguintes regras de ergonomia e composição visual:
+
+### 8.1 Princípio Anti-Cardite (Container Bloat)
+1. **Espaço e Alinhamento como Separadores:** Nunca encapsular blocos de leitura passiva em cartões individuais com bordas de `1px` (`border-white/10`) se a hierarquia puder ser resolvida com tipografia, peso, opacidade de texto e espaçamento vertical.
+2. **Superfícies Contínuas:** Em dark mode, fundos contínuos reduzem o ruído óptico e eliminam o aspecto de "dashboard corporativo", permitindo que o olhar flua sem interrupções.
+
+### 8.2 Hero Cinematográfico Integrado (2 Colunas)
+- O pôster vertical (`aspect-[2/3]`) é acompanhado por uma coluna lateral contínua preenchida com:
+  1. Breadcrumb / Voltar
+  2. Título H1 expressivo
+  3. Metadados rápidos (`Ano • Duração • Status • Gêneros`)
+  4. **Ratings Strip Compacto:** Barra horizontal única com chips translúcidos para RocketFilms, TMDb e IMDb (`bg-white/5 border border-white/10 rounded-full px-3 py-1 text-xs`), sem cartões gigantes de altura fixa.
+  5. **KPIs Financeiros Tipográficos:** Faixa de métricas limpas (Rótulo em caixa alta diminuta `text-[11px] uppercase tracking-wider text-muted-foreground`, valor principal em `text-xl font-bold` e moeda BRL em `text-xs text-muted-foreground`), sem molduras individuais.
+
+### 8.3 Ficha Técnica & Equipe Editorial
+- **Texto Corrido com Vírgulas:** Direção, roteiro, estúdios e elenco principal são estruturados como metadados editoriais em linhas de texto puro separadas por vírgula (`Direção: Christopher Nolan`, `Elenco: Cillian Murphy, Emily Blunt, Matt Damon...`).
+- **Reserva de Badges:** Badges/pílulas ficam estritamente restritos a filtros interativos e ações de curadoria.
+
+### 8.4 Conforto de Leitura na Sinopse
+- Textos descritivos e sinopses devem ter largura delimitada a `max-w-3xl` (~65 a 75 caracteres por linha) e entrelinha relaxada (`leading-relaxed`), prevenindo o cansaço do usuário com linhas excessivamente longas.
 

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { WavyBackground } from '@/components/ui/wavy-background'
 import { useSearchVisibility } from '@/context/useSearchVisibility'
 import { cn } from '@/lib/utils'
 import { Loader2, Search, X } from 'lucide-react'
@@ -12,7 +13,7 @@ interface CatalogHeroViewProps {
   isFetching?: boolean
 }
 
-export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
+export const CatalogHeroView: React.FC<CatalogHeroViewProps> = React.memo(({
   initialSearch,
   onSearchChange,
   onOpenCommandPalette,
@@ -91,75 +92,85 @@ export const CatalogHeroView: React.FC<CatalogHeroViewProps> = ({
   const isSearching = Boolean(isFetching)
 
   return (
-    <section className="relative overflow-hidden border-b border-white/10 bg-radial from-primary/10 via-background to-background px-4 pt-12 pb-16 sm:px-6">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,var(--tw-gradient-stops))] from-primary/15 via-transparent to-transparent" />
+    <section className="relative overflow-hidden border-b border-white/10 bg-background/30 px-4 py-12 pb-16 backdrop-blur-xs sm:px-6">
+      {/* Efeito Aceternity WavyBackground com as cores Dark Cinema (Âmbar e Violeta) */}
+      <WavyBackground
+        className="mx-auto flex max-w-4xl flex-col items-center text-center"
+        waveOpacity={0.4}
+        speed="slow"
+        waveWidth={45}
+        blur={14}
+        backgroundFill="transparent"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-radial from-primary/10 via-transparent to-transparent" />
 
-      <div className="relative z-10 container mx-auto flex max-w-4xl flex-col items-center text-center">
-        {/* Título de Impacto */}
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-          Explore o Universo <span className="text-primary">Cinematográfico</span>
-        </h1>
+        <div className="relative z-10 flex flex-col items-center text-center">
+          {/* Título de Impacto */}
+          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] sm:text-5xl md:text-6xl">
+            Explore o Universo <span className="text-primary drop-shadow-[0_0_25px_rgba(245,158,11,0.4)]">Cinematográfico</span>
+          </h1>
 
-        <p className="mb-8 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Pesquise por títulos, diretores, elenco e navegue por dados analíticos completos
-          de bilheteria, popularidade e avaliações do público.
-        </p>
+          <p className="mb-8 max-w-2xl text-sm text-white/80 drop-shadow-sm sm:text-base">
+            Pesquise por títulos, diretores, elenco e navegue por dados analíticos completos
+            de bilheteria, popularidade e avaliações do público.
+          </p>
 
-        {/* Barra de Pesquisa de Impacto com Debounce, Indicador Vivo e Trigger ⌘K */}
-        <div
-          ref={searchContainerRef}
-          className={cn(
-            'group relative flex w-full max-w-2xl items-center rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-300',
-            isSearching
-              ? 'shadow-[0_0_30px_rgba(234,179,8,0.2)] ring-2 ring-primary/40'
-              : 'hover:border-white/30'
-          )}
-        >
-          {isSearching ? (
-            <Loader2 className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 animate-spin text-primary transition-colors" />
-          ) : (
-            <Search className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
-          )}
-
-          <Input
-            type="text"
-            variant="hero"
-            size="lg"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setSearchQuery(e.target.value)
-            }}
-            placeholder="Digite o título do filme, diretor ou ator..."
-            className="w-full"
-          />
-
-          <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1.5">
-            {searchTerm && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={handleClear}
-                aria-label="Limpar busca"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+          {/* Barra de Pesquisa de Impacto com Debounce, Indicador Vivo e Trigger ⌘K */}
+          <div
+            ref={searchContainerRef}
+            className={cn(
+              'group relative flex w-full max-w-2xl items-center rounded-xl bg-black/40 shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300',
+              isSearching
+                ? 'shadow-[0_0_30px_rgba(234,179,8,0.25)] ring-2 ring-primary/40'
+                : 'hover:border-white/30'
+            )}
+          >
+            {isSearching ? (
+              <Loader2 className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 animate-spin text-primary transition-colors" />
+            ) : (
+              <Search className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
             )}
 
-            <Button
-              type="button"
-              variant="cmdk"
-              size="default"
-              onClick={onOpenCommandPalette}
-              aria-label="Abrir busca rápida (⌘K)"
-              title="Abrir busca rápida (⌘K)"
-            >
-              <span>⌘K</span>
-            </Button>
+            <Input
+              type="text"
+              variant="hero"
+              size="lg"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                setSearchQuery(e.target.value)
+              }}
+              placeholder="Digite o título do filme, diretor ou ator..."
+              className="w-full"
+            />
+
+            <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1.5">
+              {searchTerm && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleClear}
+                  aria-label="Limpar busca"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+
+              <Button
+                type="button"
+                variant="cmdk"
+                size="default"
+                onClick={onOpenCommandPalette}
+                aria-label="Abrir busca rápida (⌘K)"
+                title="Abrir busca rápida (⌘K)"
+              >
+                <span>⌘K</span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </WavyBackground>
     </section>
   )
-}
+})

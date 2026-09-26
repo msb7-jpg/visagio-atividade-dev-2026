@@ -53,7 +53,9 @@ export const CatalogContainer: React.FC = () => {
           selectedGenre={vm.genre}
           onSelectGenre={vm.setGenre}
           sortBy={vm.sortBy}
+          sortOrder={vm.sortOrder}
           onSelectSortBy={vm.setSortBy}
+          onToggleSort={vm.toggleSort}
           viewMode={vm.viewMode}
           onChangeViewMode={vm.setViewMode}
           totalCount={vm.total}

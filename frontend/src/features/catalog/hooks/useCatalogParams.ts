@@ -10,6 +10,8 @@ export type SortByOption =
 
 export type ViewModeOption = 'grid' | 'list'
 
+export type SortOrderOption = 'asc' | 'desc'
+
 export function useCatalogParams() {
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -31,6 +33,15 @@ export function useCatalogParams() {
     ]
     return allowed.includes(s) ? s : 'popularidade'
   }, [searchParams])
+
+  const sortOrder = useMemo<SortOrderOption>(() => {
+    const o = searchParams.get('order')
+    if (o === 'asc' || o === 'desc') {
+      return o
+    }
+    // Padrão: título alfabético é asc, métricas numéricas são desc
+    return sortBy === 'titulo' ? 'asc' : 'desc'
+  }, [searchParams, sortBy])
 
   const viewMode = useMemo<ViewModeOption>(() => {
     const v = searchParams.get('view')
@@ -107,6 +118,60 @@ export function useCatalogParams() {
         } else {
           next.set('sort', newSort)
         }
+        next.delete('order')
+        next.delete('page')
+        return next
+      })
+    },
+    [setSearchParams]
+  )
+
+  const toggleSort = useCallback(
+    (targetSort: SortByOption) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        const currentSort = (prev.get('sort') as SortByOption) || 'popularidade'
+        const currentOrder =
+          (prev.get('order') as SortOrderOption) ||
+          (currentSort === 'titulo' ? 'asc' : 'desc')
+
+        if (currentSort === targetSort) {
+          // Inverte direção se já estiver selecionado
+          const nextOrder: SortOrderOption = currentOrder === 'asc' ? 'desc' : 'asc'
+          const defaultOrderForSort = targetSort === 'titulo' ? 'asc' : 'desc'
+          if (nextOrder === defaultOrderForSort) {
+            next.delete('order')
+          } else {
+            next.set('order', nextOrder)
+          }
+        } else {
+          // Seleciona novo critério com sua direção padrão
+          if (targetSort === 'popularidade') {
+            next.delete('sort')
+          } else {
+            next.set('sort', targetSort)
+          }
+          next.delete('order')
+        }
+
+        next.delete('page')
+        return next
+      })
+    },
+    [setSearchParams]
+  )
+
+  const setSortOrder = useCallback(
+    (newOrder: SortOrderOption) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        const currentSort = (prev.get('sort') as SortByOption) || 'popularidade'
+        const defaultOrder = currentSort === 'titulo' ? 'asc' : 'desc'
+        if (newOrder === defaultOrder) {
+          next.delete('order')
+        } else {
+          next.set('order', newOrder)
+        }
         next.delete('page')
         return next
       })
@@ -138,11 +203,14 @@ export function useCatalogParams() {
     q,
     genre,
     sortBy,
+    sortOrder,
     viewMode,
     setPage,
     setQ,
     setGenre,
     setSortBy,
+    setSortOrder,
+    toggleSort,
     setViewMode
   }
 }

@@ -13,7 +13,7 @@ export const MovieListItemView: React.FC<MovieListItemViewProps> = ({ movie }) =
   return (
     <Link
       to={`/filmes/${movie.sk_movie_id}`}
-      className="group flex items-center justify-between gap-4 rounded-xl border border-white/5 bg-card p-3 transition-all hover:border-white/15 hover:bg-white/[0.03]"
+      className="group flex items-center justify-between gap-4 rounded-xl border border-white/5 bg-card p-3 transition-all hover:border-white/15 hover:bg-white/3"
     >
       <div className="flex min-w-0 flex-1 items-center gap-4">
         {/* Mini Pôster */}

@@ -1,11 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.features.movies.repository import MoviesRepository
 from app.features.movies.schemas import (
+    MovieDetailDTO,
     MovieListItemDTO,
     QuickSearchMovieDTO,
     SortField,
@@ -57,3 +58,21 @@ async def quick_search(
     repo: MoviesRepository = Depends(get_movies_repository),
 ) -> list[QuickSearchMovieDTO]:
     return await repo.quick_search(query=q, limit=limit)
+
+
+@movies_router.get(
+    "/{movie_id}",
+    response_model=MovieDetailDTO,
+    summary="Obtém a ficha técnica completa e métricas de um filme por ID",
+)
+async def get_movie_detail(
+    movie_id: str,
+    repo: MoviesRepository = Depends(get_movies_repository),
+) -> MovieDetailDTO:
+    movie = await repo.get_movie_by_id(movie_id)
+    if not movie:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Filme com ID '{movie_id}' não foi encontrado.",
+        )
+    return movie

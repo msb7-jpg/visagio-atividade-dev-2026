@@ -13,10 +13,10 @@ export const MovieGridItemView: React.FC<MovieGridItemViewProps> = ({ movie }) =
   return (
     <Link
       to={`/filmes/${movie.sk_movie_id}`}
-      className="group relative flex [transform:translateZ(0)] flex-col overflow-hidden rounded-xl border border-white/10 bg-card shadow-md transition-all duration-300 [backface-visibility:hidden] hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]"
+      className="group relative flex transform-[translateZ(0)] flex-col overflow-hidden rounded-xl border border-white/10 bg-card shadow-md transition-all duration-300 backface-hidden hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]"
     >
       {/* Container de Imagem Poster com Proporção 2:3 */}
-      <div className="relative -mb-px aspect-2/3 w-full [transform:translateZ(0)] overflow-hidden bg-card [backface-visibility:hidden]">
+      <div className="relative -mb-px aspect-2/3 w-full transform-[translateZ(0)] overflow-hidden bg-card backface-hidden">
         <BlurImage
           src={movie.url_poster}
           alt={movie.titulo}

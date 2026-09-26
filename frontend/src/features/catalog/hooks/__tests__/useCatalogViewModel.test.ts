@@ -11,11 +11,14 @@ describe('useCatalogViewModel', () => {
       q: 'Matrix',
       genre: 'Ação',
       sortBy: 'popularidade',
+      sortOrder: 'desc',
       viewMode: 'grid',
       setPage: vi.fn(),
       setQ: vi.fn(),
       setGenre: vi.fn(),
       setSortBy: vi.fn(),
+      setSortOrder: vi.fn(),
+      toggleSort: vi.fn(),
       setViewMode: vi.fn()
     })
 

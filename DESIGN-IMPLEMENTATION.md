@@ -124,25 +124,28 @@ Exibir a ficha técnica completa do filme, métricas analíticas consolidadas, g
 #### Componentes & Efeitos Visuais
 1. **Backdrop Hero:**
    - Imagem de fundo panorâmica desfocada com máscara de gradiente fade-to-black na base.
-2. **Cabeçalho de Ficha Técnica & Metadados Cinematográficos:**
-   - Pôster em destaque com cantos `rounded-2xl` e iluminação volumétrica.
-   - Título oficial, ano de lançamento, status (`status_filme`), duração em minutos formatada (`duracao_minutos` $\rightarrow$ "2h 49m"), produtoras (`dim_companies`).
-   - **Elenco e Equipe Técnica (`DimPerson`):**
-     - Seção dedicada listando: **Diretor(es)**, **Roteirista(s)** e **Atores principais** com avatares estilizados e badges de papel no filme.
-   - **Aceternity `TooltipCard` (ou Rich Tooltip):**
-     - Ao passar o mouse sobre o Diretor, Produtora ou Média de Notas, abre-se um cartão rico com dados complementares (ex: outros filmes dirigidos, total de votos apurados, distribuição de notas 1-5 estrelas em mini gráfico).
-   - **Painel Comparativo de Scores (Consolidado `DimReview` & `FactMoviePerformance`):**
-     - **Média Geral RocketFilms (Usuários):** Nota média em estrelas e base 10 (ex: `★ 8.8 / 10`), com contagem total de resenhas (`qtd_avaliacoes_usuarios`).
-     - **Badge Oficial TMDb:** Nota e contagem de votos (`nota_tmdb` / `qtd_tmdb`).
-     - **Badge Oficial IMDb:** Nota e contagem de votos (`nota_imdb` / `qtd_imdb`).
-   - **Sinopse Oficial:** Tipografia relaxada e legível.
+2. **Hero Cinematográfico Integrado (2 Colunas - Sem Cardite):**
+   - **Coluna Esquerda:** Pôster em destaque (`aspect-[2/3]`) com cantos `rounded-2xl`, iluminação suave e sombra volumétrica difusa.
+   - **Coluna Direita (Preenchimento Contínuo do Primeiro Viewport):**
+     - Botão discreto `<- Voltar ao catálogo`.
+     - Linha de Metadados: Status (`status_filme`), Ano (`ano_lancamento`), Duração (`duracao_minutos` formatada como "2h 49m") e Gêneros em badges translúcidas discretas (`bg-white/5 border-white/10`).
+     - Título Oficial (`h1`) com escala imponente e tracking balanceado.
+     - **Faixa de Pontuações Compacta (Ratings Strip):**
+       - Chips horizontais unificados (`bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs`):
+         - **TMDb:** Ícone de estrela + nota (ex: `★ 6.0 TMDb`) e contagem resumida de votos.
+         - **IMDb:** Ícone de estrela + nota (ex: `★ 5.2 IMDb`) e contagem resumida de votos.
+         - **RocketFilms (Comunidade):** Nota média em estrelas ou traço indicativo (`★ 8.8` ou `★ —`) com total de avaliações.
+     - **Faixa de Desempenho Financeiro Tipográfico (Financial KPIs Strip):**
+       - Sem caixas/cards individuais fechados. Métricas tipográficas alinhadas:
+         - **Orçamento (Budget):** `orcamento_usd` (primário) e `orcamento_brl` (subtexto).
+         - **Bilheteria (Receita Global):** `receita_usd` e `receita_brl`.
+         - **Lucro Operacional & ROI:** Valor em USD e BRL, com ROI formatado em tom sálvia suave (lucro) ou coral (prejuízo).
+         - **Popularidade:** Indicador tipográfico termômetro (`🔥 {popularidade}`).
 
-3. **Painel de Desempenho Financeiro & Performance (`FactMoviePerformance`):**
-   - Mini dashboard elegante em cartões translúcidos (Glassmorphism):
-     - **Popularidade:** Indicador termômetro visual (`🔥 {popularidade}`).
-     - **Orçamento (Budget):** `orcamento_usd` e `orcamento_brl`.
-     - **Bilheteria (Box Office / Receita Global):** `receita_usd` e `receita_brl`.
-     - **Lucro / ROI:** `lucro_usd` e `lucro_brl`, destacado em verde esmeralda com percentual de retorno sobre o investimento, ou alerta em caso de prejuízo.
+3. **Sinopse Oficial & Ficha Técnica Editorial:**
+   - **Sinopse:** Bloco tipográfico em `text-base` ou `text-lg` com entrelinha relaxada (`leading-relaxed`) e largura máxima de conforto de leitura (`max-w-3xl`).
+   - **Equipe Técnica & Produção (Formato Editorial):**
+     - Sem cards e sem "tag soup": rótulo em caixa alta diminuta (`DIREÇÃO`, `ROTEIRO`, `PRODUTORAS`, `ELENCO PRINCIPAL`) seguido de nomes textuais separados por vírgula.
 
 4. **Ações do Administrador (quando autenticado):**
    - Botões no topo: *Editar Filme* (abre modal ou navega para rota de edição) e *Excluir Filme* (dispara `AlertDialog` do shadcn com aviso irreversível).

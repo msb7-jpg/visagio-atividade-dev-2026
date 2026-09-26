@@ -19,11 +19,11 @@
      - Adicione a data/timestamp e um breve resumo do que foi entregue, com os links dos arquivos criados ou modificados.
      - Execute a suíte de testes correspondente (Pytest no backend, Vitest/ESLint no frontend) para certificar integridade.
    - **Validação de Qualidade Obrigatória pós-etapa:** Após alterações em qualquer etapa ou subetapa, execute impreterivelmente:
-     1. `bun run lint` (no diretório `frontend/`) e garanta 0 erros.
+     1. `bun run lint` (no diretório `frontend/`) e garanta **0 erros e 0 warnings**.
      2. `bun run build` (no diretório `frontend/`) para validação estrita de compilação TypeScript (`tsc -b`) e bundling de produção com Vite.
      3. `bun fallow health --coverage coverage/coverage-final.json` (no diretório `frontend/`) e certifique-se de que não haja breaches de complexidade ou saúde de código.
      4. A suíte de testes (`pytest` no backend e `bun run test` no frontend).
-   - **Nunca pule validações de testes e qualidade:** Uma fatia vertical só é considerada `[x]` concluída quando backend, frontend (se aplicável), contratos, testes automatizados, build (`bun run build`), linters (`bun run lint`) e métricas de saúde (`bun fallow health`) passarem com 100% de sucesso.
+   - **Nunca pule validações de testes e qualidade:** Uma fatia vertical só é considerada `[x]` concluída quando backend, frontend (se aplicável), contratos, testes automatizados, build (`bun run build`), linters (`bun run lint` com **0 erros e 0 warnings**) e métricas de saúde (`bun fallow health`) passarem com 100% de sucesso.
 2. **Uso de Referências Diretas:**
    - Este plano referencia diretamente as seções dos documentos de especificação. **Não é necessário carregar os documentos inteiros no contexto**: consulte apenas as seções e números de linha indicados em cada etapa.
 3. **Respeito à Linguagem Onipresente:**
@@ -65,7 +65,7 @@
 | **Etapa 1: Ingestão de Dados & Camada Analítica** | `[x]` | N/A | `[x]` | `[x]` Concluído |
 | **Etapa 2: Slice Vertical de Autenticação Admin** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 3: Slice Vertical de Catálogo, Busca & Command Palette Base** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
-| **Etapa 4: Slice Vertical de Ficha Técnica & Analytics** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| **Etapa 4: Slice Vertical de Ficha Técnica & Analytics** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 6: Slice Vertical de Gestão de Filmes (CRUD)** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 7: Enriquecimento da Command Palette & Ações Avançadas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
@@ -202,21 +202,30 @@
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.3 Tela de Detalhes)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L115-L144)  
 > - [DESIGN.md (Seção 3 - Paleta Funcional de Dados Analíticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L88-L102)
 
-- [ ] **4.1 Backend: Movie Details & Analytics Slices (`backend/app/features/movies/` & `analytics/`)**
-  - [ ] `schemas.py`: `MovieDetailDTO` consolidando dados da obra, elenco/direção (`DimPerson`), produtoras (`DimCompany`), performance (`FactMoviePerformance`) e score de avaliações (`DimReview`).
-  - [ ] `router.py`: `GET /api/v1/movies/{id}`.
-  - [ ] `analytics/router.py`: `GET /api/v1/analytics/trending` e `GET /api/v1/analytics/box-office` para seções curadas.
-  - [ ] **Testes Backend:** `backend/tests/test_movie_details.py` (retorno de filme por ID, 404 em ID inexistente, integridade de elenco e métricas).
-- [ ] **4.2 Frontend: Movie Details Slice (`frontend/src/features/movie-details/`)**
-  - [ ] `api/movieDetailsApi.ts`: Requisição de detalhes e ações administrativas.
-  - [ ] `hooks/useMovieDetailsQuery.ts`: TanStack Query para rota `/filmes/:id`.
-  - [ ] `components/MovieBackdropHeroView.tsx`: Banner superior com backdrop desfocado e transição de gradiente fade.
-  - [ ] `components/MovieInfoCardView.tsx`: Pôster ampliado, título, duração formatada ("2h 49m"), status e sinopse.
-  - [ ] `components/CastAndCrewSectionView.tsx`: Chips de Diretor, Roteirista e Atores com avatares e Aceternity `TooltipCard`.
-  - [ ] `components/ScoreComparisonView.tsx`: Painel com Nota Média de Usuários (estrelas), Nota TMDb e IMDb.
-  - [ ] `components/FinancialMetricsView.tsx`: Cards de Orçamento, Bilheteria e Lucro/ROI em verde esmeralda ou alerta de prejuízo.
-  - [ ] `components/MovieDetailsContainer.tsx`: Orquestrador da rota `/filmes/:id`.
-  - [ ] **Testes Frontend:** `frontend/src/features/movie-details/__tests__/MovieDetails.test.tsx` (exibição de ficha técnica e métricas financeiras).
+- [x] **4.1 Backend: Movie Details & Analytics Slices (`backend/app/features/movies/`)** *(Concluído em 2026-09-25)*
+  - [x] `schemas.py`: `MovieDetailDTO` consolidando dados da obra, elenco e direção (`PersonSummaryDTO`), produtoras (`CompanyDTO`), performance e notas analíticas (`FinancialMetricsDTO`) com cálculo de ROI e score de avaliações.
+  - [x] `repository.py`: Consulta assíncrona otimizada `get_movie_by_id` com `selectinload` de todas as dimensões (`genres`, `companies`, `people`, `performance`, `reviews_summary`).
+  - [x] `router.py`: Endpoint `GET /api/v1/movies/{id}` com tratamento de 404.
+  - [x] **Testes Backend:** `backend/tests/test_movie_details.py` (3 testes passando com fixture de seed e teardown com cleanup, totalizando 21 testes no backend).
+- [x] **4.2 Frontend: Movie Details Slice (`frontend/src/features/movie-details/`)** *(Concluído em 2026-09-25)*
+  - [x] `api/movieDetailsApi.ts`: Requisição de detalhes com Axios absoluto.
+  - [x] `hooks/useMovieDetailsQuery.ts` & `useMovieDetailsViewModel.ts`: TanStack Query desacoplado e ViewModel de navegação/estado.
+  - [x] `components/MovieBackdropHeroView.tsx`: Banner superior com backdrop cinematográfico desfocado e máscara fade-to-black na base.
+  - [x] `components/MovieHeaderInfoView.tsx`: Pôster com proporção 2:3, iluminação sutil, badges de gênero em estilo glass capsule e duração formatada ("2h 49m").
+  - [x] `components/ScoreComparisonView.tsx`: Painel comparativo de scores (RocketFilms com estrelas e contagem de resenhas, TMDb Score oficial e IMDb Rating global).
+  - [x] `components/FinancialMetricsView.tsx`: Cards em Glassmorphism de Orçamento, Bilheteria (USD/BRL formatados), Lucro e ROI com badge semântica esmeralda/coral e termômetro de popularidade.
+  - [x] `components/CastAndCrewSectionView.tsx`: Categorização e chips estilizados de Direção, Roteiro, Produtoras e Elenco Principal.
+  - [x] `components/MovieSynopsisView.tsx` & `MovieDetailsSkeleton.tsx` & `MovieDetailsErrorState.tsx`: Exibição fluida, skeletons responsivos e empty states.
+  - [x] `components/MovieDetailsContainer.tsx`: Orquestrador integrado à rota `/filmes/:id` e links nos cards e Spotlight/Command Palette.
+  - [x] **4.3 Frontend: Refinamento de UX/UI & Redesign Editorial da Ficha Técnica** *(Concluído em 2026-09-25)*
+  - [x] `DESIGN.md` e `DESIGN-IMPLEMENTATION.md`: Documentação atualizada com princípios anti-cardite, contenção de cores em dark mode e tipografia editorial.
+  - [x] `index.css`: Dessaturação de tokens analíticos (`--profit`, `--trending`) evitando halos neon.
+  - [x] `ScoreComparisonView.tsx`: Refatoração de 3 cards retangulares para faixa compacta de chips horizontais.
+  - [x] `FinancialMetricsView.tsx`: Eliminação de caixas fechadas; criação de faixa de KPIs tipográficos contínuos.
+  - [x] `MovieHeaderInfoView.tsx`: Composição integrada em 2 colunas no Hero, eliminando o espaço vazio e abrigando metadados, scores e KPIs.
+  - [x] `CastAndCrewSectionView.tsx`: Substituição de tag soup de badges por formato de lista editorial com vírgulas.
+  - [x] `MovieSynopsisView.tsx` & `MovieDetailsContainer.tsx`: Alinhamento de largura ergonômica (`max-w-3xl`) e orquestração integrada.
+  - [x] **Testes & Qualidade:** Atualização dos testes unitários, validação estrita com `bun run lint` (0 erros), `bun run test` (82 testes passando), `bun fallow health` (0 breaches) e `bun run build`.
   
 ---
 
@@ -327,3 +336,4 @@
 | 2026-09-24 01:10 | Criação | Criação do plano inicial em fatias verticais | Antigravity | `[x]` Plano Estruturado |
 | 2026-09-24 21:30 | Etapa 2 | Implementação completa da Slice de Autenticação Admin (Backend JWT + Frontend Login split com Storyset SVGs animados, textos rotativos e Aceternity MultiStepLoader) | Antigravity | `[x]` Concluído |
 | 2026-09-24 22:05 | Etapa 2 | Migração da camada de autenticação para `pyjwt` e `pwdlib[argon2]` seguindo guia moderno do FastAPI | Antigravity | `[x]` Concluído |
+| 2026-09-25 18:15 | Etapa 4 (4.3) | Redesign Editorial da Ficha Técnica: eliminação da cardite, Hero integrado em 2 colunas, Ratings Strip horizontal, KPIs tipográficos contínuos, texto editorial para equipe e contenção cromática | Antigravity | `[x]` Concluído |

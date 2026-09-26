@@ -39,7 +39,7 @@ export const Tooltip = ({
     const viewportHeight = window.innerHeight
 
     // Get tooltip dimensions
-    const tooltipWidth = 240 // min-w-[15rem] = 240px
+    const tooltipWidth = 240 // min-w-60 = 240px
     const tooltipHeight = tooltip.scrollHeight
 
     // Calculate absolute position relative to viewport

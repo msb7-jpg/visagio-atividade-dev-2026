@@ -21,7 +21,7 @@ export const SkeletonList: React.FC<SkeletonListProps> = ({ isGrid }) => (
     {SKELETON_KEYS.map((key) => (
       <LoadingSkeleton
         key={key}
-        className={isGrid ? 'aspect-[2/3] w-full rounded-xl' : 'h-20 w-full rounded-xl'}
+        className={isGrid ? 'aspect-2/3 w-full rounded-xl' : 'h-20 w-full rounded-xl'}
       />
     ))}
   </div>

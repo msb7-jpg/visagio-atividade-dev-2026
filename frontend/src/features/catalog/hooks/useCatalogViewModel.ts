@@ -10,7 +10,7 @@ export function useCatalogViewModel() {
     q: catalogParams.q,
     genre: catalogParams.genre,
     sortBy: catalogParams.sortBy,
-    order: catalogParams.sortBy === 'titulo' ? 'asc' : 'desc'
+    order: catalogParams.sortOrder
   })
 
   const { data: genresData } = useGenresQuery()
