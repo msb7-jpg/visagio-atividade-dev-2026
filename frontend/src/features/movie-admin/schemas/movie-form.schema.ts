@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-const currentYear = new Date().getFullYear()
-
 export const movieFormSchema = z.object({
   titulo: z
     .string()

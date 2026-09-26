@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge'
 import { BlurImage } from '@/components/ui/blur-image'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
 import { MovieQuickActionsMenu } from '@/features/catalog/components/MovieQuickActionsMenu'
@@ -33,19 +32,6 @@ export const MovieGridItemView: React.FC<MovieGridItemViewProps> = ({ movie }) =
 
               {/* Linha de vedação da costura */}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-card" />
-
-              {/* Gêneros na base do pôster */}
-              <div className="absolute right-2.5 bottom-2.5 left-2.5 flex flex-wrap gap-1">
-                {movie.generos.slice(0, 2).map((genre) => (
-                  <Badge
-                    key={genre}
-                    variant="glass"
-                    size="sm"
-                  >
-                    {genre}
-                  </Badge>
-                ))}
-              </div>
             </Link>
 
             {/* Botão de 3 pontinhos na posição original (bottom-right do pôster) */}

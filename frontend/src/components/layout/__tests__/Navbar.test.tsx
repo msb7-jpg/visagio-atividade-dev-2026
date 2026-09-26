@@ -128,4 +128,77 @@ describe('Navbar component', () => {
     expect(screen.getByDisplayValue('Oppenheimer')).toBeDefined()
     expect(container.querySelector('.animate-spin')).not.toBeNull()
   })
+
+  it('exibe avatar com iniciais do primeiro e último nome e revela nome e role no hover quando autenticado', async () => {
+    const mockToken = [
+      btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })),
+      btoa(
+        JSON.stringify({
+          sub: 'admin-1',
+          email: 'admin@rocketfilms.com',
+          nome: 'Miguel Batista',
+          role: 'admin',
+          exp: Math.floor(Date.now() / 1000) + 3600
+        })
+      ),
+      'mock-sig'
+    ].join('.')
+
+    localStorage.setItem('rocketfilms_access_token', mockToken)
+
+    render(
+      <BrowserRouter>
+        <NavbarWithVisibilityToggle initialVisible={false} />
+      </BrowserRouter>
+    )
+
+    // O avatar deve renderizar as iniciais 'MB' do primeiro e último nome ('Miguel Batista')
+    const avatarFallback = screen.getByText('MB')
+    expect(avatarFallback).toBeDefined()
+
+    // Ao passar o mouse sobre o avatar, o tooltip deve revelar nome e role
+    const avatarContainer = screen.getByLabelText('Perfil do usuário')
+    fireEvent.mouseEnter(avatarContainer)
+
+    expect(await screen.findByText('Miguel Batista')).toBeDefined()
+    expect(screen.getByText('admin')).toBeDefined()
+
+    localStorage.removeItem('rocketfilms_access_token')
+  })
+
+  it('limpa o rascunho de criação de filme ao efetuar logout', async () => {
+    const mockToken = [
+      btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })),
+      btoa(
+        JSON.stringify({
+          sub: 'admin-1',
+          email: 'admin@rocketfilms.com',
+          nome: 'Miguel Batista',
+          role: 'admin',
+          exp: Math.floor(Date.now() / 1000) + 3600
+        })
+      ),
+      'mock-sig'
+    ].join('.')
+
+    localStorage.setItem('rocketfilms_access_token', mockToken)
+    localStorage.setItem(
+      'rocketfilms_movie_create_draft',
+      JSON.stringify({ titulo: 'Filme Rascunho Confidencial', updatedAt: Date.now() })
+    )
+
+    render(
+      <BrowserRouter>
+        <NavbarWithVisibilityToggle initialVisible={false} />
+      </BrowserRouter>
+    )
+
+    expect(localStorage.getItem('rocketfilms_movie_create_draft')).not.toBeNull()
+
+    const logoutButton = screen.getByRole('button', { name: /sair/i })
+    fireEvent.click(logoutButton)
+
+    expect(localStorage.getItem('rocketfilms_movie_create_draft')).toBeNull()
+    expect(localStorage.getItem('rocketfilms_access_token')).toBeNull()
+  })
 })

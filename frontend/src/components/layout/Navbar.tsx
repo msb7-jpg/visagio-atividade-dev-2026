@@ -1,8 +1,10 @@
-import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Tooltip } from '@/components/ui/tooltip-card'
 import { useSearchVisibility } from '@/context/useSearchVisibility'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { getInitials } from '@/features/auth/utils/avatar'
 import { useHasMovieDraft } from '@/features/movie-admin/hooks/useMovieDraft'
 import { cn } from '@/lib/utils'
 import { routes } from '@/routes/routes.types'
@@ -205,15 +207,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
                   <span className="hidden sm:inline">Cadastrar Filme</span>
                 </span>
               </Button>
-              <Badge
-                variant="admin"
-                className="hidden items-center gap-1.5 md:flex"
+              <Tooltip
+                content={
+                  <div className="flex flex-col gap-0.5 py-0.5">
+                    <span className="text-xs font-medium text-foreground">
+                      {user?.nome || 'Administrador'}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <ShieldCheck className="size-3 text-muted-foreground" />
+                      <span className="capitalize">{user?.role || 'admin'}</span>
+                    </div>
+                  </div>
+                }
               >
-                <ShieldCheck className="size-3.5 text-primary" />
-                <span className="max-w-30 truncate">
-                  {user?.nome || 'Admin'}
-                </span>
-              </Badge>
+                <div
+                  className="flex cursor-pointer items-center transition-opacity hover:opacity-80 active:opacity-70"
+                  aria-label="Perfil do usuário"
+                >
+                  <Avatar size="default">
+                    <AvatarFallback>
+                      {getInitials(user?.nome)}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </Tooltip>
               <Button
                 variant="ghost"
                 size="sm"

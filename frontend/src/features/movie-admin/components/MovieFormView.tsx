@@ -387,9 +387,9 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
                     name={field.name}
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => field.handleChange(e.target.value.slice(0, 4000))}
                     placeholder="Descreva o enredo, atmosfera, conflito principal e premissa da obra..."
-                    className="min-h-28"
+                    className="max-h-60 min-h-28 overflow-y-auto"
                     rows={4}
                     maxLength={4000}
                   />

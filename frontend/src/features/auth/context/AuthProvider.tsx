@@ -9,6 +9,7 @@ import {
   setStoredToken
 } from '@/features/auth/utils/token'
 import { extractUserFromToken } from '@/features/auth/utils/user'
+import { clearMovieDraft } from '@/features/movie-admin/utils/movie-draft'
 import { queryClient } from '@/lib/query-client'
 import { useMutation } from '@tanstack/react-query'
 import { useSyncExternalStore, type ReactNode } from 'react'
@@ -52,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = useMutation<void, Error, void>(
     {
       mutationFn: async () => {
-        removeStoredToken()
         notifyAuthStore()
         queryClient.clear()
       },
@@ -63,7 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient
   )
   const login = loginMutation.mutateAsync
-  const logout = logoutMutation.mutate
+  const logout = () => {
+    removeStoredToken()
+    clearMovieDraft()
+    logoutMutation.mutate()
+  }
   const isLoading = loginMutation.isPending || logoutMutation.isPending
 
   return (

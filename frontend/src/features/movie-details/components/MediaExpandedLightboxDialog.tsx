@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import * as React from 'react'
 
 interface MediaExpandedLightboxDialogProps {

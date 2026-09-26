@@ -78,7 +78,7 @@ export function NewReviewModalView({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-1.5 text-primary">
             {isEditMode ? <PencilLine className="size-4" /> : <Film className="size-4" />}
@@ -184,9 +184,11 @@ export function NewReviewModalView({
                     name={field.name}
                     value={field.state.value || ''}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => field.handleChange(e.target.value.slice(0, 4000))}
                     placeholder="O que achou da direção, fotografia, ritmo e atuações? Deixe registrado seu ponto de vista..."
                     rows={5}
+                    maxLength={4000}
+                    className="max-h-48 overflow-y-auto"
                     disabled={isSubmitting}
                     aria-invalid={Boolean(fieldError)}
                   />
