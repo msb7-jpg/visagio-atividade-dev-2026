@@ -2,11 +2,11 @@
 
 > **Documento Vivo de Rastreabilidade e Execução**  
 > **Fontes da Verdade:**  
-> - [Atividade de Dev.pdf](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md) (Especificação oficial dos requisitos funcionais do projeto)  
-> - [ARQUITETURA.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md) (Padrão Vertical Slices, Linguagem Onipresente, desacoplamento UI Pura vs Orquestração)  
-> - [DESIGN.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md) (Design System, paleta de cores, tipografia Geist, referências visuais)  
-> - [DESIGN-IMPLEMENTATION.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md) (Especificação de telas, microinterações e componentes)  
-> - [requisitos-nao-funcionais.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md) (Padrões técnicos, tooling, linters, testes e performance)  
+> - [Atividade de Dev.pdf](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md) (Especificação oficial dos requisitos funcionais do projeto)  
+> - [ARQUITETURA.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md) (Padrão Vertical Slices, Linguagem Onipresente, desacoplamento UI Pura vs Orquestração)  
+> - [design.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md) (Design System, paleta de cores, tipografia Geist, referências visuais)  
+> - [design-implementation.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design-implementation.md) (Especificação de telas, microinterações e componentes)  
+> - [requisitos-nao-funcionais.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/engineering/requisitos-nao-funcionais.md) (Padrões técnicos, tooling, linters, testes e performance)  
 
 ---
 
@@ -27,7 +27,7 @@
 2. **Uso de Referências Diretas:**
    - Este plano referencia diretamente as seções dos documentos de especificação. **Não é necessário carregar os documentos inteiros no contexto**: consulte apenas as seções e números de linha indicados em cada etapa.
 3. **Respeito à Linguagem Onipresente:**
-   - Utilize rigorosamente a tabela oficial de equivalência definida em [ARQUITETURA.md (Seção 1.2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L20-L46). Ex: `titulo`, `url_poster`, `url_backdrop`, `nota_media_usuarios`, `comentario`, `nome`.
+   - Utilize rigorosamente a tabela oficial de equivalência definida em [ARQUITETURA.md (Seção 1.2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L20-L46). Ex: `titulo`, `url_poster`, `url_backdrop`, `nota_media_usuarios`, `comentario`, `nome`.
 
 4. **Diretriz de Resolução Efetiva de Código (Sem Supressões Indevidas):**
    - **É terminantemente proibido suprimir alertas, lints ou complexidade** com comentários de escape (como `// fallow-ignore`, `/* eslint-disable */` ou `@ts-ignore`) sem que seja um caso extremo e explicitamente autorizado.
@@ -81,18 +81,18 @@
 ### Etapa 0: Fundação, Tooling e Arquitetura Base
 > **Objetivo:** Estabelecer a infraestrutura de código, dependências, padronização de linters e testes tanto no backend quanto no frontend.  
 > **Referências:**  
-> - [requisitos-nao-funcionais.md (Seções 2, 4.1 e 4.2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L20-L36)  
-> - [ARQUITETURA.md (Seções 1 e 2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L81-L119)  
-> - [DESIGN.md (Seção 3 - Paleta e Tokens Semânticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L49-L87)
+> - [requisitos-nao-funcionais.md (Seções 2, 4.1 e 4.2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/engineering/requisitos-nao-funcionais.md#L20-L36)  
+> - [ARQUITETURA.md (Seções 1 e 2)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L81-L119)  
+> - [DESIGN.md (Seção 3 - Paleta e Tokens Semânticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L49-L87)
 
 - [x] **0.1 Backend Core Setup** *(Concluído em 2026-09-24)*
   - [x] Verificar e instalar dependências backend via `uv` (`fastapi`, `uvicorn`, `sqlalchemy>=2.0`, `aiosqlite`, `alembic`, `pydantic-settings`, `pyjwt`, `pwdlib[argon2]`, `httpx`, `pytest`, `pytest-asyncio`).
-  - [x] Estruturar pastas base: `backend/app/core/`, `backend/app/db/`, `backend/app/shared/` (`dependencies.py`, `pagination.py`, `exceptions.py`) conforme [ARQUITETURA.md (Seção 3.1)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L128-L141).
+  - [x] Estruturar pastas base: `backend/app/core/`, `backend/app/db/`, `backend/app/shared/` (`dependencies.py`, `pagination.py`, `exceptions.py`) conforme [ARQUITETURA.md (Seção 3.1)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L128-L141).
   - [x] Configurar conexão assíncrona SQLite (`sqlite+aiosqlite:///./rocketlab.db`) e middleware de CORS para liberar `http://localhost:5173`.
   - [x] **Critério de Aceite / Teste:** `uv run pytest` executa e passa com 3 testes assíncronos.
 - [x] **0.2 Frontend Tooling & Design System Setup** *(Concluído em 2026-09-24, ampliado em 2026-09-25)*
   - [x] Instalar pacotes de produção: `bun add zod @tanstack/zod-form-adapter clsx tailwind-merge class-variance-authority lucide-react cmdk framer-motion simplex-noise axios @tanstack/react-form`.
-  - [x] Configurar tokens semânticos CSS em `frontend/src/index.css` conforme paleta escura cinematográfica de [DESIGN.md (Seção 3)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L53-L86).
+  - [x] Configurar tokens semânticos CSS em `frontend/src/index.css` conforme paleta escura cinematográfica de [DESIGN.md (Seção 3)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L53-L86).
   - [x] Configurar clientes globais em `frontend/src/lib/`:
     - `api-client.ts` (instância Axios com base URL `/api/v1` e interceptor JWT).
     - `query-client.ts` (`staleTime: 5min`, `gcTime: 15min`) com `MutationCache` global interceptando `mutation.meta?.invalidates` e `mutation.meta?.redirectOnSuccess`.
@@ -100,7 +100,7 @@
     - `types/tanstack-query.d.ts` (extensão tipada de `Register.mutationMeta` com `redirectOnSuccess`, `replace`, `invalidates` e `successMessage`).
     - `utils.ts` (função `cn()`).
   - [x] Criar componentes de feedback compartilhado em `frontend/src/components/feedback/`:
-    - `RequiredFieldBadge.tsx` (asterisco com tooltip dark baseado em Aceternity `Tooltip` de `@aceternity/tooltip-card-demo` conforme [DESIGN.md 5.2](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)).
+    - `RequiredFieldBadge.tsx` (asterisco com tooltip dark baseado em Aceternity `Tooltip` de `@aceternity/tooltip-card-demo` conforme [DESIGN.md 5.2](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L129-L137)).
     - `LoadingSkeleton.tsx` e `EmptyState.tsx`.
   - [x] **Critério de Aceite / Teste:** `bun run lint` e `bun run test` passam sem erros.
 
@@ -109,8 +109,8 @@
 ### Etapa 1: Ingestão de Dados & Camada Analítica (Seed Data)
 > **Objetivo:** Garantir que o banco relacional SQLite seja inicializado e alimentado com os dados da camada analítica (Diamond Layer) fornecidos nos arquivos CSV.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Materiais e Dados Iniciais)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [requisitos-nao-funcionais.md (RNF13)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L113-L117)  
+> - [Atividade de Dev.pdf (Materiais e Dados Iniciais)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [requisitos-nao-funcionais.md (RNF13)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/engineering/requisitos-nao-funcionais.md#L113-L117)  
 > - Arquivos CSV em `data/` (`dim_movies.csv`, `dim_genres.csv`, `bridge_*`, `fact_movies_performance.csv`, `movies_reviews.csv`).
 
 - [x] **1.1 Migrações e Esquema de Banco** *(Concluído em 2026-09-24)*
@@ -118,7 +118,7 @@
   - [x] Validar compatibilidade dos modelos ORM em `backend/app/movies/models.py`.
 - [x] **1.2 Script de Ingestão Automatizado (Seed Database)** *(Concluído em 2026-09-24)*
   - [x] Criar script `backend/scripts/seed_database.py` para processar e importar os CSVs de `data/` em lote atômico com tratamento de nulos e parsing de datas.
-  - [x] Preservar as URLs completas de `url_poster` e `url_backdrop` nativas de `dim_movies.csv` ([ARQUITETURA.md 1.3](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L49-L60)).
+  - [x] Preservar as URLs completas de `url_poster` e `url_backdrop` nativas de `dim_movies.csv` ([ARQUITETURA.md 1.3](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L49-L60)).
   - [x] Carregar a tabela consolidada de médias `dim_reviews` e avaliações individuais de `movies_reviews.csv`.
   - [x] **Critério de Aceite / Teste:** Executar `uv run python scripts/seed_database.py` e verificar contagem consistente: `dim_movies` (95.645), `fact_movies_performance` (95.645), `dim_people` (424.656), `bridge_movie_person` (745.450), `dim_companies` (45.941), `bridge_movie_company` (116.326), `dim_genres` (19), `bridge_movie_genre` (121.521), `dim_reviews` (26.604), `movie_reviews` (43.666). Ingestão completa realizada em ~30 segundos com sucesso.
 
@@ -127,10 +127,10 @@
 ### Etapa 2: Slice Vertical de Autenticação Admin
 > **Objetivo:** Permitir autenticação administrativa com JWT, persistência de sessão e proteção de rotas/ações restritas.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Perfil Administrador)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [ARQUITETURA.md (Seções 3.1 `auth` e 4.1 `auth`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L142-L146)  
-> - [DESIGN-IMPLEMENTATION.md (Seção 2.2 Tela de Login)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L95-L113)  
-> - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)
+> - [Atividade de Dev.pdf (Perfil Administrador)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [ARQUITETURA.md (Seções 3.1 `auth` e 4.1 `auth`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L142-L146)  
+> - [DESIGN-IMPLEMENTATION.md (Seção 2.2 Tela de Login)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design-implementation.md#L95-L113)  
+> - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L129-L137)
 
 - [x] **2.1 Backend: Auth Slice (`backend/app/features/auth/`)** *(Concluído em 2026-09-24)*
   - [x] `schemas.py`: `LoginRequest`, `TokenResponse`, `AdminUserDTO`.
@@ -157,11 +157,11 @@
 ### Etapa 3: Slice Vertical de Catálogo, Busca & Command Palette Base
 > **Objetivo:** Implementar o catálogo paginado de filmes com filtros e busca in-page, a casca global de navegação (`AppLayout` com Navbar e trigger `⌘K`) e a base da **Command Palette global** (`cmdk` com backdrop blur intenso e busca rápida de filmes e atalhos), que será enriquecida continuamente nas fatias subsequentes.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Requisitos de Catálogo, Paginação e Busca)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [ARQUITETURA.md (Seções 3.1 `movies`/`metadata` e 4.1 `catalog`/`command-palette`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L147-L167)  
-> - [DESIGN-IMPLEMENTATION.md (Seção 2.1 Tela Principal)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L39-L93)  
-> - [DESIGN.md (Seções 5.3 Toggle Grid/List e 5.4 Command Palette Global)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L138-L168)  
-> - [requisitos-nao-funcionais.md (RNF06 - Spotlight ⌘K)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L73-L78)  
+> - [Atividade de Dev.pdf (Requisitos de Catálogo, Paginação e Busca)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [ARQUITETURA.md (Seções 3.1 `movies`/`metadata` e 4.1 `catalog`/`command-palette`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L147-L167)  
+> - [DESIGN-IMPLEMENTATION.md (Seção 2.1 Tela Principal)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design-implementation.md#L39-L93)  
+> - [DESIGN.md (Seções 5.3 Toggle Grid/List e 5.4 Command Palette Global)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L138-L168)  
+> - [requisitos-nao-funcionais.md (RNF06 - Spotlight ⌘K)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/engineering/requisitos-nao-funcionais.md#L73-L78)  
 > - Referência visual: `references/sort-by-block-and-list.png`.
 
 - [x] **3.1 Backend: Movies, Metadata & Quick-Search (`backend/app/features/movies/` & `metadata/`)** *(Concluído em 2026-09-25)*
@@ -198,10 +198,10 @@
 ### Etapa 4: Slice Vertical de Ficha Técnica & Métricas Analíticas
 > **Objetivo:** Exibir a página de detalhes completos do filme, elenco, sinopse, comparação de notas (Usuários vs TMDb vs IMDb) e métricas financeiras da camada analítica.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Detalhes do Filme e Informações Completas)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [ARQUITETURA.md (Seção 3.1 `analytics` e 4.1 `movie-details`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L153-L157)  
-> - [DESIGN-IMPLEMENTATION.md (Seção 2.3 Tela de Detalhes)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L115-L144)  
-> - [DESIGN.md (Seção 3 - Paleta Funcional de Dados Analíticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L88-L102)
+> - [Atividade de Dev.pdf (Detalhes do Filme e Informações Completas)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [ARQUITETURA.md (Seção 3.1 `analytics` e 4.1 `movie-details`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L153-L157)  
+> - [DESIGN-IMPLEMENTATION.md (Seção 2.3 Tela de Detalhes)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design-implementation.md#L115-L144)  
+> - [DESIGN.md (Seção 3 - Paleta Funcional de Dados Analíticos)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L88-L102)
 
 - [x] **4.1 Backend: Movie Details & Analytics Slices (`backend/app/features/movies/`)** *(Concluído em 2026-09-25)*
   - [x] `schemas.py`: `MovieDetailDTO` consolidando dados da obra, elenco e direção (`PersonSummaryDTO`), produtoras (`CompanyDTO`), performance e notas analíticas (`FinancialMetricsDTO`) com cálculo de ROI e score de avaliações.
@@ -233,9 +233,9 @@
 ### Etapa 5: Slice Vertical de Avaliações & Resenhas (Reviews)
 > **Objetivo:** Permitir aos usuários adicionar avaliações (nota 0 a 10 e comentário em texto), recalcular atomicamente a média geral do filme e exibir o histórico com cards expansíveis fluidos.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Adicionar avaliação com nota e resenha, ver média geral e histórico)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [ARQUITETURA.md (Seção 3.1 `reviews` e 4.1 `reviews` e 5 - Clean Component Pattern)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L158-L162)  
-> - [DESIGN-IMPLEMENTATION.md (Seção 2.3 - Histórico de Avaliações)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L146-L153)  
+> - [Atividade de Dev.pdf (Adicionar avaliação com nota e resenha, ver média geral e histórico)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [ARQUITETURA.md (Seção 3.1 `reviews` e 4.1 `reviews` e 5 - Clean Component Pattern)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L158-L162)  
+> - [DESIGN-IMPLEMENTATION.md (Seção 2.3 - Histórico de Avaliações)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design-implementation.md#L146-L153)  
 > - Aceternity `expandable-card` e TanStack Form com indicadores obrigatórios.
 
 - [x] **5.1 Backend: Reviews Slice (`backend/app/features/reviews/`)** *(Concluído em 2026-09-26)*
@@ -263,10 +263,10 @@
 ### Etapa 6: Slice Vertical de Gestão de Filmes (CRUD Admin)
 > **Objetivo:** Permitir ao Administrador autenticado cadastrar novos filmes (com campos obrigatórios, seleção de gêneros, preview de pôster em tempo real), atualizar informações de filmes existentes e remover filmes com diálogo de confirmação, orquestrados por TanStack Form e TanStack Query mutations com redirects e invalidações declarativas via `mutationMeta`.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (Cadastrar filmes, remover e atualizar filmes individualmente)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [ARQUITETURA.md (Seção 3.1 `movies` e 4.1 `movie-admin`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L298-L312)  
-> - [DESIGN-IMPLEMENTATION.md (Seção 2.4 Telas de Cadastro e Edição)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L155-L188)  
-> - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)  
+> - [Atividade de Dev.pdf (Cadastrar filmes, remover e atualizar filmes individualmente)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [ARQUITETURA.md (Seção 3.1 `movies` e 4.1 `movie-admin`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md#L298-L312)  
+> - [DESIGN-IMPLEMENTATION.md (Seção 2.4 Telas de Cadastro e Edição)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design-implementation.md#L155-L188)  
+> - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md#L129-L137)  
 > - `fix-reviews/fix-reviews.md` (Diretrizes de design anti-cardite, espaçamento orgânico e contenção de contraste).
 
 #### 🎨 Diretrizes de Design & Usabilidade da Etapa (Inspiradas em `fix-reviews/`):
@@ -324,8 +324,8 @@
 > **Objetivo:** Permitir aos usuários autenticados salvar filmes em sua lista de Favoritos e Watchlist com toggle imediato via optimistic updates, sem modais ou atrito (1 clique direto), com indicadores visuais sutis e respeitando rigorosamente os princípios de design de `fixes/fix-reviews/` (apenas cores default do tema — sem vermelho e sem azul saturados, sem cardite e com espaçamento orgânico).  
 > **Referências:**  
 > - [fixes/fix-reviews/fix-reviews.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/fixes/fix-reviews/fix-reviews.md) (Princípios de design anti-cardite, espaçamento orgânico, eliminação de cores neon/arcade e pílula flutuante no hover do pôster)  
-> - [ARQUITETURA.md (Seções 3.1 e 4.1)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md) (Vertical Slices, Clean Component Pattern, TanStack Query Mutations)  
-> - [DESIGN.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md) (Paleta em ardósia profunda, tipografia Geist, contenção de contraste)  
+> - [ARQUITETURA.md (Seções 3.1 e 4.1)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md) (Vertical Slices, Clean Component Pattern, TanStack Query Mutations)  
+> - [DESIGN.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/design/design.md) (Paleta em ardósia profunda, tipografia Geist, contenção de contraste)  
 
 #### 🎨 Diretrizes Críticas de Design & Usabilidade da Etapa:
 - **Zero cores vermelhas ou azuis neon:** Utilizar **apenas a cor default** do tema (`text-muted-foreground` / `text-white/40` quando inativo; tom âmbar/dourado suave `text-primary` e `fill-primary` quando ativo).
@@ -380,9 +380,9 @@
 ### Etapa 9: Documentação, Auditoria de Código e Validação E2E
 > **Objetivo:** Consolidar a documentação do projeto, validar a qualidade do código com ESLint/TSDoc e produzir o README com guia de execução passo a passo exigido pelo PDF de especificação.  
 > **Referências:**  
-> - [Atividade de Dev.pdf (README com passo a passo)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
-> - [requisitos-nao-funcionais.md (RNF07, RNF08, RNF10)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L79-L102)  
-> - [ARQUITETURA.md (Seção 6)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md)
+> - [Atividade de Dev.pdf (README com passo a passo)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/specs/atividade-dev.md)  
+> - [requisitos-nao-funcionais.md (RNF07, RNF08, RNF10)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/engineering/requisitos-nao-funcionais.md#L79-L102)  
+> - [ARQUITETURA.md (Seção 6)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/docs/architecture/ARQUITETURA.md)
 
 - [x] **9.1 Auditoria de Qualidade & Linters** *(Concluído em 2026-09-26)*
   - [x] Rodar ESLint 9+ (`bun run lint`) e corrigir quaisquer violações de tipagem estrita, `@shadcn/lint` e TSDoc (0 erros).

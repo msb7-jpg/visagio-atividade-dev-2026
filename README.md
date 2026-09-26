@@ -22,20 +22,26 @@ Plataforma cinematográfica completa inspirada no Letterboxd, integrando catálo
 
 ## 🎬 Demonstração & Mídias da Aplicação
 
-### 🎥 Navegação & Visão Geral (Vídeos)
+### 🎥 Demonstração em Vídeo
 
-| Visão Geral do Catálogo & Navegação | Ações Rápidas, Resenhas & Minha Lista |
-| :---: | :---: |
-| https://github.com/user-attachments/assets/media/catalog-page-overviewmp4.mp4 <br> *(Vídeo: `media/catalog-page-overviewmp4.mp4`)* | https://github.com/user-attachments/assets/media/catalog-page-context-menu-review-favorite-add-to-list.mp4 <br> *(Vídeo: `media/catalog-page-context-menu-review-favorite-add-to-list.mp4`)* |
+#### 1. Visão Geral do Catálogo & Navegação Fluida
+<video src="media/catalog-page-overviewmp4.mp4" width="100%" controls></video>
 
-| Autenticação & Entrada de Administrador |
-| :---: |
-| https://github.com/user-attachments/assets/media/login-page-overview-mp4.mp4 <br> *(Vídeo: `media/login-page-overview-mp4.mp4`)* |
+> 🔗 *Arquivo: [`media/catalog-page-overviewmp4.mp4`](media/catalog-page-overviewmp4.mp4)*
 
-> 💡 **Arquivos de vídeo locais:** Todos os vídeos em alta fidelidade estão disponíveis no diretório [`media/`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media):
-> - [`media/catalog-page-overviewmp4.mp4`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media/catalog-page-overviewmp4.mp4) — Exploração fluida do catálogo, paginação e alternância de modos.
-> - [`media/catalog-page-context-menu-review-favorite-add-to-list.mp4`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media/catalog-page-context-menu-review-favorite-add-to-list.mp4) — Menu de contexto (`···` e clique direito), adição de resenha, favoritar e watchlist.
-> - [`media/login-page-overview-mp4.mp4`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/media/login-page-overview-mp4.mp4) — Experiência de login, ilustrações Storyset interativas e transições.
+---
+
+#### 2. Ações de Menu de Contexto, Avaliação, Favoritos & Watchlist
+<video src="media/catalog-page-context-menu-review-favorite-add-to-list.mp4" width="100%" controls></video>
+
+> 🔗 *Arquivo: [`media/catalog-page-context-menu-review-favorite-add-to-list.mp4`](media/catalog-page-context-menu-review-favorite-add-to-list.mp4)*
+
+---
+
+#### 3. Autenticação Administrativa & Microinterações de Login
+<video src="media/login-page-overview-mp4.mp4" width="100%" controls></video>
+
+> 🔗 *Arquivo: [`media/login-page-overview-mp4.mp4`](media/login-page-overview-mp4.mp4)*
 
 ---
 
@@ -101,7 +107,7 @@ O sistema foi desenhado a partir dos requisitos centrais da especificação ofic
 O projeto depende de **Python 3.11+**, [**uv**](https://docs.astral.sh/uv/) e [**Bun**](https://bun.sh/).
 
 > ⚠️ **IMPORTANTE (Arquivos CSV Necessários):**  
-> A ingestão de dados analíticos requer que os arquivos CSV fornecidos estejam presentes no diretório raiz [`data/`](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/data):
+> A ingestão de dados analíticos requer que os arquivos CSV fornecidos estejam presentes no diretório raiz `data/`:
 > - `dim_movies.csv`
 > - `dim_genres.csv`
 > - `dim_companies.csv`
