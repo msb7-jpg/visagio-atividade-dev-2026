@@ -1,6 +1,6 @@
-import { TrendingUp, DollarSign, Wallet } from 'lucide-react'
 import type { FinancialMetricsDTO } from '@/features/movie-details/types/movie-details.types'
-import { formatCompactCurrency, formatRoi } from '@/features/movie-details/utils/movie-formatters'
+import { formatCompactCurrency } from '@/features/movie-details/utils/movie-formatters'
+import { DollarSign, TrendingUp, Wallet } from 'lucide-react'
 
 interface FinancialMetricsViewProps {
   metricas: FinancialMetricsDTO
@@ -58,8 +58,6 @@ export function FinancialMetricsView({ metricas }: FinancialMetricsViewProps) {
     (lucroBrl !== null && lucroBrl !== 0) ||
     (roiVal !== null && roiVal !== undefined && !isNaN(roiVal))
 
-  const roi = formatRoi(roiVal)
-
   if (!hasOrcamento && !hasReceita && !hasLucroOrRoi) return null
 
   return (
@@ -92,11 +90,12 @@ export function FinancialMetricsView({ metricas }: FinancialMetricsViewProps) {
                 {lucroUsd !== null && (
                   <span>{formatCompactCurrency(lucroUsd, 'USD')}</span>
                 )}
-                {roiVal !== null && roiVal !== undefined && (
+                {/* {roiVal !== null && roiVal !== undefined && (
                   <span className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                     ROI: {roi.formatted}
                   </span>
-                )}
+                  Não gostei mt da métrica do ROI e acho q tem mais valor pro usuário so ver se deu lucro ou preju
+                )} */}
               </div>
             }
             secondaryText={lucroBrl !== null ? formatCompactCurrency(lucroBrl, 'BRL') : undefined}

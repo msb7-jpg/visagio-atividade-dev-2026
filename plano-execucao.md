@@ -237,23 +237,25 @@
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.3 - Histórico de Avaliações)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L146-L153)  
 > - Aceternity `expandable-card` e TanStack Form com indicadores obrigatórios.
 
-- [ ] **5.1 Backend: Reviews Slice (`backend/app/features/reviews/`)**
-  - [ ] `schemas.py`: `CreateReviewDTO` (`nome`, `nota`: 0 a 10, `comentario`: 10 a 4000 caracteres), `ReviewResponseDTO`, `ReviewSummaryDTO`.
-  - [ ] `service.py`: Inserção atômica em `movies_reviews` e recálculo transacional de `dim_reviews` (`nota_media_usuarios`, `qtd_avaliacoes_usuarios`).
-  - [ ] `router.py`:
-    - `GET /api/v1/movies/{id}/reviews` (histórico de avaliações ordenado por data).
-    - `POST /api/v1/movies/{id}/reviews` (submissão de nova resenha).
-  - [ ] **Testes Backend:** `backend/tests/test_reviews.py` (criação de review, validação de limites de nota, recálculo matemático correto da média e histórico ordenado).
-- [ ] **5.2 Frontend: Reviews Slice (`frontend/src/features/reviews/`)**
-  - [ ] `api/reviewsApi.ts`: Funções `fetchMovieReviews` e `submitReview`.
-  - [ ] `schemas/review.schema.ts`: Schema Zod espelhando os contratos de negócio.
-  - [ ] `hooks/useReviewForm.ts`: TanStack Form (`useForm` + `zodValidator`) com reset pós-submissão.
-  - [ ] `hooks/useReviewsQuery.ts` & `useSubmitReviewMutation.ts`: TanStack Query mutation com `meta: { invalidates: [['movies', id, 'reviews'], ['movies', id]], successMessage: 'Avaliação publicada com sucesso!' }` gerenciado no `MutationCache` global.
-  - [ ] `components/ReviewRatingStarsView.tsx`: Seletor interativo de estrelas com feedback de nota em tempo real.
-  - [ ] `components/NewReviewModalView.tsx`: Modal com formulário tipado e indicadores visuais de obrigatoriedade (`RequiredFieldBadge`).
-  - [ ] `components/ReviewExpandableCardView.tsx`: Aceternity `ExpandableCard` com Framer Motion (`layoutId`) para abrir e ler resenhas completas sem reload.
-  - [ ] `components/ReviewsContainer.tsx`: Integração da seção de avaliações na tela de detalhes.
-  - [ ] **Testes Frontend:** `frontend/src/features/reviews/__tests__/ReviewSubmission.test.tsx` (validação de formulário, abertura do modal e mutação com sucesso via MSW).
+- [x] **5.1 Backend: Reviews Slice (`backend/app/features/reviews/`)** *(Concluído em 2026-09-26)*
+  - [x] `schemas.py`: `ReviewCreateDTO` (`nome`, `nota`: 1 a 10, `comentario`: 10 a 4000 caracteres), `ReviewResponseDTO`, `ReviewSummaryDTO`.
+  - [x] `service.py`: Inserção atômica em `movie_reviews` (com resolução dinâmica de ID numérico ou string `sk_movie_id`) e recálculo transacional de `dim_reviews` (`nota_media_usuarios`, `qtd_avaliacoes_usuarios`).
+  - [x] `docs.py` & `router.py`:
+    - `GET /api/v1/movies/{movie_id}/reviews` (histórico de avaliações ordenado por data e ID decrescentes).
+    - `POST /api/v1/movies/{movie_id}/reviews` (submissão de nova resenha com documentação OpenAPI).
+  - [x] **Testes Backend:** `backend/tests/test_reviews.py` (3 testes passando com fixture de seed e recálculo transacional, totalizando 24 testes no backend).
+- [x] **5.2 Frontend: Reviews Slice (`frontend/src/features/reviews/`)** *(Concluído em 2026-09-26)*
+  - [x] `api/reviewsApi.ts`: Funções `fetchMovieReviews` e `submitMovieReview`.
+  - [x] `schemas/review.schema.ts`: Schema Zod espelhando os contratos de negócio (`nome`, `nota`, `comentario`).
+  - [x] `types/reviews.types.ts`: Tipagens TypeScript estritas para `MovieReviewDTO` e `CreateReviewDTO`.
+  - [x] `hooks/useMovieReviews.ts`: TanStack Query hooks com `meta.invalidates` declarativo invalidando as queries do filme e de avaliações.
+  - [x] `button.tsx`: Variantes `rating`, `rating-active`, `rating-selected` e size `rating-score` para preservar integridade de `@shadcn/lint`.
+  - [x] `components/ReviewRatingSelectorView.tsx`: Seletor interativo de nota 1 a 10 com feedback de humor animado (Meh, Frown, Smile, Sparkles).
+  - [x] `components/NewReviewModalView.tsx`: Modal shadcn Dialog com TanStack Form, `RequiredFieldBadge` e mensagens de validação Zod.
+  - [x] `components/ReviewExpandableCardView.tsx`: Aceternity `ExpandableCard` com Framer Motion (`layoutId`) para expansão e leitura de resenhas longas.
+  - [x] `components/ReviewsSectionContainer.tsx`: Orquestrador com cabeçalho analítico, botão "Escrever Avaliação", grid responsivo de resenhas e estados de loading/empty.
+  - [x] `components/MovieDetailsContainer.tsx`: Integração da seção de avaliações na tela de detalhes.
+  - [x] **Testes & Qualidade:** `ReviewsSection.test.tsx` e `MovieDetailsContainer.test.tsx` passando; 89 testes passando no frontend, 0 erros no ESLint/shadcn-lint, e build de produção validado com sucesso.
 
 ---
 

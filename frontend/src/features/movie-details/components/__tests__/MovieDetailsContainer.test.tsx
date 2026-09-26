@@ -1,8 +1,18 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { describe, expect, it, vi } from 'vitest'
 import { MovieDetailsContainer } from '../MovieDetailsContainer'
 import * as vmModule from '@/features/movie-details/hooks/useMovieDetailsViewModel'
 import type { MovieDetailDTO } from '@/features/movie-details/types/movie-details.types'
+
+function renderWithClient(ui: React.ReactElement) {
+  const testClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false }
+    }
+  })
+  return render(<QueryClientProvider client={testClient}>{ui}</QueryClientProvider>)
+}
 
 const mockMovie: MovieDetailDTO = {
   sk_movie_id: 'test-sk-1',
@@ -49,7 +59,7 @@ describe('MovieDetailsContainer', () => {
       handleGoHome: vi.fn()
     })
 
-    render(<MovieDetailsContainer />)
+    renderWithClient(<MovieDetailsContainer />)
     expect(screen.getByTestId('movie-details-skeleton')).toBeInTheDocument()
   })
 
@@ -63,7 +73,7 @@ describe('MovieDetailsContainer', () => {
       handleGoHome: vi.fn()
     })
 
-    render(<MovieDetailsContainer />)
+    renderWithClient(<MovieDetailsContainer />)
     expect(screen.getByText('Filme não encontrado')).toBeInTheDocument()
     expect(
       screen.getByText('Não foi possível encontrar o filme especificado')
@@ -81,12 +91,14 @@ describe('MovieDetailsContainer', () => {
       handleGoHome: vi.fn()
     })
 
-    render(<MovieDetailsContainer />)
+    renderWithClient(<MovieDetailsContainer />)
     expect(screen.getByText('Interstellar Odyssey')).toBeInTheDocument()
     expect(screen.getByText('Ficção Científica')).toBeInTheDocument()
     expect(screen.getByText('Christopher Nolan')).toBeInTheDocument()
     expect(screen.getByText('Matthew McConaughey')).toBeInTheDocument()
     expect(screen.getByText('Syncopy')).toBeInTheDocument()
-    expect(screen.getByText('9.3')).toBeInTheDocument()
+    expect(screen.getAllByText('9.3').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByText('Avaliações da Comunidade')).toBeInTheDocument()
+    expect(screen.getByText('Escrever Avaliação')).toBeInTheDocument()
   })
 })

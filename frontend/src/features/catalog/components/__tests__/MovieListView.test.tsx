@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MovieListView } from '../MovieListView'
 import { MovieListStatus } from '../MovieListStatus'
 
@@ -70,30 +71,37 @@ describe('MovieListView empty/loading states', () => {
 
 describe('MovieListView populated states', () => {
   it('renderiza lista em grid e em list quando há filmes', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false }, mutations: { retry: false } }
+    })
     const { rerender } = render(
-      <BrowserRouter>
-        <MovieListView
-          movies={MOCK_MATRIX}
-          viewMode="grid"
-          isLoading={false}
-          isError={false}
-          hasFilters={false}
-        />
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <MovieListView
+            movies={MOCK_MATRIX}
+            viewMode="grid"
+            isLoading={false}
+            isError={false}
+            hasFilters={false}
+          />
+        </BrowserRouter>
+      </QueryClientProvider>
     )
 
     expect(screen.getByText('The Matrix')).toBeDefined()
 
     rerender(
-      <BrowserRouter>
-        <MovieListView
-          movies={MOCK_MATRIX}
-          viewMode="list"
-          isLoading={false}
-          isError={false}
-          hasFilters={false}
-        />
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <MovieListView
+            movies={MOCK_MATRIX}
+            viewMode="list"
+            isLoading={false}
+            isError={false}
+            hasFilters={false}
+          />
+        </BrowserRouter>
+      </QueryClientProvider>
     )
 
     expect(screen.getByText('The Matrix')).toBeDefined()

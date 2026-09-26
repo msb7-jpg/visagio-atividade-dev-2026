@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AuthProvider } from '@/features/auth/context/AuthProvider'
 import { MovieGridItemView } from '@/features/catalog/components/MovieGridItemView'
 import { MovieListItemView } from '@/features/catalog/components/MovieListItemView'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
@@ -27,25 +29,43 @@ describe('MovieItemViews', () => {
     receita_brl: 2317586915
   }
 
-  it('MovieGridItemView renderiza título, badges e link correto', () => {
-    render(
-      <BrowserRouter>
-        <MovieGridItemView movie={mockMovie} />
-      </BrowserRouter>
+  function renderWithProviders(ui: React.ReactElement) {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false }, mutations: { retry: false } }
+    })
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <BrowserRouter>{ui}</BrowserRouter>
+        </AuthProvider>
+      </QueryClientProvider>
     )
+  }
+
+  it('MovieGridItemView renderiza título, ano, nota no rodapé e gatilho de ações rápidas', () => {
+    renderWithProviders(<MovieGridItemView movie={mockMovie} />)
 
     expect(screen.getByText('The Matrix')).toBeDefined()
     expect(screen.getByText('1999')).toBeDefined()
     expect(screen.getByText('8.9')).toBeDefined()
-    expect(screen.getByText('96')).toBeDefined() // Math.round/toFixed de 95.5
+    expect(screen.getByText('136 min')).toBeDefined()
+    expect(screen.getByLabelText('Ações rápidas para The Matrix')).toBeDefined()
+  })
+
+  it('MovieGridItemView abre context menu ao clicar com botão direito no texto do card', async () => {
+    const { fireEvent } = await import('@testing-library/react')
+    renderWithProviders(<MovieGridItemView movie={mockMovie} />)
+
+    // Clica com botão direito no título (fora do pôster, na parte textual inferior)
+    const titleElement = screen.getByText('The Matrix')
+    fireEvent.contextMenu(titleElement)
+
+    expect(await screen.findByText('Avaliação Rápida (1 clique)')).toBeInTheDocument()
+    expect(screen.getByTitle('Clique com botão direito no card para abrir o menu')).toBeInTheDocument()
   })
 
   it('MovieListItemView renderiza linha com nota, diretores e gêneros', () => {
-    render(
-      <BrowserRouter>
-        <MovieListItemView movie={mockMovie} />
-      </BrowserRouter>
-    )
+    renderWithProviders(<MovieListItemView movie={mockMovie} />)
 
     expect(screen.getByText('The Matrix')).toBeDefined()
     expect(screen.getByText('(1999)')).toBeDefined()

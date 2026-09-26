@@ -87,7 +87,7 @@ describe('Movie Details Pure Views', () => {
       />
     )
 
-    expect(screen.getByText(/ROI: \+325.3%/)).toBeInTheDocument()
+    expect(screen.getByText('$536.7M')).toBeInTheDocument()
     expect(screen.getByText('$165M')).toBeInTheDocument()
     expect(screen.getByText('$701.7M')).toBeInTheDocument()
   })

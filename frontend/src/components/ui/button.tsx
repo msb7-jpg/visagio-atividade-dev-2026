@@ -22,7 +22,10 @@ const buttonVariants = cva(
         'pill-active': 'rounded-full font-semibold text-primary-foreground bg-primary hover:bg-primary/90 shadow-xs',
         sort: 'rounded-full text-white/60 hover:text-white',
         'sort-active': 'rounded-full font-semibold text-primary hover:text-primary',
-        cmdk: 'border border-white/15 bg-white/5 hover:bg-white/10 text-foreground font-mono text-[11px]'
+        cmdk: 'border border-white/15 bg-white/5 hover:bg-white/10 text-foreground font-mono text-[11px]',
+        rating: 'border border-white/10 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10',
+        'rating-active': 'border-primary/40 bg-primary/15 text-primary font-semibold',
+        'rating-selected': 'bg-primary text-primary-foreground font-bold shadow-md'
       },
       size: {
         default:
@@ -38,7 +41,8 @@ const buttonVariants = cva(
         'icon-sm':
           'size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg',
         'icon-lg': 'size-9',
-        pagination: 'h-8 min-w-8 px-2 text-xs font-medium rounded-lg'
+        pagination: 'h-8 min-w-8 px-2 text-xs font-medium rounded-lg',
+        'rating-score': 'h-8 min-w-8 gap-0.5 rounded-lg px-1.5 text-xs font-medium'
       }
     },
     defaultVariants: {

@@ -223,7 +223,7 @@ class MovieReview(Base):
     )
     nome: Mapped[str] = mapped_column(String(120))
     nota: Mapped[float] = mapped_column(Double)
-    comentario: Mapped[str] = mapped_column(String(4000))
+    comentario: Mapped[str | None] = mapped_column(String(4000), nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     movie: Mapped[DimMovie] = relationship(back_populates="reviews")

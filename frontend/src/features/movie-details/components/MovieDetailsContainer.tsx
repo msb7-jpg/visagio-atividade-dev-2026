@@ -7,6 +7,7 @@ import { MovieHeaderInfoView } from '@/features/movie-details/components/MovieHe
 import { MovieSynopsisView } from '@/features/movie-details/components/MovieSynopsisView'
 import { ScoreComparisonView } from '@/features/movie-details/components/ScoreComparisonView'
 import { useMovieDetailsViewModel } from '@/features/movie-details/hooks/useMovieDetailsViewModel'
+import { ReviewsSectionContainer } from '@/features/reviews/components/ReviewsSectionContainer'
 
 export function MovieDetailsContainer() {
   const vm = useMovieDetailsViewModel()
@@ -63,6 +64,13 @@ export function MovieDetailsContainer() {
           roteiristas={movie.roteiristas}
           atores={movie.atores}
           produtoras={movie.produtoras}
+        />
+
+        <ReviewsSectionContainer
+          movieId={movie.sk_movie_id}
+          movieTitle={movie.titulo}
+          notaMediaUsuarios={movie.nota_media_usuarios}
+          qtdAvaliacoesUsuarios={movie.qtd_avaliacoes_usuarios}
         />
       </div>
     </article>
