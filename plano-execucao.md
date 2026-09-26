@@ -66,7 +66,7 @@
 | **Etapa 2: Slice Vertical de Autenticação Admin** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 3: Slice Vertical de Catálogo, Busca & Command Palette Base** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 4: Slice Vertical de Ficha Técnica & Analytics** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
-| **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[>]` | `[ ]` | `[ ]` | `[>]` Em Progresso |
 | **Etapa 6: Slice Vertical de Gestão de Filmes (CRUD)** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 7: Enriquecimento da Command Palette & Ações Avançadas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 8: Documentação, Storybook & Validação E2E** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |

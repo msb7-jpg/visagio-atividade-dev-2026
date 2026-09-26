@@ -1,9 +1,7 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { SearchVisibilityContext } from './SearchVisibilityContext'
 
-export const SearchVisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
+export const SearchVisibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isHeroSearchVisible, setIsHeroSearchVisible] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isFetching, setIsFetching] = useState(false)

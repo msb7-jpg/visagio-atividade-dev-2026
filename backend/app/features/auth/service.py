@@ -51,12 +51,10 @@ class AuthService:
     @classmethod
     def authenticate_admin(cls, request: LoginRequest) -> TokenResponse | None:
         """Valida credenciais do administrador e emite TokenResponse."""
-        # Compara e-mail com case-insensitive
-        if request.email.lower() != settings.admin_email.lower():
-            return None
+        invalid_email = request.email.lower() != settings.admin_email.lower()
+        invalid_password = request.senha != settings.admin_password
 
-        # Validação da senha administrativa padrão
-        if request.senha != settings.admin_password:
+        if invalid_email or invalid_password:
             return None
 
         token_claims = {
@@ -67,7 +65,11 @@ class AuthService:
         }
 
         token, expires_in = cls.create_access_token(data=token_claims)
-        return TokenResponse(access_token=token, token_type="bearer", expires_in=expires_in)
+        return TokenResponse(
+            access_token=token, 
+            token_type="bearer", 
+            expires_in=expires_in
+        )
 
     @classmethod
     def decode_token(cls, token: str) -> AdminUserDTO | None:

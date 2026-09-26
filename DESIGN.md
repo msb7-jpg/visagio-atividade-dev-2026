@@ -207,18 +207,6 @@ A partir da maturidade adquirida no desenvolvimento da aplicação, estabelecem-
 1. **Espaço e Alinhamento como Separadores:** Nunca encapsular blocos de leitura passiva em cartões individuais com bordas de `1px` (`border-white/10`) se a hierarquia puder ser resolvida com tipografia, peso, opacidade de texto e espaçamento vertical.
 2. **Superfícies Contínuas:** Em dark mode, fundos contínuos reduzem o ruído óptico e eliminam o aspecto de "dashboard corporativo", permitindo que o olhar flua sem interrupções.
 
-### 8.2 Hero Cinematográfico Integrado (2 Colunas)
-- O pôster vertical (`aspect-[2/3]`) é acompanhado por uma coluna lateral contínua preenchida com:
-  1. Breadcrumb / Voltar
-  2. Título H1 expressivo
-  3. Metadados rápidos (`Ano • Duração • Status • Gêneros`)
-  4. **Ratings Strip Compacto:** Barra horizontal única com chips translúcidos para RocketFilms, TMDb e IMDb (`bg-white/5 border border-white/10 rounded-full px-3 py-1 text-xs`), sem cartões gigantes de altura fixa.
-  5. **KPIs Financeiros Tipográficos:** Faixa de métricas limpas (Rótulo em caixa alta diminuta `text-[11px] uppercase tracking-wider text-muted-foreground`, valor principal em `text-xl font-bold` e moeda BRL em `text-xs text-muted-foreground`), sem molduras individuais.
-
-### 8.3 Ficha Técnica & Equipe Editorial
-- **Texto Corrido com Vírgulas:** Direção, roteiro, estúdios e elenco principal são estruturados como metadados editoriais em linhas de texto puro separadas por vírgula (`Direção: Christopher Nolan`, `Elenco: Cillian Murphy, Emily Blunt, Matt Damon...`).
-- **Reserva de Badges:** Badges/pílulas ficam estritamente restritos a filtros interativos e ações de curadoria.
-
 ### 8.4 Conforto de Leitura na Sinopse
 - Textos descritivos e sinopses devem ter largura delimitada a `max-w-3xl` (~65 a 75 caracteres por linha) e entrelinha relaxada (`leading-relaxed`), prevenindo o cansaço do usuário com linhas excessivamente longas.
 

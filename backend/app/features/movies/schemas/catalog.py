@@ -1,21 +1,7 @@
 from decimal import Decimal
-from typing import Any, Literal
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
-
-
-class GenreDTO(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    sk_genre_id: str
-    nome_genero: str
-
-
-class CompanyDTO(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    sk_company_id: str
-    nome_produtora: str
 
 
 class MovieListItemDTO(BaseModel):
@@ -129,67 +115,3 @@ class QuickSearchMovieDTO(BaseModel):
             popularidade=float(pop_val) if pop_val is not None else 0.0,
             generos=[g.nome_genero for g in getattr(m, "genres", [])],
         )
-
-
-SortField = Literal[
-    "popularidade",
-    "nota_media_usuarios",
-    "receita_usd",
-    "ano_lancamento",
-    "titulo",
-]
-SortOrder = Literal["asc", "desc"]
-
-
-class PersonSummaryDTO(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    sk_person_id: str
-    nome_pessoa: str
-    tipo_pessoa: str
-
-
-class FinancialMetricsDTO(BaseModel):
-    """Métricas financeiras e avaliações externas da camada analítica."""
-
-    orcamento_usd: Decimal | None = None
-    receita_usd: Decimal | None = None
-    lucro_usd: Decimal | None = None
-    orcamento_brl: Decimal | None = None
-    receita_brl: Decimal | None = None
-    lucro_brl: Decimal | None = None
-    roi_percentual: float | None = None
-    popularidade: float = 0.0
-    nota_tmdb: float | None = None
-    qtd_tmdb: int | None = None
-    nota_imdb: float | None = None
-    qtd_imdb: int | None = None
-
-
-class MovieDetailDTO(BaseModel):
-    """Ficha técnica detalhada completa de um filme."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    sk_movie_id: str
-    id_filme: str
-    titulo: str
-    data_lancamento: str | None = None
-    ano_lancamento: int | None = None
-    duracao_minutos: int | None = None
-    status_filme: str | None = None
-    sinopse: str | None = None
-    url_poster: str | None = None
-    url_backdrop: str | None = None
-
-    # Relacionamentos
-    generos: list[GenreDTO] = Field(default_factory=list)
-    produtoras: list[CompanyDTO] = Field(default_factory=list)
-    diretores: list[PersonSummaryDTO] = Field(default_factory=list)
-    roteiristas: list[PersonSummaryDTO] = Field(default_factory=list)
-    atores: list[PersonSummaryDTO] = Field(default_factory=list)
-
-    # Métricas e notas
-    metricas: FinancialMetricsDTO = Field(default_factory=FinancialMetricsDTO)
-    nota_media_usuarios: float | None = None
-    qtd_avaliacoes_usuarios: int = 0

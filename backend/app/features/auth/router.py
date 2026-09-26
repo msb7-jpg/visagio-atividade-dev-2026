@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.features.auth.docs import LoginDocs, MeDocs
 from app.features.auth.schemas import AdminUserDTO, LoginRequest, TokenResponse
 from app.features.auth.service import AuthService
 
@@ -33,12 +34,7 @@ async def get_current_admin(
     return user
 
 
-@auth_router.post(
-    "/login",
-    response_model=TokenResponse,
-    summary="Login administrativo",
-    description="Autentica o administrador com e-mail e senha retornando um Bearer Token JWT.",
-)
+@auth_router.post("/login", **LoginDocs.to_dict())
 async def login(credentials: LoginRequest) -> TokenResponse:
     """Processa o login administrativo."""
     if not (auth_result := AuthService.authenticate_admin(credentials)):
@@ -49,12 +45,7 @@ async def login(credentials: LoginRequest) -> TokenResponse:
     return auth_result
 
 
-@auth_router.get(
-    "/me",
-    response_model=AdminUserDTO,
-    summary="Identificação do administrador logado",
-    description="Retorna os dados do administrador atual autenticado via token JWT.",
-)
+@auth_router.get("/me", **MeDocs.to_dict())
 async def get_current_admin_info(
     current_admin: Annotated[AdminUserDTO, Depends(get_current_admin)],
 ) -> AdminUserDTO:
