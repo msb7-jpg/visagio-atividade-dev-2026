@@ -121,10 +121,22 @@ O projeto depende de **Python 3.11+**, [**uv**](https://docs.astral.sh/uv/) e [*
 
 ---
 
-### 2. Configuração do Backend (FastAPI + SQLite + Alembic)
+### 2. Inicialização Rápida em Um Comando (Recomendado)
 
-No terminal, a partir da raiz do repositório:
+O repositório inclui o script inteligente [`setup.sh`](setup.sh) que automatiza todo o fluxo: detecta se o banco de dados já existe e está populado, aplica migrações do Alembic, sincroniza dependências (`uv` e `bun`), executa o seed analítico caso necessário e sobe ambos os servidores (FastAPI + Vite) concorrentemente:
 
+```bash
+# Na raiz do projeto:
+./setup.sh
+```
+
+---
+
+### 3. Configuração Manual Passo a Passo (Opcional)
+
+Caso prefira rodar cada etapa manualmente em terminais separados:
+
+#### Backend (FastAPI + SQLite + Alembic)
 ```bash
 cd backend
 
