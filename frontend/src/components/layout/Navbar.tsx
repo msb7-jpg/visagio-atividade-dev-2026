@@ -1,13 +1,14 @@
-import { routes } from '@/routes/routes.types'
-import { Link, useNavigate } from 'react-router-dom'
-import { Search, Loader2, X, Film, LogIn, LogOut, ShieldCheck } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useSearchVisibility } from '@/context/useSearchVisibility'
+import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useHasMovieDraft } from '@/features/movie-admin/hooks/useMovieDraft'
 import { cn } from '@/lib/utils'
+import { routes } from '@/routes/routes.types'
+import { Film, Loader2, LogIn, LogOut, Plus, Search, ShieldCheck, X } from 'lucide-react'
 import React, { useEffect, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface NavbarProps {
   onOpenCommandPalette: () => void
@@ -15,6 +16,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
   const { isAuthenticated, user, logout } = useAuth()
+  const hasDraft = useHasMovieDraft()
   const {
     isHeroSearchVisible,
     searchQuery,
@@ -173,9 +175,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette }) => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(routes.adminMovieCreate())}
+                aria-label={hasDraft ? 'Cadastrar filme (rascunho disponível)' : 'Cadastrar filme'}
+              >
+                <span className="flex items-center gap-2">
+                  <span className="relative flex items-center justify-center">
+                    <Plus className="size-4" />
+                    {hasDraft && (
+                      <span
+                        data-testid="draft-notification-dot"
+                        className="absolute -top-1 -right-1 size-2 animate-pulse rounded-full bg-primary ring-2 ring-background"
+                      />
+                    )}
+                  </span>
+                  <span className="hidden sm:inline">Cadastrar Filme</span>
+                </span>
+              </Button>
               <Badge
                 variant="admin"
-                className="hidden items-center gap-1.5 sm:flex"
+                className="hidden items-center gap-1.5 md:flex"
               >
                 <ShieldCheck className="size-3.5 text-primary" />
                 <span className="max-w-30 truncate">

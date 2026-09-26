@@ -25,7 +25,9 @@ const buttonVariants = cva(
         cmdk: 'border border-white/15 bg-white/5 hover:bg-white/10 text-foreground font-mono text-[11px]',
         rating: 'border border-white/10 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10',
         'rating-active': 'border-primary/40 bg-primary/15 text-primary font-semibold',
-        'rating-selected': 'bg-primary text-primary-foreground font-bold shadow-md'
+        'rating-selected': 'bg-primary text-primary-foreground font-bold shadow-md',
+        'media-thumb': 'h-auto p-1 border-2 border-white/10 bg-white/5 opacity-60 hover:opacity-100 rounded-lg overflow-hidden transition-all',
+        'media-thumb-active': 'h-auto p-1 border-2 border-primary bg-primary/10 opacity-100 rounded-lg overflow-hidden shadow-md transition-all'
       },
       size: {
         default:

@@ -1,5 +1,10 @@
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/features/auth/hooks/useAuth'
+import { DeleteMovieConfirmDialog } from '@/features/movie-admin/components/DeleteMovieConfirmDialog'
+import { useDeleteMovieMutation } from '@/features/movie-admin/hooks/useMovieAdminMutations'
 import { CastAndCrewSectionView } from '@/features/movie-details/components/CastAndCrewSectionView'
 import { FinancialMetricsView } from '@/features/movie-details/components/FinancialMetricsView'
+import { MediaExpandedLightboxDialog } from '@/features/movie-details/components/MediaExpandedLightboxDialog'
 import { MovieBackdropHeroView } from '@/features/movie-details/components/MovieBackdropHeroView'
 import { MovieDetailsErrorState } from '@/features/movie-details/components/MovieDetailsErrorState'
 import { MovieDetailsSkeleton } from '@/features/movie-details/components/MovieDetailsSkeleton'
@@ -8,9 +13,23 @@ import { MovieSynopsisView } from '@/features/movie-details/components/MovieSyno
 import { ScoreComparisonView } from '@/features/movie-details/components/ScoreComparisonView'
 import { useMovieDetailsViewModel } from '@/features/movie-details/hooks/useMovieDetailsViewModel'
 import { ReviewsSectionContainer } from '@/features/reviews/components/ReviewsSectionContainer'
+import { routes } from '@/routes/routes.types'
+import { PencilLine, Trash2 } from 'lucide-react'
+import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export function MovieDetailsContainer() {
   const vm = useMovieDetailsViewModel()
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
+  const [lightboxMedia, setLightboxMedia] = React.useState<'poster' | 'backdrop' | null>(null)
+
+  const deleteMutation = useDeleteMovieMutation({
+    onSuccess: () => {
+      setIsDeleteDialogOpen(false)
+    }
+  })
 
   if (vm.isLoading) {
     return <MovieDetailsSkeleton />
@@ -43,6 +62,31 @@ export function MovieDetailsContainer() {
           urlPoster={movie.url_poster}
           generos={movie.generos}
           onBack={vm.handleBack}
+          onExpandPoster={() => setLightboxMedia('poster')}
+          adminActions={
+            isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(routes.adminMovieEdit(movie.sk_movie_id))}
+                  aria-label="Editar este filme"
+                >
+                  <PencilLine className="size-3.5 text-white/40" />
+                  <span>Editar Filme</span>
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  aria-label="Excluir este filme"
+                >
+                  <Trash2 className="size-3.5" />
+                  <span>Excluir</span>
+                </Button>
+              </div>
+            ) : null
+          }
         >
           <ScoreComparisonView
             notaMediaUsuarios={movie.nota_media_usuarios}
@@ -73,6 +117,29 @@ export function MovieDetailsContainer() {
           qtdAvaliacoesUsuarios={movie.qtd_avaliacoes_usuarios}
         />
       </div>
+
+      <DeleteMovieConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        movieTitle={movie.titulo}
+        onConfirmDelete={() => {
+          deleteMutation.mutate(movie.sk_movie_id)
+        }}
+        isDeleting={deleteMutation.isPending}
+      />
+
+      <MediaExpandedLightboxDialog
+        open={Boolean(lightboxMedia)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setLightboxMedia(null)
+          }
+        }}
+        titulo={movie.titulo}
+        urlPoster={movie.url_poster}
+        urlBackdrop={movie.url_backdrop}
+        defaultMedia={lightboxMedia || 'poster'}
+      />
     </article>
   )
 }

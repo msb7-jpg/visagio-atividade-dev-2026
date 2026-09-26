@@ -8,7 +8,7 @@ export function useMovieDetailsViewModel() {
   const query = useMovieDetailsQuery(id)
 
   const handleBack = () => {
-    navigate(-1)
+    navigate(routes.home())
   }
 
   const handleGoHome = () => {

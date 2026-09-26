@@ -27,17 +27,21 @@ const mockMovie: MovieListItem = {
   receita_brl: 2000000000
 }
 
+import { MemoryRouter } from 'react-router-dom'
+
 function renderComponent() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } }
   })
   return render(
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <MovieQuickActionsMenu movie={mockMovie}>
-          <div data-testid="poster-mock">Poster The Matrix</div>
-        </MovieQuickActionsMenu>
-      </AuthProvider>
+      <MemoryRouter>
+        <AuthProvider>
+          <MovieQuickActionsMenu movie={mockMovie}>
+            <div data-testid="poster-mock">Poster The Matrix</div>
+          </MovieQuickActionsMenu>
+        </AuthProvider>
+      </MemoryRouter>
     </QueryClientProvider>
   )
 }

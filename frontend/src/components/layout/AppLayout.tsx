@@ -1,5 +1,5 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { Navbar } from './Navbar'
 import {
   CommandPaletteProvider,
@@ -10,6 +10,11 @@ import { SearchVisibilityProvider } from '@/context/useSearchVisibility'
 
 const AppLayoutContent: React.FC = () => {
   const { isOpen, setIsOpen, open } = useCommandPalette()
+  const location = useLocation()
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [location.pathname])
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">

@@ -34,7 +34,6 @@ vamos utilizar regras de eslint para o sistema
 use cases do sistema -> @Atividade de Dev.pdf
 
 Requisitos adicionais 
-- documentação com storybook
 - testes  automatizados
 - autenticação
 - filtros

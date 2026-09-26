@@ -66,8 +66,8 @@
 | **Etapa 2: Slice Vertical de Autenticação Admin** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 3: Slice Vertical de Catálogo, Busca & Command Palette Base** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 4: Slice Vertical de Ficha Técnica & Analytics** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
-| **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[>]` | `[ ]` | `[ ]` | `[>]` Em Progresso |
-| **Etapa 6: Slice Vertical de Gestão de Filmes (CRUD)** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| **Etapa 5: Slice Vertical de Avaliações & Resenhas** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
+| **Etapa 6: Slice Vertical de Gestão de Filmes (CRUD)** | `[>]` | `[ ]` | `[ ]` | `[>]` Em Progresso |
 | **Etapa 7: Enriquecimento da Command Palette & Ações Avançadas** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | **Etapa 8: Documentação, Storybook & Validação E2E** | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 
@@ -260,31 +260,62 @@
 ---
 
 ### Etapa 6: Slice Vertical de Gestão de Filmes (CRUD Admin)
-> **Objetivo:** Permitir ao Administrador autenticado cadastrar novos filmes (com campos obrigatórios, seleção de gêneros, preview de pôster), atualizar informações de filmes existentes e remover filmes com diálogo de confirmação, orquestrados por TanStack Form e TanStack Query mutations com redirects e invalidações declarativas via `mutationMeta`.  
+> **Objetivo:** Permitir ao Administrador autenticado cadastrar novos filmes (com campos obrigatórios, seleção de gêneros, preview de pôster em tempo real), atualizar informações de filmes existentes e remover filmes com diálogo de confirmação, orquestrados por TanStack Form e TanStack Query mutations com redirects e invalidações declarativas via `mutationMeta`.  
 > **Referências:**  
 > - [Atividade de Dev.pdf (Cadastrar filmes, remover e atualizar filmes individualmente)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [ARQUITETURA.md (Seção 3.1 `movies` e 4.1 `movie-admin`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L298-L312)  
 > - [DESIGN-IMPLEMENTATION.md (Seção 2.4 Telas de Cadastro e Edição)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN-IMPLEMENTATION.md#L155-L188)  
 > - [DESIGN.md (Seção 5.2 Required Fields)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/DESIGN.md#L129-L137)  
+> - `fix-reviews/fix-reviews.md` (Diretrizes de design anti-cardite, espaçamento orgânico e contenção de contraste).
 
-- [ ] **6.1 Backend: Movie Mutation Endpoints (`backend/app/features/movies/`)**
-  - [ ] `schemas.py`: `MovieCreateDTO` e `MovieUpdateDTO` com validação de campos obrigatórios (`titulo`, `sinopse`, `ano_lancamento`, `duracao_minutos`, `generos_ids`).
-  - [ ] `service.py`: Operações transacionais de `create_movie`, `update_movie` e `delete_movie` com limpeza segura de tabelas de associação (bridges) e deleção em cascata. Protegido pela dependência `get_current_admin`.
-  - [ ] `router.py`:
-    - `POST /api/v1/movies` (criação).
-    - `PUT /api/v1/movies/{id}` (atualização).
-    - `DELETE /api/v1/movies/{id}` (exclusão).
-  - [ ] **Testes Backend:** `backend/tests/test_movie_crud.py` (criação bem-sucedida, bloqueio 401 sem token admin, atualização e exclusão com cascata).
-- [ ] **6.2 Frontend: Movie Admin Slice (`frontend/src/features/movie-admin/`)**
-  - [ ] `api/movieAdminApi.ts`: Chamadas autenticadas `createMovie`, `updateMovie`, `deleteMovie`.
-  - [ ] `schemas/movie-form.schema.ts`: Schema Zod do formulário com validações de limites de ano (1888 a 2030), duração e textos.
-  - [ ] `hooks/useMovieAdminForm.ts`: TanStack Form com preenchimento em modo edição e reset em modo criação.
-  - [ ] `hooks/useMovieAdminMutations.ts`: TanStack Query mutations (`createMovie`, `updateMovie`, `deleteMovie`) configuradas com `meta: { redirectOnSuccess: (data) => /filmes/${data.sk_movie_id}, invalidates: [['movies']] }`.
-  - [ ] `components/PosterPreviewCard.tsx`: Preview dinâmico do pôster com suporte a fallback visual em caso de erro na URL digitada.
-  - [ ] `components/MovieFormView.tsx`: Formulário completo com seletor de gêneros, textarea para sinopse e indicadores de campos obrigatórios (`RequiredFieldBadge`).
-  - [ ] `components/MovieCreateContainer.tsx` (rota `/admin/filmes/novo`) & `components/MovieEditContainer.tsx` (rota `/admin/filmes/:id/editar`).
-  - [ ] `components/DeleteMovieConfirmDialog.tsx`: Dialog do shadcn com aviso destrutivo para exclusão de filme.
-  - [ ] **Testes Frontend:** `frontend/src/features/movie-admin/__tests__/MovieForm.test.tsx` (validação de erros em campos vazios obrigatórios e submit com dados válidos).
+#### 🎨 Diretrizes de Design & Usabilidade da Etapa (Inspiradas em `fix-reviews/`):
+- **O que NÃO fazer:**
+  - NÃO criar um formulário burocrático e confuso com inputs empilhados em caixa única sem respiro, parecendo ERP corporativo.
+  - NÃO utilizar contrastes agressivos, bordas duras amarelas/laranjas grossas ou halos neon ("arcade/cyberpunk").
+  - NÃO colocar caixas dentro de caixas com bordas pesadas (cardite).
+  - NÃO esconder o preview de pôster ou exibir imagens quebradas sem fallback visual gracioso.
+  - NÃO utilizar `window.confirm()` nativo nem botões de exclusão sem diálogo de confirmação seguro.
+- **O que FAZER:**
+  - Layout editorial assimétrico em 2 colunas: formulário amplo e espaçado à esquerda (`max-w-2xl`) + **Live Dynamic Poster Preview** 2:3 à direita.
+  - Paleta em ardósia profunda (`slate-950`/`zinc-900`) e foco em âmbar fosco suave (`border-primary/40`).
+  - Seleção de múltiplos gêneros elegante via chips/badges interativos em cápsula (com toggle de seleção visual).
+  - `RequiredFieldBadge` discreto com tooltip dark.
+  - Diálogo de confirmação de exclusão seguro e estético (`DeleteMovieConfirmDialog`).
+  - Atalhos contextuais no catálogo: opções *Editar* e *Excluir* no `MovieQuickActionsMenu` (hover e botão direito) exclusivas para admin.
+  - Acesso direto na Navbar: botão "Novo Filme" / "Cadastrar Filme" para administradores autenticados.
+  - Comando na Command Palette: "Cadastrar Novo Filme" visível para admins.
+
+- [x] **6.1 Backend: Movie Mutation Endpoints (`backend/app/features/movies/`)** *(Concluído em 2026-09-26)*
+  - [x] `schemas/mutations.py`: `MovieCreateDTO` e `MovieUpdateDTO` com validação de campos obrigatórios (`titulo`, `sinopse`, `ano_lancamento`, `duracao_minutos`, `generos_ids`, `diretor`).
+  - [x] `service.py`: Operações transacionais de `create_movie`, `update_movie` e `delete_movie` com limpeza segura de tabelas de associação (`bridge_movie_genre`, `bridge_movie_company`, `bridge_movie_person`) e deleção em cascata (`fact_movies_performance`, `dim_reviews`, `movie_reviews`).
+  - [x] `router.py`:
+    - `POST /api/v1/movies` (criação protegida por `get_current_admin`).
+    - `PUT /api/v1/movies/{id}` (atualização protegida por `get_current_admin`).
+    - `DELETE /api/v1/movies/{id}` (exclusão protegida por `get_current_admin`).
+  - [x] **Testes Backend:** `backend/tests/test_movie_crud.py` (criação bem-sucedida, bloqueio 401 sem token admin, atualização e exclusão com verificação de integridade referencial - 4 testes assíncronos, totalizando 30 testes no backend).
+
+- [x] **6.2 Frontend: Movie Admin Slice (`frontend/src/features/movie-admin/`)** *(Concluído em 2026-09-26)*
+  - [x] `api/movieAdminApi.ts`: Chamadas autenticadas `createMovie`, `updateMovie`, `deleteMovie`.
+  - [x] `schemas/movie-form.schema.ts`: Schema Zod do formulário com validações de limites de ano (1888 a 2030), duração e campos obrigatórios.
+  - [x] `hooks/useMovieAdminMutations.ts`: TanStack Query mutations (`createMovie`, `updateMovie`, `deleteMovie`) configuradas com `meta: { redirectOnSuccess, invalidates }`.
+  - [x] `components/PosterLivePreview.tsx`: Preview dinâmico do pôster com proporção 2:3, iluminação sutil e fallback elegante para URLs vazias ou quebradas.
+  - [x] `components/GenreSelectorPills.tsx`: Grade de seleção múltipla de gêneros em chips interativos estilo cápsula.
+  - [x] `components/MovieFormView.tsx`: Formulário completo em 2 colunas com `RequiredFieldBadge`, inputs com foco suave e textarea ampla para sinopse.
+  - [x] `components/DeleteMovieConfirmDialog.tsx`: Diálogo do shadcn com aviso destrutivo para exclusão segura de filme.
+  - [x] `components/MovieCreateContainer.tsx` (rota `/admin/filmes/novo`) & `components/MovieEditContainer.tsx` (rota `/admin/filmes/:id/editar`).
+  - [x] Registrar rotas protegidas em `AppRoutes.tsx` com `ProtectedRoute`.
+
+- [x] **6.3 Frontend: Ações Rápidas, Navbar & Integrações de Superfície** *(Concluído em 2026-09-26)*
+  - [x] **Navbar (`Navbar.tsx`):** Adicionado botão de acesso rápido "Cadastrar Filme" visível para administradores autenticados.
+  - [x] **Catálogo (`MovieQuickActionsMenu.tsx`):** Adicionado itens *Editar filme...* e *Excluir filme...* no menu de contexto (hover `···` e clique direito) para administradores autenticados, com disparo do `DeleteMovieConfirmDialog`.
+  - [x] **Ficha Técnica (`MovieDetailsContainer.tsx` / `MovieHeaderInfoView.tsx`):** Botões discretos de ação para administradores (Editar e Excluir).
+  - [x] **Command Palette (`CommandPaletteContainer.tsx` & `types/command-palette.types.ts`):** Adicionado comando "Cadastrar Novo Filme" associado à rota `/admin/filmes/novo`.
+
+- [x] **6.4 Testes & Validação de Qualidade** *(Concluído em 2026-09-26)*
+  - [x] Testes unitários com Vitest para `MovieFormView`, `PosterLivePreview`, `DeleteMovieConfirmDialog`, `MovieDetailsContainer` e `MovieQuickActionsMenu` (111 testes passando no frontend).
+  - [x] `bun run lint` com 0 erros nos arquivos do slice e conformidade total com `@shadcn/no-restyle`.
+  - [x] `bun run build` para checagem estrita de compilação TypeScript (`tsc -b`) e bundling Vite passando em 589ms.
+  - [x] 30 testes Pytest assíncronos passando no backend.
 
 ---
 
@@ -296,38 +327,38 @@
 > - [ARQUITETURA.md (Seção 4.1 `command-palette`)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md#L313-L325)  
 
 - [ ] **7.1 Frontend: Ações Contextuais e Integração com Roles Admin**
-  - [ ] Adicionar grupo "Ações Administrativas" visível condicionalmente para administradores logados (atalhos diretos para `/admin/filmes/novo` e ação unificada de encerramento de sessão disparando mutação de logout).
-  - [ ] Integrar atalhos analíticos (pular para os filmes com maior ROI ou maior bilheteria).
+  - [ ] Adicionar grupo com "Ações baeado nas funcionalidades desenvolvidas anteriormente que façam sentido e respeitando permissões como do admin.
+  - [ ] Integrar atalhos analíticos (Top 10 Mais populares, Top 10 Maiores Bilheterias, Top 10 Mais bem avalidos, Pesquisar pelos anos disponíveis por exemplo Filmes 2020, Atalho para adicionar novo filme).
   - [ ] **Testes Frontend:** `frontend/src/features/command-palette/__tests__/CommandPaletteAdvanced.test.tsx` (exibição condicional de ações administrativas e execução de atalhos).
+
+- [] **7.2 Complementos de funcionalidades**
+- [] Adicionar favoritar filmes para usuários autênticados
+- [] Adicionar uma watchlist para usuários autênticados
+- [] adicionar estar opções dentro do context menu do usuário
 
 ---
 
-### Etapa 8: Documentação, Storybook, Auditoria de Código e Validação E2E
-> **Objetivo:** Consolidar a documentação do projeto com Storybook, validar a qualidade do código com ESLint/TSDoc e produzir o README com guia de execução passo a passo exigido pelo PDF de especificação.  
+### Etapa 8: Novas funcionalidades para usuário
+
+
+### Etapa 9: Documentação, Auditoria de Código e Validação E2E
+> **Objetivo:** Consolidar a documentação do projeto, validar a qualidade do código com ESLint/TSDoc e produzir o README com guia de execução passo a passo exigido pelo PDF de especificação.  
 > **Referências:**  
 > - [Atividade de Dev.pdf (README com passo a passo)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/atividade-dev.md)  
 > - [requisitos-nao-funcionais.md (RNF07, RNF08, RNF10)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/requisitos-nao-funcionais.md#L79-L102)  
 > - [ARQUITETURA.md (Seção 6)](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/ARQUITETURA.md)
 
-- [ ] **8.1 Storybook 8 Setup & Stories de Componentes**
-  - [ ] Configurar Storybook 8 no frontend integrado ao Vite e Tailwind v4.
-  - [ ] Criar stories para componentes atômicos essenciais:
-    - `Button.stories.tsx` (variantes default, outline, destructive, ghost).
-    - `RequiredFieldBadge.stories.tsx` (comportamento de tooltip).
-    - `MovieGridItemView.stories.tsx` (card com poster e badges).
-    - `ReviewExpandableCardView.stories.tsx` (comportamento de expansão).
-- [ ] **8.2 Auditoria de Qualidade & Linters**
+- [ ] **9.1 Auditoria de Qualidade & Linters**
   - [ ] Rodar ESLint 9+ (`bun run lint`) e corrigir quaisquer violações de tipagem estrita, `@shadcn/lint` e TSDoc.
   - [ ] Verificar regras de imports absolutos `@/*` em todo o código frontend.
   - [ ] Backend: Rodar `ruff check` ou validações de tipagem Python.
-- [ ] **8.3 README.md Final & Guia de Execução**
+- [ ] **9.2 README.md Final & Guia de Execução**
   - [ ] Atualizar o [README.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/README.md) com:
     - Pré-requisitos (Python 3.11+, Bun, SQLite).
     - Como rodar as migrações e o script de seed (`python backend/scripts/seed_database.py`).
     - Como inicializar o backend FastAPI (`uv run uvicorn app.main:app --reload`).
     - Como inicializar o frontend Vite (`bun run dev`).
     - Como rodar a suíte completa de testes (`uv run pytest` e `bun run test`).
-    - Como abrir o Storybook (`bun run storybook`).
 
 ---
 
@@ -339,3 +370,4 @@
 | 2026-09-24 21:30 | Etapa 2 | Implementação completa da Slice de Autenticação Admin (Backend JWT + Frontend Login split com Storyset SVGs animados, textos rotativos e Aceternity MultiStepLoader) | Antigravity | `[x]` Concluído |
 | 2026-09-24 22:05 | Etapa 2 | Migração da camada de autenticação para `pyjwt` e `pwdlib[argon2]` seguindo guia moderno do FastAPI | Antigravity | `[x]` Concluído |
 | 2026-09-25 18:15 | Etapa 4 (4.3) | Redesign Editorial da Ficha Técnica: eliminação da cardite, Hero integrado em 2 colunas, Ratings Strip horizontal, KPIs tipográficos contínuos, texto editorial para equipe e contenção cromática | Antigravity | `[x]` Concluído |
+| 2026-09-26 15:58 | Etapa 6 (6.1-6.4) | Slice Vertical de Gestão de Filmes (CRUD Admin): backend transacional completo com remoção segura em cascata, formulário editorial anti-cardite em 2 colunas com live poster preview 2:3, seleção de gêneros em pills, diálogo de confirmação seguro, atalhos contextuais no catálogo/ficha técnica/palette e botão de cadastro na Navbar para admins. 100% testes passando (30 backend, 111 frontend), build Vite e 0 erros de linting. | Antigravity | `[x]` Concluído |

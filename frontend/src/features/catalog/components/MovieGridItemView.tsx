@@ -64,8 +64,11 @@ export const MovieGridItemView: React.FC<MovieGridItemViewProps> = ({ movie }) =
             {/* Rodapé com Ano, Duração e Nota dos Usuários Limpa */}
             <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
-                <span>{movie.ano_lancamento || 'Ano N/D'}</span>
-                {movie.duracao_minutos && (
+                {
+                  movie.ano_lancamento !== null && movie.ano_lancamento !== undefined &&
+                    <span>{movie.ano_lancamento}</span>
+                }
+                {movie.duracao_minutos !== null && movie.duracao_minutos > 0 && (
                   <>
                     <span>·</span>
                     <span>{movie.duracao_minutos} min</span>

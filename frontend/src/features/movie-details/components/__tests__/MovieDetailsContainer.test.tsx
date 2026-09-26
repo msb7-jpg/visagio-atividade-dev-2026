@@ -5,13 +5,19 @@ import { MovieDetailsContainer } from '../MovieDetailsContainer'
 import * as vmModule from '@/features/movie-details/hooks/useMovieDetailsViewModel'
 import type { MovieDetailDTO } from '@/features/movie-details/types/movie-details.types'
 
+import { MemoryRouter } from 'react-router-dom'
+
 function renderWithClient(ui: React.ReactElement) {
   const testClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false }
     }
   })
-  return render(<QueryClientProvider client={testClient}>{ui}</QueryClientProvider>)
+  return render(
+    <QueryClientProvider client={testClient}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>
+  )
 }
 
 const mockMovie: MovieDetailDTO = {

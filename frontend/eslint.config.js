@@ -1,3 +1,13 @@
+/**
+ * Configuração ESLint 9+ (Flat Config)
+ *
+ * 📖 GUIA RÁPIDO DE RESOLUÇÃO DE ERROS E PADRÕES:
+ * Consulte o arquivo `frontend/LINT_GUIDE.md` para um resumo prático de padrões efetivos,
+ * armadilhas comuns (como shadcn/no-restyle e pureza do React Compiler) e comandos rápidos:
+ * - Diagnóstico rápido: `bunx eslint --quiet src/features/...`
+ * - Correção automática: `bunx eslint --fix src/features/...`
+ */
+
 import js from '@eslint/js'
 import shadcn from '@shadcn/lint'
 import stylistic from '@stylistic/eslint-plugin'
@@ -16,7 +26,7 @@ const plugins = {
   '@typescript-eslint': tseslint.plugin,
   tsdoc,
   shadcn,
-  tailwindcss: tailwind,
+  tailwindcss: tailwind
 }
 
 const rules = {
@@ -87,6 +97,9 @@ const rules = {
   'tailwindcss/no-custom-classname': 'off',
 
   // Shadcn rules
+  // NOTA: 'shadcn/no-restyle' proíbe sobrescrever cores, tipografia, bordas e padding
+  // diretamente em componentes shadcn. Veja detalhes e padrões no arquivo LINT_GUIDE.md.
+  // Padrão para ícones com gap: use <span className="flex items-center gap-2"> dentro do <Button>.
   'shadcn/no-raw-colors': 'warn',
   'shadcn/no-inline-styles': 'warn',
   'shadcn/no-restyle': ['error', {

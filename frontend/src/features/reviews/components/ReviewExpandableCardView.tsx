@@ -104,7 +104,7 @@ export function ReviewExpandableCardView({
               {review.comentario}
             </motion.p>
           ) : (
-            <p className="text-xs italic text-muted-foreground/50">
+            <p className="text-xs text-muted-foreground/50 italic">
               Sem comentários.
             </p>
           )}
@@ -187,7 +187,7 @@ export function ReviewExpandableCardView({
               <div className="mt-4 max-h-[60vh] overflow-y-auto pr-1">
                 <motion.p
                   layoutId={`review-comment-${review.sk_movie_review_id}`}
-                  className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line"
+                  className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground"
                 >
                   {review.comentario}
                 </motion.p>

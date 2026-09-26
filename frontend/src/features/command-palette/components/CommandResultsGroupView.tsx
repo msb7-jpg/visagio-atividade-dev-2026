@@ -10,7 +10,7 @@ import {
   type CommandMovieItem,
   type CommandPaletteAction
 } from '@/features/command-palette/types/command-palette.types'
-import { ArrowRight, Compass, LogIn, LogOut, Sparkles } from 'lucide-react'
+import { ArrowRight, Compass, LogIn, LogOut, Plus, Sparkles } from 'lucide-react'
 import React from 'react'
 
 interface CommandResultsGroupViewProps {
@@ -127,15 +127,26 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
           <span>Explorar Catálogo Completo</span>
         </CommandItem>
         {isAuthenticated ? (
-          <CommandItem
-            value="action-logout"
-            onSelect={() => onSelectAction('logout')}
-            variant="cinema"
-            className="cursor-pointer"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Sair</span>
-          </CommandItem>
+          <>
+            <CommandItem
+              value="action-create-movie"
+              onSelect={() => onSelectAction('/admin/filmes/novo')}
+              variant="cinema"
+              className="cursor-pointer"
+            >
+              <Plus className="h-4 w-4 " />
+              <span>Cadastrar Filme</span>
+            </CommandItem>
+            <CommandItem
+              value="action-logout"
+              onSelect={() => onSelectAction('logout')}
+              variant="cinema"
+              className="cursor-pointer"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Sair</span>
+            </CommandItem>
+          </>
         ) : (
           <CommandItem
             value="action-login"

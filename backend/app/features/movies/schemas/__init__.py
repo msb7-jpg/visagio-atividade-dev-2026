@@ -9,6 +9,10 @@ from app.features.movies.schemas.common import (
 )
 from app.features.movies.schemas.detail import MovieDetailDTO
 from app.features.movies.schemas.metrics import FinancialMetricsDTO
+from app.features.movies.schemas.mutations import (
+    MovieCreateDTO,
+    MovieUpdateDTO,
+)
 from app.features.movies.schemas.params import (
     MovieFilterParams,
     SortField,
@@ -26,4 +30,6 @@ __all__ = [
     "MovieFilterParams",
     "FinancialMetricsDTO",
     "MovieDetailDTO",
+    "MovieCreateDTO",
+    "MovieUpdateDTO",
 ]

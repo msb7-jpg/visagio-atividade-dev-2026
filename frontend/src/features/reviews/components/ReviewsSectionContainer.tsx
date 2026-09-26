@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { NewReviewModalView } from '@/features/reviews/components/NewReviewModalView'
 import { ReviewExpandableCardView } from '@/features/reviews/components/ReviewExpandableCardView'
 import {
@@ -7,9 +8,8 @@ import {
   useUpdateMovieReviewMutation
 } from '@/features/reviews/hooks/useMovieReviews'
 import { useUserMovieReview } from '@/features/reviews/hooks/useUserMovieReview'
-import { useAuth } from '@/features/auth/hooks/useAuth'
-import type { MovieReviewDTO } from '@/features/reviews/types/reviews.types'
 import type { ReviewFormValues } from '@/features/reviews/schemas/review.schema'
+import type { MovieReviewDTO } from '@/features/reviews/types/reviews.types'
 import { MessageSquarePlus, PencilLine, Star } from 'lucide-react'
 import { useState } from 'react'
 

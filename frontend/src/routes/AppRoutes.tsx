@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { ProtectedRoute } from '@/routes/ProtectedRoute'
 
 const CatalogContainer = lazy(() =>
   import('@/features/catalog/components/CatalogContainer').then(module => ({
@@ -20,12 +21,30 @@ const LoginContainer = lazy(() =>
   }))
 )
 
+const MovieCreateContainer = lazy(() =>
+  import('@/features/movie-admin/components/MovieCreateContainer').then(module => ({
+    default: module.MovieCreateContainer
+  }))
+)
+
+const MovieEditContainer = lazy(() =>
+  import('@/features/movie-admin/components/MovieEditContainer').then(module => ({
+    default: module.MovieEditContainer
+  }))
+)
+
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<CatalogContainer />} />
         <Route path="/filmes/:id" element={<MovieDetailsContainer />} />
+
+        {/* Rotas restritas ao Administrador */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin/filmes/novo" element={<MovieCreateContainer />} />
+          <Route path="/admin/filmes/:id/editar" element={<MovieEditContainer />} />
+        </Route>
       </Route>
       <Route path="/login" element={<LoginContainer />} />
     </Routes>

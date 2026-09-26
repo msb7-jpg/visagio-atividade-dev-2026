@@ -1,7 +1,7 @@
-import * as React from 'react'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useMovieReviewsQuery } from '@/features/reviews/hooks/useMovieReviews'
 import type { MovieReviewDTO } from '@/features/reviews/types/reviews.types'
+import * as React from 'react'
 
 export interface UserMovieReviewData {
   reviewId?: string

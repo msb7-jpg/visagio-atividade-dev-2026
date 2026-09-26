@@ -15,8 +15,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { Tooltip } from '@/components/ui/tooltip-card'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import type { MovieListItem } from '@/features/catalog/api/catalogApi'
+import { DeleteMovieConfirmDialog } from '@/features/movie-admin/components/DeleteMovieConfirmDialog'
+import { useDeleteMovieMutation } from '@/features/movie-admin/hooks/useMovieAdminMutations'
 import { NewReviewModalView } from '@/features/reviews/components/NewReviewModalView'
 import { StarRatingInput } from '@/features/reviews/components/StarRatingInput'
 import {
@@ -26,8 +29,21 @@ import {
 import { useUserMovieReview } from '@/features/reviews/hooks/useUserMovieReview'
 import type { ReviewFormValues } from '@/features/reviews/schemas/review.schema'
 import { cn } from '@/lib/utils'
-import { Check, Eye, Film, Heart, MoreHorizontal, MouseRight, PencilLine, PlusCircle } from 'lucide-react'
+import { routes } from '@/routes/routes.types'
+import {
+  Check,
+  Edit3,
+  Eye,
+  Film,
+  Heart,
+  MoreHorizontal,
+  MouseRight,
+  PencilLine,
+  PlusCircle,
+  Trash2
+} from 'lucide-react'
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface MovieQuickActionsMenuProps {
   movie: MovieListItem
@@ -42,12 +58,14 @@ export function MovieQuickActionsMenu({
   triggerClassName,
   className
 }: MovieQuickActionsMenuProps) {
-  const { user } = useAuth()
+  const navigate = useNavigate()
+  const { user, isAuthenticated } = useAuth()
   const authorName = user?.nome || 'Cinéfilo'
 
   const { userReview, hasReviewed, recordReview } = useUserMovieReview(movie.sk_movie_id)
 
   const [isReviewModalOpen, setIsReviewModalOpen] = React.useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [modalMode, setModalMode] = React.useState<'create' | 'edit'>('create')
   const [initialModalValues, setInitialModalValues] = React.useState<{
     nota?: number
@@ -92,7 +110,14 @@ export function MovieQuickActionsMenu({
     }
   })
 
-  const isPending = submitMutation.isPending || updateMutation.isPending
+  const deleteMutation = useDeleteMovieMutation({
+    onSuccess: () => {
+      setIsDeleteDialogOpen(false)
+      setIsDropdownOpen(false)
+    }
+  })
+
+  const isPending = submitMutation.isPending || updateMutation.isPending || deleteMutation.isPending
 
   // Valor exibido nas estrelas: última nota do usuário ou sucesso temporário
   const currentScore = quickRatingSuccess ?? (userReview ? userReview.nota : 0)
@@ -179,19 +204,18 @@ export function MovieQuickActionsMenu({
                 Sua avaliação ({((userReview?.nota ?? 0) / 2).toFixed(1)} ★)
               </span>
             ) : (
-              'Avaliação Rápida (1 clique)'
+              'Assistiu? Deixe sua nota'
             )}
           </span>
 
           {/* Ícone de botão direito exclusivo do menu de contexto com tooltip explicativo */}
-          <div className="group/hint relative flex items-center">
-            <span
-              className="flex cursor-help items-center text-white/40 transition-colors hover:text-white/70"
-              title="Clique com botão direito no card para abrir o menu"
-            >
-              <MouseRight className="size-3.5" />
-            </span>
-          </div>
+          <Tooltip content="Clique com botão direito no card para abrir o menu">
+            <div className="flex items-center">
+              <span className="flex cursor-help items-center text-white/40 transition-colors hover:text-white/70">
+                <MouseRight className="size-3.5" />
+              </span>
+            </div>
+          </Tooltip>
         </LabelComponent>
 
         <div className="px-1 py-1.5">
@@ -215,7 +239,7 @@ export function MovieQuickActionsMenu({
                 handleOpenEditReview()
               }}
             >
-              <PencilLine className="size-3.5 text-primary" />
+              <PencilLine className="size-3.5 text-muted-foreground" />
               <span>Editar minha resenha...</span>
             </ItemComponent>
 
@@ -251,6 +275,35 @@ export function MovieQuickActionsMenu({
           <Heart className="size-3.5" />
           <span>Favoritar (em breve)</span>
         </ItemComponent>
+
+        {/* Ações de Administração (quando autenticado) */}
+        {isAuthenticated && (
+          <>
+            <SeparatorComponent />
+            <ItemComponent
+              onSelect={(e) => {
+                e.preventDefault()
+                setIsDropdownOpen(false)
+                navigate(routes.adminMovieEdit(movie.sk_movie_id))
+              }}
+            >
+              <Edit3 className="size-3.5 text-muted-foreground" />
+              <span>Editar filme...</span>
+            </ItemComponent>
+
+            <ItemComponent
+              className="text-destructive focus:text-destructive"
+              onSelect={(e) => {
+                e.preventDefault()
+                setIsDropdownOpen(false)
+                setIsDeleteDialogOpen(true)
+              }}
+            >
+              <Trash2 className="size-3.5 text-destructive" />
+              <span>Excluir filme...</span>
+            </ItemComponent>
+          </>
+        )}
       </div>
     )
   }
@@ -324,6 +377,17 @@ export function MovieQuickActionsMenu({
         isSubmitting={isPending}
         mode={modalMode}
         initialValues={initialModalValues}
+      />
+
+      {/* Diálogo de Confirmação de Exclusão (Admin) */}
+      <DeleteMovieConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        movieTitle={movie.titulo}
+        onConfirmDelete={() => {
+          deleteMutation.mutate(movie.sk_movie_id)
+        }}
+        isDeleting={deleteMutation.isPending}
       />
     </>
   )

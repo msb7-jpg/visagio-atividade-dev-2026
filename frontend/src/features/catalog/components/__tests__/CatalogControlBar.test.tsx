@@ -1,9 +1,13 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import { CatalogControlBar } from '@/features/catalog/components/CatalogControlBar'
 import type { GenreItem } from '@/features/catalog/api/catalogApi'
 
 describe('CatalogControlBar', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   const mockGenres: GenreItem[] = [
     { sk_genre_id: 'g-1', nome_genero: 'Ação' },
     { sk_genre_id: 'g-2', nome_genero: 'Drama' }
@@ -80,11 +84,11 @@ describe('CatalogControlBar', () => {
       />
     )
 
-    const avaliacoesBtn = screen.getByText('Avaliações')
+    const avaliacoesBtn = screen.getByRole('button', { name: /Avaliações/i })
     fireEvent.click(avaliacoesBtn)
     expect(handleToggleSort).toHaveBeenCalledWith('nota_media_usuarios')
 
-    const popularidadeBtn = screen.getByText('Popularidade')
+    const popularidadeBtn = screen.getByRole('button', { name: /Popularidade/i })
     fireEvent.click(popularidadeBtn)
     expect(handleToggleSort).toHaveBeenCalledWith('popularidade')
   })

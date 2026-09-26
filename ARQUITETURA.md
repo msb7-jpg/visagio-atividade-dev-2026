@@ -532,7 +532,7 @@ export function ReviewsContainer({ movieId }: ReviewsContainerProps) {
 1. **Escalabilidade & Legibilidade:** Os componentes React ficam puramente visuais, fáceis de alinhar com o design rico (Tailwind v4, Aceternity UI, Glassmorphism). O código de interface não é poluído com dezenas de `try/catch`, chamadas de endpoints ou regras de validação.
 2. **Manutenibilidade:** Qualquer alteração no fluxo de uma funcionalidade (ex: validação de review ou filtro de catálogo) é feita dentro da pasta correspondente em `src/features/<feature>/` ou `backend/app/features/<feature>/`, sem quebrar outras áreas da aplicação.
 3. **Testabilidade Real:** 
-   - Os componentes visuais podem ser testados com Storybook ou Vitest de forma isolada, apenas injetando props mocadas.
+   - Os componentes visuais podem ser testados com Vitest de forma isolada, apenas injetando props mocadas.
    - Os hooks podem ser testados com `@testing-library/react` e MSW.
    - Os serviços FastAPI e endpoints recebem testes de integração rápidos com Pytest e AsyncClient.
 4. **Alinhamento com RNFs:** Cumpre rigorosamente **RNF01 a RNF14**, eliminando caminhos relativos longos via path alias `@/*` e garantindo tipagem de ponta a ponta com TypeScript estrito, Zod e Pydantic v2.

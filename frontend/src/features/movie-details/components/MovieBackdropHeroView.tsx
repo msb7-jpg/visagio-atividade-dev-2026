@@ -3,7 +3,10 @@ interface MovieBackdropHeroViewProps {
   titulo: string
 }
 
-export function MovieBackdropHeroView({ urlBackdrop, titulo }: MovieBackdropHeroViewProps) {
+export function MovieBackdropHeroView({
+  urlBackdrop,
+  titulo
+}: MovieBackdropHeroViewProps) {
   if (!urlBackdrop) {
     return (
       <div

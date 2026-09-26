@@ -3,18 +3,26 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.db.session import get_db
+from app.features.auth.router import get_current_admin
+from app.features.auth.schemas import AdminUserDTO
 from app.features.movies.docs import (
+    CreateMovieDoc,
+    DeleteMovieDoc,
     GetMovieDetailDoc,
     ListMoviesDoc,
     QuickSearchDoc,
+    UpdateMovieDoc,
 )
 from app.features.movies.repository import MoviesRepository
 from app.features.movies.schemas import (
+    MovieCreateDTO,
     MovieDetailDTO,
     MovieFilterParams,
     MovieListItemDTO,
+    MovieUpdateDTO,
     QuickSearchMovieDTO,
 )
+from app.features.movies.service import MoviesService
 from app.shared.pagination import PaginatedResponse
 
 movies_router = APIRouter()
@@ -22,6 +30,11 @@ movies_router = APIRouter()
 MoviesRepo = Annotated[
     MoviesRepository,
     Depends(lambda session=Depends(get_db): MoviesRepository(session)),
+]
+
+MoviesServ = Annotated[
+    MoviesService,
+    Depends(lambda session=Depends(get_db): MoviesService(session)),
 ]
 
 
@@ -53,3 +66,45 @@ async def get_movie_detail(
             detail=f"Filme com ID '{movie_id}' não foi encontrado.",
         )
     return movie
+
+
+@movies_router.post("", **CreateMovieDoc.to_dict())
+async def create_movie(
+    payload: MovieCreateDTO,
+    service: MoviesServ,
+    _current_admin: Annotated[AdminUserDTO, Depends(get_current_admin)],
+) -> MovieDetailDTO:
+    """Cria um novo filme no catálogo (Requer Admin)."""
+    return await service.create_movie(payload)
+
+
+@movies_router.put("/{movie_id}", **UpdateMovieDoc.to_dict())
+async def update_movie(
+    movie_id: str,
+    payload: MovieUpdateDTO,
+    service: MoviesServ,
+    _current_admin: Annotated[AdminUserDTO, Depends(get_current_admin)],
+) -> MovieDetailDTO:
+    """Atualiza informações de um filme existente (Requer Admin)."""
+    updated = await service.update_movie(movie_id, payload)
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Filme com ID '{movie_id}' não foi encontrado para atualização.",
+        )
+    return updated
+
+
+@movies_router.delete("/{movie_id}", **DeleteMovieDoc.to_dict())
+async def delete_movie(
+    movie_id: str,
+    service: MoviesServ,
+    _current_admin: Annotated[AdminUserDTO, Depends(get_current_admin)],
+) -> None:
+    """Exclui um filme do catálogo e suas associações (Requer Admin)."""
+    deleted = await service.delete_movie(movie_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Filme com ID '{movie_id}' não foi encontrado para exclusão.",
+        )

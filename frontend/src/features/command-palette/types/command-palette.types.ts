@@ -22,6 +22,7 @@ export type CommandPaletteAction = CommandRouteAction | CommandSystemAction
 export const COMMAND_ACTIONS = {
   NAVIGATE_HOME: '/' as const,
   NAVIGATE_LOGIN: '/login' as const,
+  NAVIGATE_CREATE_MOVIE: '/admin/filmes/novo' as const,
   LOGOUT: 'logout' as const
 } as const
 
