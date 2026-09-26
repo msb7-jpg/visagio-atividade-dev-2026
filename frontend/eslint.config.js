@@ -151,7 +151,7 @@ export default defineConfig([
         cssConfigPath: 'src/index.css'
       },
       shadcn: {
-        note: 'Consulte DESIGN.md e README.md. Adicione variantes ou tamanhos em src/components/ui em vez de sobrescrever estilos.'
+        note: 'Consulte docs/design/DESIGN.md e README.md. Adicione variantes ou tamanhos em src/components/ui em vez de sobrescrever estilos.'
       }
     },
     plugins,

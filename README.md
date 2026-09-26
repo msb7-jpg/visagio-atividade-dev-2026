@@ -233,3 +233,15 @@ graph TD
 1. **Linguagem Onipresente (Ubiquitous Language):** Os mesmos termos canônicos (`titulo`, `sinopse`, `ano_lancamento`, `duracao_minutos`, `url_poster`, `url_backdrop`, `nota_media_usuarios`, `comentario`) são rigorosamente preservados do banco SQLite até o TanStack Form.
 2. **Separação UI Pura vs. Orquestração:** Componentes visuais (`*View.tsx`) recebem apenas dados via props; a orquestração de queries, mutações e cache fica isolada em Containers e Hooks dedicados.
 3. **Design Editorial Anti-Cardite:** Experiência cinematográfica limpa com foco visual nas obras, tipografia Geist, contenção cromática e zero ruído visual.
+
+---
+
+## 📖 Documentação Detalhada
+
+Para guias aprofundados de arquitetura, design system, boas práticas e planejamento, consulte a pasta [`docs/`](docs/README.md):
+- [**docs/architecture/**](docs/architecture/ARQUITETURA.md): Decisões arquiteturais, contratos de dados e diretrizes de backend.
+- [**docs/design/**](docs/design/DESIGN.md): Tokens semânticos, paleta escura cinematográfica e design system shadcn.
+- [**docs/engineering/**](docs/engineering/GUIDELINES.md): Boas práticas com React 19, hooks e requisitos não-funcionais.
+- [**docs/planning/**](docs/planning/plano-execucao.md): Plano de execução detalhado com checklist e rastreabilidade de todas as fatias verticais.
+- [**docs/specs/**](docs/specs/atividade-dev.md): Requisitos funcionais da especificação oficial.
+
