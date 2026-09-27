@@ -207,28 +207,57 @@ class PeopleRepository:
 
         person_ids = [p.sk_person_id for p in people]
 
-        # Etapa 2: Contagem de filmes apenas para os IDs selecionados
+        # Etapa 2: Mapear IDs de pessoas e contagem deduplicada de filmes por pessoa
         counts_stmt = (
             select(
                 bridge_movie_person.c.sk_person_id,
-                func.count(bridge_movie_person.c.sk_movie_id).label("total_filmes"),
+                bridge_movie_person.c.sk_movie_id,
             )
             .where(bridge_movie_person.c.sk_person_id.in_(person_ids))
-            .group_by(bridge_movie_person.c.sk_person_id)
         )
-        counts_res = await self.session.execute(counts_stmt)
-        counts_map = dict(counts_res.fetchall())
+        movies_res = await self.session.execute(counts_stmt)
+        person_movie_rows = movies_res.fetchall()
 
-        results = [
-            QuickSearchPersonDTO(
-                sk_person_id=p.sk_person_id,
-                nome_pessoa=p.nome_pessoa,
-                tipo_pessoa=p.tipo_pessoa,
-                total_filmes=counts_map.get(p.sk_person_id, 0),
+        # Mapeia pessoa_id -> set(movie_ids)
+        person_movies_map: dict[str, set[str]] = {}
+        for row in person_movie_rows:
+            p_id, m_id = row[0], row[1]
+            if p_id not in person_movies_map:
+                person_movies_map[p_id] = set()
+            person_movies_map[p_id].add(m_id)
+
+        # Etapa 3: Agrupar por nome_pessoa para unificar papéis e filmes únicos
+        grouped_by_name: dict[str, dict] = {}
+        for p in people:
+            nome = p.nome_pessoa.strip()
+            if nome not in grouped_by_name:
+                grouped_by_name[nome] = {
+                    "sk_person_id": p.sk_person_id,
+                    "nome_pessoa": p.nome_pessoa,
+                    "papeis": set(),
+                    "movie_ids": set(),
+                }
+            if p.tipo_pessoa:
+                grouped_by_name[nome]["papeis"].add(p.tipo_pessoa.strip())
+            # Adiciona filmes vinculados a esse sk_person_id
+            grouped_by_name[nome]["movie_ids"].update(person_movies_map.get(p.sk_person_id, set()))
+
+        results = []
+        for g in grouped_by_name.values():
+            sorted_papeis = sorted(list(g["papeis"]))
+            # tipo_pessoa consolidado (ex: "Diretor, Roteirista")
+            tipo_label = ", ".join(sorted_papeis) if sorted_papeis else "Cinema"
+            results.append(
+                QuickSearchPersonDTO(
+                    sk_person_id=g["sk_person_id"],
+                    nome_pessoa=g["nome_pessoa"],
+                    tipo_pessoa=tipo_label,
+                    total_filmes=len(g["movie_ids"]),
+                    papeis=sorted_papeis,
+                )
             )
-            for p in people
-        ]
 
         # Ordena por maior relevância de obras no catálogo
         results.sort(key=lambda x: (x.total_filmes, -len(x.nome_pessoa)), reverse=True)
         return results[:limit]
+

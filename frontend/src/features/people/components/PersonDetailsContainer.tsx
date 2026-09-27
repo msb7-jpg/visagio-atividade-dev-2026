@@ -112,7 +112,7 @@ export const PersonDetailsContainer: React.FC = () => {
   return (
     <div
       ref={catalogRef}
-      className="container mx-auto flex flex-1 flex-col px-4 py-6 sm:px-6 space-y-8"
+      className="container mx-auto flex flex-1 flex-col space-y-8 px-4 py-6 sm:px-6"
     >
       {/* Botão de retorno sutil */}
       <div>

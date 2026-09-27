@@ -150,4 +150,33 @@ describe('CommandResultsGroupView', () => {
       total_filmes: 12
     })
   })
+
+  it('renderiza múltiplos papéis unificados como badges individuais', () => {
+    render(
+      <Command>
+        <CommandList>
+          <CommandResultsGroupView
+            movies={[]}
+            people={[
+              {
+                sk_person_id: 'person-tarantino',
+                nome_pessoa: 'Quentin Tarantino',
+                tipo_pessoa: 'Diretor, Roteirista',
+                total_filmes: 9,
+                papeis: ['Diretor', 'Roteirista']
+              }
+            ]}
+            query="tarantino"
+            onSelectMovie={vi.fn()}
+            onSelectPerson={vi.fn()}
+            onSelectAction={vi.fn()}
+          />
+        </CommandList>
+      </Command>
+    )
+
+    expect(screen.getByText('Quentin Tarantino')).toBeDefined()
+    expect(screen.getByText('Diretor')).toBeDefined()
+    expect(screen.getByText('Roteirista')).toBeDefined()
+  })
 })

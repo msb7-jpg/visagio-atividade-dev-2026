@@ -35,3 +35,5 @@ class QuickSearchPersonDTO(BaseModel):
     nome_pessoa: str
     tipo_pessoa: str
     total_filmes: int = 0
+    papeis: list[str] = Field(default_factory=list, description="Lista de papéis desempenhados")
+

@@ -147,3 +147,38 @@ async def test_quick_search_people(seed_test_person_data):
         assert len(found) == 1
         assert found[0]["nome_pessoa"] == "Christopher Nolan Test"
         assert found[0]["total_filmes"] == 2
+        assert "Diretor" in found[0]["papeis"]
+
+
+@pytest.mark.asyncio
+async def test_quick_search_people_deduplication():
+    """Garante que registros múltiplos da mesma pessoa com papéis diferentes são unificados."""
+    async with AsyncSessionLocal() as session:
+        p1 = DimPerson(nome_pessoa="Quentin Dup Test", tipo_pessoa="Diretor")
+        p2 = DimPerson(nome_pessoa="Quentin Dup Test", tipo_pessoa="Roteirista")
+        session.add_all([p1, p2])
+        await session.commit()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/v1/people/quick-search?q=Quentin Dup Test")
+            assert resp.status_code == 200
+            data = resp.json()
+            found = [p for p in data if p["nome_pessoa"] == "Quentin Dup Test"]
+            # Deve retornar exatamente 1 registro unificado
+            assert len(found) == 1
+            assert "Diretor" in found[0]["papeis"]
+            assert "Roteirista" in found[0]["papeis"]
+            assert "Diretor" in found[0]["tipo_pessoa"]
+            assert "Roteirista" in found[0]["tipo_pessoa"]
+    finally:
+        async with AsyncSessionLocal() as session:
+            db_p1 = await session.get(DimPerson, p1.sk_person_id)
+            if db_p1:
+                await session.delete(db_p1)
+            db_p2 = await session.get(DimPerson, p2.sk_person_id)
+            if db_p2:
+                await session.delete(db_p2)
+            await session.commit()
+

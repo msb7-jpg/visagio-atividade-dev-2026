@@ -123,7 +123,7 @@ export const PosterLivePreview: React.FC<PosterLivePreviewProps> = ({
         </div>
       ) : (
         /* Card de Prévia do Backdrop Panorâmico (16:9) */
-        <div className="group relative aspect-16/9 w-full max-w-[340px] overflow-hidden rounded-xl border border-white/10 bg-card/80 shadow-2xl transition-all duration-300">
+        <div className="group relative aspect-video w-full max-w-[340px] overflow-hidden rounded-xl border border-white/10 bg-card/80 shadow-2xl transition-all duration-300">
           {hasValidBackdropUrl ? (
             <>
               <img

@@ -52,7 +52,7 @@ export function CastAndCrewSectionView({
                     size="md"
                     className="cursor-pointer"
                   >
-                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:decoration-primary hover:text-primary">
+                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary">
                       {d.nome_pessoa}
                     </span>
                   </Badge>
@@ -82,7 +82,7 @@ export function CastAndCrewSectionView({
                     size="md"
                     className="cursor-pointer"
                   >
-                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:decoration-primary hover:text-primary">
+                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary">
                       {r.nome_pessoa}
                     </span>
                   </Badge>
@@ -133,7 +133,7 @@ export function CastAndCrewSectionView({
                     size="md"
                     className="cursor-pointer"
                   >
-                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:decoration-primary hover:text-primary">
+                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary">
                       {a.nome_pessoa}
                     </span>
                   </Badge>

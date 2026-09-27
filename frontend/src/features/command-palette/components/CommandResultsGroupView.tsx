@@ -105,12 +105,24 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
                     <span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
                       {person.nome_pessoa}
                     </span>
-                    <Badge
-                      variant="glass"
-                      size="sm"
-                    >
-                      {person.tipo_pessoa}
-                    </Badge>
+                    {person.papeis && person.papeis.length > 0 ? (
+                      person.papeis.map((papel) => (
+                        <Badge
+                          key={papel}
+                          variant="glass"
+                          size="sm"
+                        >
+                          {papel}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge
+                        variant="glass"
+                        size="sm"
+                      >
+                        {person.tipo_pessoa}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Film className="size-3 opacity-70" />

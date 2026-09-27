@@ -133,7 +133,7 @@ export function NewReviewModalView({
             children={(field) => {
               const fieldError = extractFirstErrorMessage(field.state.meta.errors)
               return (
-                <div className="space-y-1.5 rounded-lg border border-white/5 bg-white/[0.02] p-3.5">
+                <div className="space-y-1.5 rounded-lg border border-white/5 bg-white/2 p-3.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-muted-foreground">
                       Sua classificação

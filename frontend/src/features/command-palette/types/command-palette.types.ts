@@ -54,6 +54,7 @@ export interface CommandPersonItem {
   nome_pessoa: string
   tipo_pessoa: string
   total_filmes: number
+  papeis?: string[]
 }
 
 /**
