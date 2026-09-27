@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import { MovieBackdropHeroView } from '../MovieBackdropHeroView'
 import { MovieHeaderInfoView } from '../MovieHeaderInfoView'
@@ -92,14 +93,16 @@ describe('Movie Details Pure Views', () => {
     expect(screen.getByText('$701.7M')).toBeInTheDocument()
   })
 
-  it('CastAndCrewSectionView exibe diretores, roteiristas e atores', () => {
+  it('CastAndCrewSectionView exibe diretores, roteiristas e atores com links', () => {
     render(
-      <CastAndCrewSectionView
-        diretores={[{ sk_person_id: '1', nome_pessoa: 'Christopher Nolan', tipo_pessoa: 'Diretor' }]}
-        roteiristas={[{ sk_person_id: '2', nome_pessoa: 'Jonathan Nolan', tipo_pessoa: 'Roteirista' }]}
-        atores={[{ sk_person_id: '3', nome_pessoa: 'Matthew McConaughey', tipo_pessoa: 'Ator' }]}
-        produtoras={[{ sk_company_id: '1', nome_produtora: 'Syncopy' }]}
-      />
+      <MemoryRouter>
+        <CastAndCrewSectionView
+          diretores={[{ sk_person_id: '1', nome_pessoa: 'Christopher Nolan', tipo_pessoa: 'Diretor' }]}
+          roteiristas={[{ sk_person_id: '2', nome_pessoa: 'Jonathan Nolan', tipo_pessoa: 'Roteirista' }]}
+          atores={[{ sk_person_id: '3', nome_pessoa: 'Matthew McConaughey', tipo_pessoa: 'Ator' }]}
+          produtoras={[{ sk_company_id: '1', nome_produtora: 'Syncopy' }]}
+        />
+      </MemoryRouter>
     )
 
     expect(screen.getByText('Christopher Nolan')).toBeInTheDocument()

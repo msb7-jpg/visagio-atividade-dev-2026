@@ -71,6 +71,7 @@
 | **Etapa 7: Slice Vertical de Favoritos, Watchlist & Biblioteca** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 8: Enriquecimento da Command Palette & Ações Avançadas** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
 | **Etapa 9: Documentação, Auditoria e Entrega Final** | `[x]` | `[x]` | `[x]` | `[x]` Concluído |
+| **Etapa 10: Slice Vertical de Perfil de Pessoa & Filmografia (Letterboxd-like)** | `[>]` | `[ ]` | `[ ]` | `[>]` Em Execução |
 
 ---
 
@@ -397,6 +398,40 @@
     - Credenciais de acesso de administrador para testes.
     - Como rodar a suíte completa de testes (`uv run pytest` e `bun run test`).
     - Instruções de auditoria de código (`bun run lint`, `bun run build`, `uv run ruff check .`).
+
+### Etapa 10: Slice Vertical de Perfil de Pessoa & Filmografia (Letterboxd-like)
+> **Objetivo:** Exibir a página dedicada de pessoas (diretores, atores e roteiristas) com avatar em evidência, indicador de progresso cineclubista ("You’ve watched X of Y / Z%"), reaproveitamento integral dos cards e filtros do catálogo da Home, hyperlinks em todos os pontos de menção e busca unificada de pessoas na Command Palette (⌘K).  
+> **Referências:**  
+> - [fixes/fix-reviews/fix-reviews.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/fixes/fix-reviews/fix-reviews.md) (Princípios de design cineclubista, paleta em ardósia e contenção de ruído)  
+> - [plano-melhoria-reviews.md](file:///home/miguelsb/workspace/visagio-atividade-dev-2026/fixes/fix-reviews/plano-melhoria-reviews.md) (Card de filme limpo, Quick Action e menu contextual)
+
+- [x] **10.1 Backend: Slice de Pessoas (`backend/app/features/people/`)** *(Concluído em 2026-09-27)*
+  - [x] Schemas Pydantic (`PersonDetailDTO`, `QuickSearchPersonDTO`).
+  - [x] Queries otimizadas em `dim_people`, `bridge_movie_person` e `dim_movies` (com filtros por gênero, ano e ordenações reutilizando `MovieListItemDTO`).
+  - [x] Endpoints RESTful:
+    - `GET /api/v1/people/{person_id}`: Dados cadastrais da pessoa, estatísticas (total de filmes, nota média dos filmes).
+    - `GET /api/v1/people/{person_id}/movies`: Filmografia paginada com filtros por gênero, ano e ordenação.
+    - `GET /api/v1/people/quick-search?q=...`: Busca rápida por nome para Command Palette.
+  - [x] Testes Pytest assíncronos cobrindo perfil, filmografia e busca rápida (43 testes passando no backend).
+
+- [x] **10.2 Frontend: Command Palette Unificada (Filmes & Pessoas)** *(Concluído em 2026-09-27)*
+  - [x] Atualizar busca rápida para pesquisar tanto filmes quanto pessoas em paralelo com cache do TanStack Query.
+  - [x] Enriquecer `CommandResultsGroupView.tsx` com a seção "Pessoas Encontradas" (avatar estilizado, papéis e atalho de navegação).
+  - [x] Testes unitários para busca de pessoas na Command Palette.
+
+- [x] **10.3 Frontend: Navegação & Links Ubíquos para Pessoas** *(Concluído em 2026-09-27)*
+  - [x] Atualizar `routes.types.ts` com a rota tipada `/pessoas/${string}` e construtor `routes.personDetail(id)`.
+  - [x] Transformar menções de pessoas em links clicáveis na Ficha Técnica (`CastAndCrewSectionView.tsx`).
+
+- [x] **10.4 Frontend: Página de Perfil da Pessoa (`/pessoas/:id`)** *(Concluído em 2026-09-27)*
+  - [x] `PersonHeroHeaderView`: Avatar em evidência com fallback cinematográfico estilizado, nome, badges sutis de atuação, e cálculo de progresso *"Você assistiu X de Y / Z%"* cruzado com a biblioteca do usuário (`useUserLibrary`).
+  - [x] Reuso direto de `CatalogControlBar` (Gêneros, Anos, Sort e Toggle Grid/List) mantendo a mesma ergonomia da Home.
+  - [x] Renderização dos filmes via `MovieGridItemView` e `MovieListItemView` com suporte aos menus de contexto e quick rating.
+  - [x] Estado de loading com skeletons e empty state elegante.
+
+- [x] **10.5 Testes & Validação de Qualidade da Etapa 10** *(Concluído em 2026-09-27)*
+  - [x] Testes unitários no Vitest para componentes e hooks do slice de pessoas (149 testes passando).
+  - [x] 0 erros de ESLint (`bun run lint`), compilação TypeScript limpa (`bun run build`), formatação e integridade com Ruff (`uv run ruff check .` com 0 erros) e 100% de testes passando no backend (`pytest`) e frontend (`vitest`).
 
 ---
 

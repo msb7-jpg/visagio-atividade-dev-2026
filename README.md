@@ -55,7 +55,7 @@ Interações contextuais diretas sobre as obras: clique com o botão direito par
 ---
 
 #### 3. Command Palette (⌘K / Ctrl+K) — Busca Global & Navegação Instantânea
-Acesso instantâneo a qualquer filme, diretor ou seção do sistema através do atalho universal de teclado. Inclui busca com debouncing em tempo real, visualização de metadados no dropdown e navegação completa por setas sem tirar as mãos do teclado.
+Acesso instantâneo a qualquer filme, pessoa da indústria cinematográfica (atores, diretores, roteiristas) ou seção do sistema através do atalho universal de teclado. Inclui busca com debouncing em tempo real agrupada por categorias, visualização de metadados no dropdown e navegação completa por setas sem tirar as mãos do teclado.
 
 ![Command Palette & Navegação Cross-App](media/video-replacement/catalog-page-using-command-pallete-to-navigate-cross-app.gif)
 
@@ -119,6 +119,20 @@ Painel para atualização de informações cadastrais, ajuste de diretores via c
 
 ---
 
+#### 8. Busca Global de Pessoas e Cineastas (Command Palette)
+Busca integrada via atalho `⌘K` / `Ctrl+K` permitindo localizar tanto títulos quanto pessoas (atores, diretores e roteiristas), exibindo a contagem de obras presentes no catálogo e atalhos de navegação rápida direto para o perfil do cineasta.
+
+![Command Palette pesquisando Pessoas](media/person-page-command-pallete-to-search-persons.png)
+
+---
+
+#### 9. Perfil de Artistas & Filmografia Completa
+Visão dedicada com a filmografia completa do cineasta ou ator, seus papéis na indústria (Diretor, Roteirista, Ator), período em atividade, indicador gamificado de progresso de filmes assistidos pelo cinéfilo e filtros integrados por gênero, ano e status.
+
+![Visão Geral da Página de Pessoa](media/person-page-overview.png)
+
+---
+
 ## 🎯 Histórias de Usuário & Funcionalidades
 
 O sistema foi desenhado a partir dos requisitos centrais da especificação oficial e expandido com recursos de ponta:
@@ -128,7 +142,10 @@ O sistema foi desenhado a partir dos requisitos centrais da especificação ofic
   - Filtros dinâmicos por **Gênero** e **Ano de Lançamento** (alimentados diretamente do banco de dados).
   - Ordenação multicritério por Popularidade, Nota dos Usuários, Bilheteria (USD), Ano de Lançamento e Título.
 - **Busca Global e Instantânea:**
-  - Barra de pesquisa integrada in-page e **Command Palette (`⌘K` / `Ctrl+K`)** para busca em tempo real com debouncing e navegação via teclado.
+  - Barra de pesquisa integrada in-page e **Command Palette (`⌘K` / `Ctrl+K`)** para busca em tempo real com debouncing e navegação via teclado, abrangendo **tanto filmes quanto pessoas** (atores, diretores e roteiristas).
+- **Perfis de Pessoas & Filmografia:**
+  - Páginas dedicadas (`/pessoas/:id`) para artistas e cineastas com métricas consolidadas de carreira (período de atividade, nota média, papéis e total de obras).
+  - Indicador de progresso cineclubista com percentual de filmes assistidos pelo usuário autenticado.
 - **Ficha Técnica & Comparativo Analítico:**
   - Dados completos da obra (sinopse, duração formatada, diretor, roteiristas, estúdios e elenco principal).
   - **Comparador de Notas:** Avaliação média interna do CineFlow vs. TMDb vs. IMDb.

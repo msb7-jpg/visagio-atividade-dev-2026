@@ -28,7 +28,7 @@ describe('CommandPaletteDialogView', () => {
       </QueryClientProvider>
     )
 
-    const input = screen.getByPlaceholderText(/Busque filmes pelo título ou navegue por atalhos/)
+    const input = screen.getByPlaceholderText(/Busque filmes pelo título/i)
     expect(input).toBeDefined()
     expect(screen.getByText('Navegar')).toBeDefined()
     expect(screen.getByText('Selecionar')).toBeDefined()

@@ -7,7 +7,8 @@ Novo dominios criar uma sessão na página principal do catalog de
 
 - criar uma página focada em person e colocar os filmes relacionados a ela, seja diretor ou ator, interessante ter algo como 
 You’ve watched 0 of 30 / 0%
-    - dentro de um filme, 
+    - aonde tivermos referencias a persons, deve ser possivel  clicar e ser levado para uma página desta person, a página deve ter algum avatar em evidência da person e vamos reutilizar massivamente os elementos da home page, ou seja o list item e grid item, e os filtros
+    - nao sei se seria possivel tb, mas poderiamos na command pallete habilitar alem da quick search de filmes, que ela sirva pra persons tb, ai so iriamos meio q classificar o resultado sendo Pessoas encontradas ou Filmes Encontrados como já fazemos
 
 Good to have
 TODO - Comportamento da estrela

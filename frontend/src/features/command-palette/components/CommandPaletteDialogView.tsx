@@ -19,6 +19,7 @@ interface CommandPaletteDialogViewProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onSelectMovie: (movie: CommandMovieItem) => void
+  onSelectPerson?: (person: { sk_person_id: string }) => void
   onSelectAction: (action: CommandPaletteAction) => void
   isAuthenticated?: boolean
 }
@@ -27,15 +28,21 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
   isOpen,
   onOpenChange,
   onSelectMovie,
+  onSelectPerson,
   onSelectAction,
   isAuthenticated = false
 }) => {
   const [query, setQuery] = useState('')
-  const { results, isLoading, isDebouncing } = useSpotlightSearch(query)
+  const { results, personResults, isLoading, isDebouncing } = useSpotlightSearch(query)
 
   const handleSelectMovie = (movie: CommandMovieItem) => {
     onOpenChange(false)
     onSelectMovie(movie)
+  }
+
+  const handleSelectPerson = (person: { sk_person_id: string }) => {
+    onOpenChange(false)
+    onSelectPerson?.(person)
   }
 
   const handleSelectAction = (action: CommandPaletteAction) => {
@@ -51,7 +58,7 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
     >
       <div className="relative">
         <CommandInput
-          placeholder="Busque filmes pelo título ou navegue por atalhos..."
+          placeholder="Busque filmes pelo título, pessoas da equipe ou atalhos..."
           value={query}
           onValueChange={setQuery}
         />
@@ -65,15 +72,17 @@ export const CommandPaletteDialogView: React.FC<CommandPaletteDialogViewProps> =
       <CommandList>
         <CommandEmpty>
           {query.trim().length < 2
-            ? 'Digite pelo menos 2 caracteres para pesquisar filmes...'
-            : 'Nenhum filme ou atalho encontrado.'}
+            ? 'Digite pelo menos 2 caracteres para pesquisar filmes ou pessoas...'
+            : 'Nenhum filme, pessoa ou atalho encontrado.'}
         </CommandEmpty>
 
         <CommandResultsGroupView
           movies={results}
+          people={personResults}
           query={query}
           isAuthenticated={isAuthenticated}
           onSelectMovie={handleSelectMovie}
+          onSelectPerson={handleSelectPerson}
           onSelectAction={handleSelectAction}
         />
       </CommandList>

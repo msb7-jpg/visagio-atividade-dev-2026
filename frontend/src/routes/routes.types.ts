@@ -13,6 +13,9 @@ export type StaticRoute =
 /** Rotas dinâmicas de detalhe de filme usando Template Literal Type */
 export type DynamicMovieRoute = `/filmes/${string | number}`
 
+/** Rotas dinâmicas de detalhe de pessoa usando Template Literal Type */
+export type DynamicPersonRoute = `/pessoas/${string | number}`
+
 /** Rotas dinâmicas de edição de filme no painel administrativo */
 export type DynamicAdminMovieRoute = `/admin/filmes/${string | number}/editar`
 
@@ -24,6 +27,7 @@ export type FilteredLibraryRoute = `/minha-lista?tab=${'favorites' | 'watchlist'
 export type AppRoute =
   | StaticRoute
   | DynamicMovieRoute
+  | DynamicPersonRoute
   | DynamicAdminMovieRoute
   | FilteredCatalogRoute
   | FilteredLibraryRoute
@@ -37,6 +41,7 @@ export const routes = {
   userLibrary: (tab?: 'favorites' | 'watchlist') =>
     (tab ? (`/minha-lista?tab=${tab}` as const) : ('/minha-lista' as const)),
   movieDetail: (id: string | number): DynamicMovieRoute => `/filmes/${id}`,
+  personDetail: (id: string | number): DynamicPersonRoute => `/pessoas/${id}`,
   adminMovieCreate: () => '/admin/filmes/novo' as const,
   adminMovieEdit: (id: string | number): DynamicAdminMovieRoute =>
     `/admin/filmes/${id}/editar`,

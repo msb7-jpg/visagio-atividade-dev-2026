@@ -89,7 +89,9 @@ class MoviesRepository:
                     (DimMovie.status_filme.notin_(["Lançado", "Released", "lançado", "released"]))
                     | (DimMovie.status_filme.is_(None))
                 )
-            elif status_lower in ("pós-produção", "pos-producao", "pos-produção", "post-production"):
+            elif status_lower in (
+                "pós-produção", "pos-producao", "pos-produção", "post-production"
+            ):
                 query_filters.append(
                     DimMovie.status_filme.ilike("%pós-produção%")
                     | DimMovie.status_filme.ilike("%pos-producao%")

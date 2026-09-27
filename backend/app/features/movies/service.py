@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import delete, or_, select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -15,9 +15,6 @@ from app.movies.models import (
     DimPerson,
     DimReview,
     FactMoviePerformance,
-    bridge_movie_company,
-    bridge_movie_genre,
-    bridge_movie_person,
     generate_surrogate_key,
 )
 

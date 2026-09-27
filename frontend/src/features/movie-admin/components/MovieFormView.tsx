@@ -61,6 +61,9 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
     generos_ids: initialValues?.generos_ids ?? []
   }), [initialValues])
 
+  // Flag para evitar que o cleanup do useEffect ressalve o rascunho ao desmontar
+  const isDiscardingRef = React.useRef(false)
+
   const form = useForm({
     defaultValues,
     validators: {
@@ -82,9 +85,6 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
 
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = React.useState(false)
   const hasSavedDraft = useHasMovieDraft()
-
-  // Flag para evitar que o cleanup do useEffect ressalve o rascunho ao desmontar
-  const isDiscardingRef = React.useRef(false)
 
   // Escuta limpezas de rascunho externas (como logout ou descarte em outra aba)
   React.useEffect(() => {

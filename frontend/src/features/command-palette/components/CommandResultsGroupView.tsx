@@ -7,24 +7,29 @@ import {
 } from '@/components/ui/command'
 import {
   type CommandMovieItem,
-  type CommandPaletteAction
+  type CommandPaletteAction,
+  type CommandPersonItem
 } from '@/features/command-palette/types/command-palette.types'
 import { routes } from '@/routes/routes.types'
-import { ArrowRight, Bookmark, Compass, Heart, LogIn, LogOut, Plus } from 'lucide-react'
+import { ArrowRight, Bookmark, Compass, Film, Heart, LogIn, LogOut, Plus, User } from 'lucide-react'
 import React from 'react'
 
 interface CommandResultsGroupViewProps {
   movies: CommandMovieItem[]
+  people?: CommandPersonItem[]
   query?: string
   onSelectMovie: (movie: CommandMovieItem) => void
+  onSelectPerson?: (person: CommandPersonItem) => void
   onSelectAction: (action: CommandPaletteAction) => void
   isAuthenticated?: boolean
 }
 
 export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = ({
   movies,
+  people = [],
   query: _query,
   onSelectMovie,
+  onSelectPerson,
   onSelectAction,
   isAuthenticated = false
 }) => {
@@ -80,9 +85,46 @@ export const CommandResultsGroupView: React.FC<CommandResultsGroupViewProps> = (
         </CommandGroup>
       )}
 
-      {movies.length > 0 && <CommandSeparator variant="cinema" />}
+      {people.length > 0 && (
+        <>
+          {movies.length > 0 && <CommandSeparator variant="cinema" />}
+          <CommandGroup heading="Pessoas Encontradas">
+            {people.map((person) => (
+              <CommandItem
+                key={person.sk_person_id}
+                value={`person-${person.nome_pessoa}-${person.tipo_pessoa}`}
+                onSelect={() => onSelectPerson?.(person)}
+                variant="cinema"
+                className="cursor-pointer"
+              >
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-muted-foreground group-hover:border-primary/40 group-hover:text-primary">
+                  <User className="size-4" />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
+                      {person.nome_pessoa}
+                    </span>
+                    <Badge
+                      variant="glass"
+                      size="sm"
+                    >
+                      {person.tipo_pessoa}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Film className="size-3 opacity-70" />
+                    <span>{person.total_filmes} {person.total_filmes === 1 ? 'obra' : 'obras'} no catálogo</span>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 -translate-x-1 text-white/30 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </>
+      )}
 
-      {movies.length > 0 && <CommandSeparator variant="cinema" />}
+      {(movies.length > 0 || people.length > 0) && <CommandSeparator variant="cinema" />}
 
       <CommandGroup heading="Navegação & Ações Rápidas">
         <CommandItem

@@ -391,9 +391,11 @@ def run_seed():
             -- 1. Remove "United States Of America" da bridge
             DELETE FROM bridge_movie_person
             WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '658829')
-              AND sk_person_id IN (SELECT sk_person_id FROM dim_people WHERE nome_pessoa = 'United States Of America');
+              AND sk_person_id IN (
+                  SELECT sk_person_id FROM dim_people WHERE nome_pessoa = 'United States Of America'
+              );
 
-            -- 2. Conecta Ricky Umberger como Diretor ao filme (sk_person_id já existente com tipo_pessoa='Diretor')
+            -- 2. Conecta Ricky Umberger como Diretor ao filme
             INSERT OR IGNORE INTO bridge_movie_person (sk_movie_id, sk_person_id)
             SELECT m.sk_movie_id, p.sk_person_id
             FROM dim_movies m, dim_people p
@@ -406,7 +408,8 @@ def run_seed():
             SET tipo_pessoa = 'Diretor'
             WHERE nome_pessoa = 'Ricky Umberger'
               AND NOT EXISTS (
-                  SELECT 1 FROM dim_people WHERE nome_pessoa = 'Ricky Umberger' AND tipo_pessoa = 'Diretor'
+                  SELECT 1 FROM dim_people
+                  WHERE nome_pessoa = 'Ricky Umberger' AND tipo_pessoa = 'Diretor'
               )
               AND sk_person_id IN (
                   SELECT sk_person_id FROM bridge_movie_person

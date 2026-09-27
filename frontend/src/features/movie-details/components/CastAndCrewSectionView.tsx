@@ -1,6 +1,8 @@
 import { Badge } from '@/components/ui/badge'
 import { Clapperboard, PenTool, Users, Building2 } from 'lucide-react'
 import type { CompanyDTO, PersonSummaryDTO } from '@/features/movie-details/types/movie-details.types'
+import { Link } from 'react-router-dom'
+import { routes } from '@/routes/routes.types'
 
 interface CastAndCrewSectionViewProps {
   diretores: PersonSummaryDTO[]
@@ -39,13 +41,22 @@ export function CastAndCrewSectionView({
             </span>
             <div className="flex flex-wrap gap-1.5">
               {diretores.map((d) => (
-                <Badge
+                <Link
                   key={d.sk_person_id}
-                  variant="glass"
-                  size="md"
+                  to={routes.personDetail(d.sk_person_id)}
+                  className="inline-block transition-transform hover:scale-105"
+                  title={`Ver filmografia de ${d.nome_pessoa}`}
                 >
-                  {d.nome_pessoa}
-                </Badge>
+                  <Badge
+                    variant="glass"
+                    size="md"
+                    className="cursor-pointer"
+                  >
+                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:decoration-primary hover:text-primary">
+                      {d.nome_pessoa}
+                    </span>
+                  </Badge>
+                </Link>
               ))}
             </div>
           </div>
@@ -60,13 +71,22 @@ export function CastAndCrewSectionView({
             </span>
             <div className="flex flex-wrap gap-1.5">
               {roteiristas.map((r) => (
-                <Badge
+                <Link
                   key={r.sk_person_id}
-                  variant="glass"
-                  size="md"
+                  to={routes.personDetail(r.sk_person_id)}
+                  className="inline-block transition-transform hover:scale-105"
+                  title={`Ver filmografia de ${r.nome_pessoa}`}
                 >
-                  {r.nome_pessoa}
-                </Badge>
+                  <Badge
+                    variant="glass"
+                    size="md"
+                    className="cursor-pointer"
+                  >
+                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:decoration-primary hover:text-primary">
+                      {r.nome_pessoa}
+                    </span>
+                  </Badge>
+                </Link>
               ))}
             </div>
           </div>
@@ -102,13 +122,22 @@ export function CastAndCrewSectionView({
             </span>
             <div className="flex flex-wrap gap-1.5">
               {atores.map((a) => (
-                <Badge
+                <Link
                   key={a.sk_person_id}
-                  variant="glass"
-                  size="md"
+                  to={routes.personDetail(a.sk_person_id)}
+                  className="inline-block transition-transform hover:scale-105"
+                  title={`Ver filmografia de ${a.nome_pessoa}`}
                 >
-                  {a.nome_pessoa}
-                </Badge>
+                  <Badge
+                    variant="glass"
+                    size="md"
+                    className="cursor-pointer"
+                  >
+                    <span className="underline decoration-white/30 decoration-1 underline-offset-2 transition-colors hover:decoration-primary hover:text-primary">
+                      {a.nome_pessoa}
+                    </span>
+                  </Badge>
+                </Link>
               ))}
             </div>
           </div>

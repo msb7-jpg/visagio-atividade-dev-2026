@@ -47,6 +47,16 @@ export interface CommandActionItem {
 export type CommandMovieItem = QuickSearchMovieItem
 
 /**
+ * Tipo para item de pessoa retornado na busca da Command Palette.
+ */
+export interface CommandPersonItem {
+  sk_person_id: string
+  nome_pessoa: string
+  tipo_pessoa: string
+  total_filmes: number
+}
+
+/**
  * Tipo para item de gênero selecionável.
  */
 export type CommandGenreItem = string

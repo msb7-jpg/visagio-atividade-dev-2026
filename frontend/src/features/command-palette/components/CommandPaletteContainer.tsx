@@ -26,6 +26,11 @@ export const CommandPaletteContainer: React.FC<CommandPaletteContainerProps> = (
     navigate(routes.movieDetail(movie.sk_movie_id))
   }
 
+  const handleSelectPerson = (person: { sk_person_id: string }) => {
+    onOpenChange(false)
+    navigate(routes.personDetail(person.sk_person_id))
+  }
+
   const handleSelectAction = (action: CommandPaletteAction) => {
     onOpenChange(false)
     if (action === COMMAND_ACTIONS.LOGOUT) {
@@ -40,6 +45,7 @@ export const CommandPaletteContainer: React.FC<CommandPaletteContainerProps> = (
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       onSelectMovie={handleSelectMovie}
+      onSelectPerson={handleSelectPerson}
       onSelectAction={handleSelectAction}
       isAuthenticated={isAuthenticated}
     />

@@ -111,4 +111,43 @@ describe('CommandResultsGroupView', () => {
     fireEvent.click(screen.getByText('Minha Biblioteca: Watchlist'))
     expect(handleSelectAction).toHaveBeenCalledWith('/minha-lista?tab=watchlist')
   })
+
+  it('renderiza pessoas encontradas e dispara onSelectPerson ao clicar', () => {
+    const handleSelectPerson = vi.fn()
+
+    render(
+      <Command>
+        <CommandList>
+          <CommandResultsGroupView
+            movies={[]}
+            people={[
+              {
+                sk_person_id: 'person-nolan',
+                nome_pessoa: 'Christopher Nolan',
+                tipo_pessoa: 'Diretor',
+                total_filmes: 12
+              }
+            ]}
+            query="nolan"
+            onSelectMovie={vi.fn()}
+            onSelectPerson={handleSelectPerson}
+            onSelectAction={vi.fn()}
+          />
+        </CommandList>
+      </Command>
+    )
+
+    expect(screen.getByText('Pessoas Encontradas')).toBeDefined()
+    expect(screen.getByText('Christopher Nolan')).toBeDefined()
+    expect(screen.getByText('Diretor')).toBeDefined()
+    expect(screen.getByText('12 obras no catálogo')).toBeDefined()
+
+    fireEvent.click(screen.getByText('Christopher Nolan'))
+    expect(handleSelectPerson).toHaveBeenCalledWith({
+      sk_person_id: 'person-nolan',
+      nome_pessoa: 'Christopher Nolan',
+      tipo_pessoa: 'Diretor',
+      total_filmes: 12
+    })
+  })
 })

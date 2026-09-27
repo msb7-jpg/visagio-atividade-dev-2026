@@ -39,12 +39,19 @@ const UserLibraryContainer = lazy(() =>
   }))
 )
 
+const PersonDetailsContainer = lazy(() =>
+  import('@/features/people/components/PersonDetailsContainer').then(module => ({
+    default: module.PersonDetailsContainer
+  }))
+)
+
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<CatalogContainer />} />
         <Route path="/filmes/:id" element={<MovieDetailsContainer />} />
+        <Route path="/pessoas/:id" element={<PersonDetailsContainer />} />
 
         {/* Rotas restritas ao Administrador e Usuários autenticados */}
         <Route element={<ProtectedRoute />}>
