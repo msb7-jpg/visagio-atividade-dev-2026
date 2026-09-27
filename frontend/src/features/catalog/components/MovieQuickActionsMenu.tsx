@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Tooltip } from '@/components/ui/tooltip-card'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -131,25 +132,42 @@ export function MovieQuickActionsMenu({
 
   const isPending = submitMutation.isPending || updateMutation.isPending || deleteMutation.isPending
 
-  // Valor exibido nas estrelas: última nota do usuário ou sucesso temporário
-  const currentScore = quickRatingSuccess ?? (userReview ? userReview.nota : 0)
+  const [optimisticScore, setOptimisticScore] = React.useState<number | null>(null)
+
+  // Valor exibido nas estrelas: nota otimista imediata, feedback de sucesso temporário ou última nota registrada
+  const currentScore = optimisticScore ?? quickRatingSuccess ?? (userReview ? userReview.nota : 0)
 
   const handleQuickRate = (score: number) => {
+    setOptimisticScore(score)
     if (hasReviewed && userReview?.reviewId) {
-      updateMutation.mutate({
-        reviewId: userReview.reviewId,
-        payload: {
-          nome: userReview.nome,
-          nota: score,
-          comentario: userReview.comentario
+      updateMutation.mutate(
+        {
+          reviewId: userReview.reviewId,
+          payload: {
+            nome: userReview.nome,
+            nota: score,
+            comentario: userReview.comentario
+          }
+        },
+        {
+          onError: () => {
+            setOptimisticScore(null)
+          }
         }
-      })
+      )
     } else {
-      submitMutation.mutate({
-        nome: authorName,
-        nota: score,
-        comentario: null
-      })
+      submitMutation.mutate(
+        {
+          nome: authorName,
+          nota: score,
+          comentario: null
+        },
+        {
+          onError: () => {
+            setOptimisticScore(null)
+          }
+        }
+      )
     }
   }
 
@@ -209,24 +227,35 @@ export function MovieQuickActionsMenu({
             {quickRatingSuccess !== null ? (
               <span className="flex items-center gap-1.5 text-profit">
                 <Check className="size-3.5" />
-                <span>Nota {(quickRatingSuccess / 2).toFixed(1)} salva!</span>
+                <span>Nota {quickRatingSuccess.toFixed(1)} salva!</span>
               </span>
             ) : hasReviewed ? (
               <span>
-                Sua avaliação ({((userReview?.nota ?? 0) / 2).toFixed(1)} ★)
+                Sua avaliação ({(userReview?.nota ?? 0).toFixed(1)} / 10)
               </span>
             ) : (
               'Assistiu? Deixe sua nota'
             )}
           </span>
 
-          {/* Ícone de botão direito exclusivo do menu de contexto com tooltip explicativo */}
-          <span
-            className="flex cursor-help items-center text-white/40 transition-colors hover:text-white/70"
-            title="Clique com botão direito no card para abrir o menu"
+          {/* Ícone de botão direito exclusivo com tooltip explicativo elegante */}
+          <Tooltip
+            content={
+              <div className="space-y-1 p-0.5 text-xs">
+                <p className="font-semibold text-foreground">Menu de Contexto</p>
+                <p className="leading-snug text-muted-foreground">
+                  Clique com o botão direito sobre qualquer card para abrir este menu de atalhos.
+                </p>
+              </div>
+            }
           >
-            <MouseRight className="size-3.5" />
-          </span>
+            <span
+              className="flex cursor-help items-center text-white/40 transition-colors hover:text-white/70"
+              aria-label="Clique com botão direito no card para abrir o menu"
+            >
+              <MouseRight className="size-3.5" />
+            </span>
+          </Tooltip>
         </LabelComponent>
 
         <div className="px-1 py-1.5">
@@ -236,6 +265,7 @@ export function MovieQuickActionsMenu({
             size="sm"
             disabled={isPending}
             showScoreLabel={true}
+            showTooltip={false}
           />
         </div>
 

@@ -44,7 +44,7 @@ export const PersonHeroHeaderView: React.FC<PersonHeroHeaderViewProps> = ({
               key={papel}
               variant="outline"
               size="md"
-              className="gap-1.5 bg-secondary/60 text-secondary-foreground"
+              className="gap-1.5"
             >
               {getRoleIcon(papel)}
               <span>{papel}</span>

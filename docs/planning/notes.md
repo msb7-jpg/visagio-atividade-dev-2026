@@ -1,32 +1,7 @@
 
-1. - novo filtro por status do filme: e.g nao lancado, pos-produção, etc
-2. - bug ao cadastar o filme ele nao apangando do local stora a informacao, msm coisa para fazer o logout
-
-Novo dominios criar uma sessão na página principal do catalog de 
-- reviews populares, aonde so vamos ter um card do filme que nem o MovieGridListItem, mas focando nos reviews do usuário, so preciso de algum critério melhor para mostrar os reviews, pois ainda nao temos a ideia de responder reviews ou dar link em reviews, e nao teriamos dados para tal feito
-
-- criar uma página focada em person e colocar os filmes relacionados a ela, seja diretor ou ator, interessante ter algo como 
-You’ve watched 0 of 30 / 0%
-    - aonde tivermos referencias a persons, deve ser possivel  clicar e ser levado para uma página desta person, a página deve ter algum avatar em evidência da person e vamos reutilizar massivamente os elementos da home page, ou seja o list item e grid item, e os filtros
-    - nao sei se seria possivel tb, mas poderiamos na command pallete habilitar alem da quick search de filmes, que ela sirva pra persons tb, ai so iriamos meio q classificar o resultado sendo Pessoas encontradas ou Filmes Encontrados como já fazemos
-
-Good to have
+Good to have ->
 TODO - Comportamento da estrela
-- ao adicionar uma estrela, nao eh possivel colocar nota zero, mas no banco teoricamente pode, entao isso vai poder ser um comportamento valido, porem caso o usuário nao tenha colocado nada vai vir um dialog de confirmação avisando q ele nao colocou nota e se deseja mesmo continuar com nota zero, e um botao sutil ao lado de remover a avaliação / qtd de estrelas, apenas um x cinza
-
-TODO - no form esta tendo um constraste ruim ao selecionar um genero, a cor do check mal da para aparecer, alem disso a visão expandida nao esta boa, queria realmente uma visao expandida dos posteres q ocupasse boa parte da tela, e sla caso o usuário optasse por ver uma ou ou outra deve ser mais simples, nao precisa de tanto texto como "Visualização em tela expandida de mídia cinematográfica em alta resolução." e pode ser so parecido com uma galeria das duas imagens q ele passa pro lado e ve uma ou a outra, e ai tiramos o segundo botão de Expandir Fundo e deixamos so o expandir poster como um de tp mostrar artes, neste esquema q te falei, mostra a foto grande, as fotos pequenas embaixo e vc pode ir de um lado pro outro, e o tamanho total permanece, na foto 2:3 podemos fazer aquele esquema de as laterais serem a propria foto desfocada entendeu
-
-TODO - quero poder ver as previews das imagens na hora da criação/edição do filme, alem disso gostaria de salvar o estado da criação de um filme no local storage, se eu fechar, voltar, etc, ele salva como rascunho e mostra um pequeno badge ao lado do icone como uma notificacao, indicando q tem um rascunho salvo, ou seja agr para cancelar a criação tb deve ter um confirm dialog dizendo se queremos descartar o rascunho msm, e um pequeno detalhe tb
-
-
-TODO - melhorias na criação/gerenciamento/visualização dos filmes
-- mas adicionar uma opção de visualizar os postes numa tela expandida, o poster e o backdrop
-- para deletar um filme, deve ter uma input que o usuário digita o nome completo do filme, junto ao botão de confirmar
-- ao preencher a lista de diretores, ao inves de uma iput simples, quero uma input com autocomplete que busca no banco por diretores ja existentes, caso eu mande um q nao exista, da um create
-- colocar qualquer outro icone melhor no forms de criar ao inves do sparkles
-- quando o usuário digita o link das imagens, devemos fazer um fetch, para verificar q as imagens existem e conseguiram ser buscadas e mostrar um check positivo dentro da input
-- aumentar um pouco o tamanho das inputs, as bordas estao excessivamente arredondadas em relaçao
-- o botão voltar nao esta voltando corretamente no historio, exemplo eu edito um filme, clico em voltar, ele volta para pagina do filme, clico dps em Voltar ao catálogo, mas ele vola para a última posição do histórico q era a página de edição ao inves de voltar para página inicial
+- ao adicionar uma estrela, nao eh possivel colocar nota zero, mas no banco teoricamente pode, entao isso vai poder ser um comportamento valido, porem caso o usuário nao tenha colocado nada vai vir um dialog de confirmação avisando q ele nao colocou nota e se deseja mesmo continuar com nota zero, atualmente o usuário so consegue arrastar para a esquerda até 0,5, mas poderiamos dar para arrastar até zero, alem disso nos locais q usamos avalação ela esta sendo mostrada de 0 a 5, eu ainda gostaria de 5 estrelas, mas a nota final mostra de 0 até 10, entendeu? ja q o filme tb eh mostrado com esta nota,
 
 Optionals ->
 TODO - adiconar prelaods ao longo do app para deixar mais eficiente
@@ -34,3 +9,6 @@ TODO - identificar melhor quais sao componentes "views" que representam uma pagi
 TODO - ao ir para um filme vc n volta para o topo da pagina
 TODO - ao ir para um filme vc nem sempre entra no topo da página dele
 TODO - generos tao mal deduplicados, tem um em portuues ali no meio
+TODO - Novo dominios criar uma sessão na página principal do catalog de 
+    - reviews populares, aonde so vamos ter um card do filme que nem o MovieGridListItem, mas focando nos reviews do usuário, so preciso de algum critério melhor para mostrar os reviews, pois ainda nao temos a ideia de responder reviews ou dar link em reviews, e nao teriamos dados para tal feito
+

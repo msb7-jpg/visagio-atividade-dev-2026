@@ -17,23 +17,13 @@ $DbPath = Join-Path $BackendDir "rocketlab.db"
 Write-Host "`n🎬 [CineFlow] Iniciando orquestrador do sistema no Windows...`n" -ForegroundColor Cyan
 
 # ------------------------------------------------------------------------------
-# 1. Verificação de Ferramentas / Pré-requisitos
+# 1. Verificação de Ferramentas / Pré-requisitos & Detecção de Fallbacks
 # ------------------------------------------------------------------------------
-Write-Host "🔍 Verificando ferramentas instaladas..." -ForegroundColor Cyan
+Write-Host "🔍 Verificando ferramentas instaladas e selecionando runtimes..." -ForegroundColor Cyan
 
 function Test-CommandAvailable {
     param([string]$CommandName)
     return [bool](Get-Command $CommandName -ErrorAction SilentlyContinue)
-}
-
-if (-not (Test-CommandAvailable "uv")) {
-    Write-Host "❌ Erro: 'uv' não encontrado. Instale o uv (https://docs.astral.sh/uv/) e adicione ao PATH." -ForegroundColor Red
-    exit 1
-}
-
-if (-not (Test-CommandAvailable "bun")) {
-    Write-Host "❌ Erro: 'bun' não encontrado. Instale o Bun (https://bun.sh/) e adicione ao PATH." -ForegroundColor Red
-    exit 1
 }
 
 $PythonCmd = $null
@@ -43,12 +33,35 @@ if (Test-CommandAvailable "python") {
     $PythonCmd = "python3"
 } elseif (Test-CommandAvailable "py") {
     $PythonCmd = "py"
+}
+
+# Detecção Backend: uv (preferencial) ou python venv/pip (fallback)
+$BackendRunner = ""
+if (Test-CommandAvailable "uv") {
+    $BackendRunner = "uv"
+    Write-Host "   ✓ Backend runtime: 'uv' detectado (modo de alta performance)." -ForegroundColor Green
+} elseif ($null -ne $PythonCmd) {
+    $BackendRunner = "pip"
+    Write-Host "   ⚠️  'uv' não encontrado. Usando fallback do Backend: '$PythonCmd -m venv' e 'pip'." -ForegroundColor Yellow
 } else {
-    Write-Host "❌ Erro: Python não encontrado. Instale Python 3.11+ e adicione ao PATH." -ForegroundColor Red
+    Write-Host "❌ Erro: Nem 'uv' nem 'python' foram encontrados no sistema." -ForegroundColor Red
+    Write-Host "   Instale uv (https://docs.astral.sh/uv/) ou Python 3.11+ e adicione ao PATH." -ForegroundColor Red
     exit 1
 }
 
-Write-Host "   ✓ uv, bun e python disponíveis." -ForegroundColor Green
+# Detecção Frontend: bun (preferencial) ou npm (fallback)
+$FrontendRunner = ""
+if (Test-CommandAvailable "bun") {
+    $FrontendRunner = "bun"
+    Write-Host "   ✓ Frontend runtime: 'bun' detectado (modo de alta performance)." -ForegroundColor Green
+} elseif (Test-CommandAvailable "npm") {
+    $FrontendRunner = "npm"
+    Write-Host "   ⚠️  'bun' não encontrado. Usando fallback do Frontend: 'npm' e 'node'." -ForegroundColor Yellow
+} else {
+    Write-Host "❌ Erro: Nem 'bun' nem 'npm' foram encontrados no sistema." -ForegroundColor Red
+    Write-Host "   Instale o Bun (https://bun.sh/) ou o Node.js / npm (https://nodejs.org/)." -ForegroundColor Red
+    exit 1
+}
 
 # ------------------------------------------------------------------------------
 # 2. Configuração de Variáveis de Ambiente
@@ -57,7 +70,7 @@ $EnvFile = Join-Path $BackendDir ".env"
 $EnvExample = Join-Path $BackendDir ".env.example"
 
 if (-not (Test-Path $EnvFile)) {
-    Write-Host "⚙️  Arquivo .env ausente no backend. Criando a partir de .env.example..." -ForegroundColor Yellow
+    Write-Host "`n⚙️  Arquivo .env ausente no backend. Criando a partir de .env.example..." -ForegroundColor Yellow
     if (Test-Path $EnvExample) {
         Copy-Item -Path $EnvExample -Destination $EnvFile
     } else {
@@ -75,27 +88,79 @@ LOG_LEVEL=INFO
 # ------------------------------------------------------------------------------
 # 3. Sincronização de Dependências
 # ------------------------------------------------------------------------------
-Write-Host "`n📦 Sincronizando dependências do Backend (uv sync)..." -ForegroundColor Cyan
-Push-Location $BackendDir
-try {
-    & uv sync --all-extras
-    if ($LASTEXITCODE -ne 0) { throw "Falha ao executar uv sync" }
-} finally {
-    Pop-Location
+$VenvDir = Join-Path $BackendDir ".venv"
+$VenvScripts = Join-Path $VenvDir "Scripts"
+$VenvPython = Join-Path $VenvScripts "python.exe"
+$VenvPip = Join-Path $VenvScripts "pip.exe"
+$VenvAlembic = Join-Path $VenvScripts "alembic.exe"
+$VenvUvicorn = Join-Path $VenvScripts "uvicorn.exe"
+
+# Suporte caso o ambiente seja criado com padrão POSIX bin/
+if (-not (Test-Path $VenvPython)) {
+    $VenvScripts = Join-Path $VenvDir "bin"
+    $VenvPython = Join-Path $VenvScripts "python.exe"
+    if (-not (Test-Path $VenvPython)) { $VenvPython = Join-Path $VenvScripts "python" }
+    $VenvPip = Join-Path $VenvScripts "pip.exe"
+    if (-not (Test-Path $VenvPip)) { $VenvPip = Join-Path $VenvScripts "pip" }
+    $VenvAlembic = Join-Path $VenvScripts "alembic.exe"
+    if (-not (Test-Path $VenvAlembic)) { $VenvAlembic = Join-Path $VenvScripts "alembic" }
+    $VenvUvicorn = Join-Path $VenvScripts "uvicorn.exe"
+    if (-not (Test-Path $VenvUvicorn)) { $VenvUvicorn = Join-Path $VenvScripts "uvicorn" }
 }
 
-Write-Host "`n📦 Verificando dependências do Frontend (bun install)..." -ForegroundColor Cyan
-$NodeModulesDir = Join-Path $FrontendDir "node_modules"
-if (-not (Test-Path $NodeModulesDir)) {
-    Push-Location $FrontendDir
+if ($BackendRunner -eq "uv") {
+    Write-Host "`n📦 Sincronizando dependências do Backend (uv sync)..." -ForegroundColor Cyan
+    Push-Location $BackendDir
     try {
-        & bun install
-        if ($LASTEXITCODE -ne 0) { throw "Falha ao executar bun install" }
+        & uv sync --all-extras
+        if ($LASTEXITCODE -ne 0) { throw "Falha ao executar uv sync" }
     } finally {
         Pop-Location
     }
 } else {
-    Write-Host "   ✓ node_modules já presente no frontend." -ForegroundColor Green
+    Write-Host "`n📦 Preparando ambiente virtual do Backend (venv + pip)..." -ForegroundColor Cyan
+    if (-not (Test-Path $VenvDir)) {
+        Write-Host "   Criando ambiente virtual em $VenvDir..."
+        & $PythonCmd -m venv $VenvDir
+    }
+    Write-Host "   Instalando/atualizando dependências com pip..."
+    Push-Location $BackendDir
+    try {
+        & $VenvPython -m pip install --upgrade pip
+        & $VenvPython -m pip install -e ".[dev]"
+        if ($LASTEXITCODE -ne 0) { throw "Falha na instalação de dependências do backend com pip" }
+    } finally {
+        Pop-Location
+    }
+}
+
+$NodeModulesDir = Join-Path $FrontendDir "node_modules"
+if ($FrontendRunner -eq "bun") {
+    Write-Host "`n📦 Verificando dependências do Frontend (bun install)..." -ForegroundColor Cyan
+    if (-not (Test-Path $NodeModulesDir)) {
+        Push-Location $FrontendDir
+        try {
+            & bun install
+            if ($LASTEXITCODE -ne 0) { throw "Falha ao executar bun install" }
+        } finally {
+            Pop-Location
+        }
+    } else {
+        Write-Host "   ✓ node_modules já presente no frontend." -ForegroundColor Green
+    }
+} else {
+    Write-Host "`n📦 Verificando dependências do Frontend (npm install)..." -ForegroundColor Cyan
+    if (-not (Test-Path $NodeModulesDir)) {
+        Push-Location $FrontendDir
+        try {
+            & npm install
+            if ($LASTEXITCODE -ne 0) { throw "Falha ao executar npm install" }
+        } finally {
+            Pop-Location
+        }
+    } else {
+        Write-Host "   ✓ node_modules já presente no frontend." -ForegroundColor Green
+    }
 }
 
 # ------------------------------------------------------------------------------
@@ -105,6 +170,8 @@ Write-Host "`n🗄️  Analisando estado da base de dados ($DbPath)..." -Foregro
 
 $NeedsMigrations = $false
 $NeedsSeed = $false
+
+$EffectivePy = if (Test-Path $VenvPython) { $VenvPython } else { $PythonCmd }
 
 if ((-not (Test-Path $DbPath)) -or ((Get-Item $DbPath).Length -eq 0)) {
     Write-Host "⚠️  Banco de dados não encontrado ou vazio. Setup inicial necessário!" -ForegroundColor Yellow
@@ -126,7 +193,7 @@ try:
 except Exception:
     print('0')
 "@
-    $MoviesCountRaw = & $PythonCmd -c $CheckScript 2>$null
+    $MoviesCountRaw = & $EffectivePy -c $CheckScript 2>$null
     $MoviesCount = 0
     [int]::TryParse(($MoviesCountRaw | Select-Object -First 1), [ref]$MoviesCount) | Out-Null
 
@@ -147,7 +214,15 @@ if ($NeedsMigrations) {
     Write-Host "🔄 Aplicando migrações relacionais (Alembic)..." -ForegroundColor Cyan
     Push-Location $BackendDir
     try {
-        & uv run alembic upgrade head
+        if ($BackendRunner -eq "uv") {
+            & uv run alembic upgrade head
+        } else {
+            if (Test-Path $VenvAlembic) {
+                & $VenvAlembic upgrade head
+            } else {
+                & $VenvPython -m alembic upgrade head
+            }
+        }
         if ($LASTEXITCODE -ne 0) { throw "Falha ao aplicar migrações do Alembic" }
         Write-Host "   ✓ Migrações aplicadas com sucesso." -ForegroundColor Green
     } finally {
@@ -162,7 +237,11 @@ if ($NeedsSeed) {
         Write-Host "   ✓ CSVs encontrados. Executando seed_database.py (isso pode levar ~25s)..." -ForegroundColor Green
         Push-Location $BackendDir
         try {
-            & uv run python scripts/seed_database.py
+            if ($BackendRunner -eq "uv") {
+                & uv run python scripts/seed_database.py
+            } else {
+                & $VenvPython scripts/seed_database.py
+            }
             if ($LASTEXITCODE -ne 0) { throw "Falha na ingestão analítica dos CSVs" }
             Write-Host "   ✓ Ingestão analítica concluída com sucesso!" -ForegroundColor Green
         } finally {
@@ -184,16 +263,24 @@ Write-Host "   • Frontend React:  http://localhost:5173" -ForegroundColor Gray
 Write-Host "   • Pressione Ctrl+C para encerrar ambos os serviços.`n" -ForegroundColor Yellow
 
 $BackendJob = Start-Job -ScriptBlock {
-    param($dir)
+    param($dir, $runner, $uvicornPath)
     Set-Location $dir
-    & uv run uvicorn app.main:app --reload --port 8000
-} -ArgumentList $BackendDir
+    if ($runner -eq "uv") {
+        & uv run uvicorn app.main:app --reload --port 8000
+    } else {
+        & $uvicornPath app.main:app --reload --port 8000
+    }
+} -ArgumentList $BackendDir, $BackendRunner, $VenvUvicorn
 
 $FrontendJob = Start-Job -ScriptBlock {
-    param($dir)
+    param($dir, $runner)
     Set-Location $dir
-    & bun run dev
-} -ArgumentList $FrontendDir
+    if ($runner -eq "bun") {
+        & bun run dev
+    } else {
+        & npm run dev
+    }
+} -ArgumentList $FrontendDir, $FrontendRunner
 
 try {
     while ($true) {
@@ -206,9 +293,15 @@ try {
         Start-Sleep -Milliseconds 500
     }
 } finally {
-    Write-Host "`n🛑 Encerrando servidores..." -ForegroundColor Yellow
+    Write-Host "`n🛑 Encerrando servidores e liberando portas..." -ForegroundColor Yellow
     Stop-Job -Job $BackendJob -ErrorAction SilentlyContinue
     Stop-Job -Job $FrontendJob -ErrorAction SilentlyContinue
     Remove-Job -Job $BackendJob -Force -ErrorAction SilentlyContinue
     Remove-Job -Job $FrontendJob -Force -ErrorAction SilentlyContinue
+
+    # Encerra processos uvicorn e vite caso tenham ficado em execução desanexados no Windows
+    Get-Process -Name "uvicorn", "node", "bun" -ErrorAction SilentlyContinue | Where-Object {
+        $_.Path -like "*$BackendDir*" -or $_.Path -like "*$FrontendDir*"
+    } | Stop-Process -Force -ErrorAction SilentlyContinue
+    Write-Host "   ✓ Servidores encerrados com sucesso." -ForegroundColor Green
 }

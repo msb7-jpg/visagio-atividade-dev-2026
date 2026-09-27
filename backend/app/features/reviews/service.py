@@ -74,7 +74,7 @@ class ReviewsService:
             sk_movie_id=sk_id,
             nome=data.nome,
             nota=data.nota,
-            comentario=data.comentario or "",
+            comentario=data.comentario if data.comentario is not None else "",
         )
         self.session.add(review)
         await self.session.flush()
@@ -102,7 +102,7 @@ class ReviewsService:
 
         review.nome = data.nome
         review.nota = data.nota
-        review.comentario = data.comentario
+        review.comentario = data.comentario if data.comentario is not None else ""
         await self.session.flush()
 
         await self._recalculate_dim_review(sk_id)

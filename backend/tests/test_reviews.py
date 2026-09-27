@@ -188,9 +188,24 @@ async def test_update_review_success_and_recalculates_average(seed_review_movie)
         assert updated["nota"] == 10.0
         assert "extraordinário" in updated["comentario"]
 
-        # Ficha do filme deve refletir média 10.0
+        # Atualiza novamente com comentário None / nulo
+        # (cenário de quick rating ou edição sem texto)
+        update_null_res = await client.put(
+            f"/api/v1/movies/{id_filme}/reviews/{review_id}",
+            json={
+                "nome": "Editor",
+                "nota": 8.0,
+                "comentario": None,
+            },
+        )
+        assert update_null_res.status_code == 200
+        updated_null = update_null_res.json()
+        assert updated_null["nota"] == 8.0
+        assert updated_null["comentario"] is None
+
+        # Ficha do filme deve refletir média 8.0
         movie_res = await client.get(f"/api/v1/movies/{id_filme}")
         assert movie_res.status_code == 200
         movie = movie_res.json()
-        assert movie["nota_media_usuarios"] == 10.0
+        assert movie["nota_media_usuarios"] == 8.0
 

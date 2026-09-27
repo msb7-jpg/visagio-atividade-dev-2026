@@ -22,32 +22,49 @@ C_RED="\033[31m"
 echo -e "\n${C_BOLD}${C_CYAN}🎬 [CineFlow] Iniciando orquestrador do sistema...${C_RESET}\n"
 
 # ------------------------------------------------------------------------------
-# 1. Verificação de Ferramentas / Pré-requisitos
+# 1. Verificação de Ferramentas / Pré-requisitos & Detecção de Fallbacks
 # ------------------------------------------------------------------------------
-echo -e "${C_CYAN}🔍 Verificando ferramentas instaladas...${C_RESET}"
+echo -e "${C_CYAN}🔍 Verificando ferramentas instaladas e selecionando runtimes...${C_RESET}"
 
-if ! command -v uv &> /dev/null; then
-  echo -e "${C_RED}❌ Erro: 'uv' não encontrado. Instale o uv (https://docs.astral.sh/uv/) e tente novamente.${C_RESET}"
+# Detecção Backend: uv (preferencial) ou python3 + venv/pip (fallback)
+BACKEND_RUNNER=""
+if command -v uv &> /dev/null; then
+  BACKEND_RUNNER="uv"
+  echo -e "${C_GREEN}   ✓ Backend runtime: 'uv' detectado (modo de alta performance).${C_RESET}"
+elif command -v python3 &> /dev/null; then
+  # Testa se o módulo venv está disponível no python3
+  if python3 -m venv --help &> /dev/null; then
+    BACKEND_RUNNER="pip"
+    echo -e "${C_YELLOW}   ⚠️  'uv' não encontrado. Usando fallback do Backend: 'python3 -m venv' e 'pip'.${C_RESET}"
+  else
+    echo -e "${C_RED}❌ Erro: Nem 'uv' nem o pacote 'python3-venv' foram encontrados.${C_RESET}"
+    echo -e "   Instale o uv (https://docs.astral.sh/uv/) ou o pacote venv (ex: sudo apt install python3-venv).${C_RESET}"
+    exit 1
+  fi
+else
+  echo -e "${C_RED}❌ Erro: Nenhum runtime Python ou 'uv' foi encontrado no sistema.${C_RESET}"
   exit 1
 fi
 
-if ! command -v bun &> /dev/null; then
-  echo -e "${C_RED}❌ Erro: 'bun' não encontrado. Instale o Bun (https://bun.sh/) e tente novamente.${C_RESET}"
+# Detecção Frontend: bun (preferencial) ou npm + node (fallback)
+FRONTEND_RUNNER=""
+if command -v bun &> /dev/null; then
+  FRONTEND_RUNNER="bun"
+  echo -e "${C_GREEN}   ✓ Frontend runtime: 'bun' detectado (modo de alta performance).${C_RESET}"
+elif command -v npm &> /dev/null && command -v node &> /dev/null; then
+  FRONTEND_RUNNER="npm"
+  echo -e "${C_YELLOW}   ⚠️  'bun' não encontrado. Usando fallback do Frontend: 'npm' e 'node'.${C_RESET}"
+else
+  echo -e "${C_RED}❌ Erro: Nem 'bun' nem 'npm' foram encontrados no sistema.${C_RESET}"
+  echo -e "   Instale o Bun (https://bun.sh/) ou o Node.js / npm (https://nodejs.org/).${C_RESET}"
   exit 1
 fi
-
-if ! command -v python3 &> /dev/null; then
-  echo -e "${C_RED}❌ Erro: 'python3' não encontrado.${C_RESET}"
-  exit 1
-fi
-
-echo -e "${C_GREEN}   ✓ uv, bun e python3 disponíveis.${C_RESET}"
 
 # ------------------------------------------------------------------------------
 # 2. Configuração de Variáveis de Ambiente
 # ------------------------------------------------------------------------------
 if [ ! -f "$BACKEND_DIR/.env" ]; then
-  echo -e "${C_YELLOW}⚙️  Arquivo .env ausente no backend. Criando a partir de .env.example...${C_RESET}"
+  echo -e "\n${C_YELLOW}⚙️  Arquivo .env ausente no backend. Criando a partir de .env.example...${C_RESET}"
   if [ -f "$BACKEND_DIR/.env.example" ]; then
     cp "$BACKEND_DIR/.env.example" "$BACKEND_DIR/.env"
   else
@@ -65,14 +82,38 @@ fi
 # ------------------------------------------------------------------------------
 # 3. Sincronização de Dependências
 # ------------------------------------------------------------------------------
-echo -e "\n${C_CYAN}📦 Sincronizando dependências do Backend (uv sync)...${C_RESET}"
-(cd "$BACKEND_DIR" && uv sync --all-extras)
+VENV_DIR="$BACKEND_DIR/.venv"
+VENV_PYTHON="$VENV_DIR/bin/python"
+VENV_ALEMBIC="$VENV_DIR/bin/alembic"
+VENV_UVICORN="$VENV_DIR/bin/uvicorn"
 
-echo -e "\n${C_CYAN}📦 Verificando dependências do Frontend (bun install)...${C_RESET}"
-if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
-  (cd "$FRONTEND_DIR" && bun install)
+if [ "$BACKEND_RUNNER" = "uv" ]; then
+  echo -e "\n${C_CYAN}📦 Sincronizando dependências do Backend (uv sync)...${C_RESET}"
+  (cd "$BACKEND_DIR" && uv sync --all-extras)
 else
-  echo -e "${C_GREEN}   ✓ node_modules já presente no frontend.${C_RESET}"
+  echo -e "\n${C_CYAN}📦 Preparando ambiente virtual do Backend (venv + pip)...${C_RESET}"
+  if [ ! -d "$VENV_DIR" ]; then
+    echo -e "   Criando ambiente virtual em $VENV_DIR..."
+    python3 -m venv "$VENV_DIR"
+  fi
+  echo -e "   Instalando/atualizando dependências com pip..."
+  (cd "$BACKEND_DIR" && "$VENV_DIR/bin/pip" install --upgrade pip && "$VENV_DIR/bin/pip" install -e ".[dev]")
+fi
+
+if [ "$FRONTEND_RUNNER" = "bun" ]; then
+  echo -e "\n${C_CYAN}📦 Verificando dependências do Frontend (bun install)...${C_RESET}"
+  if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
+    (cd "$FRONTEND_DIR" && bun install)
+  else
+    echo -e "${C_GREEN}   ✓ node_modules já presente no frontend.${C_RESET}"
+  fi
+else
+  echo -e "\n${C_CYAN}📦 Verificando dependências do Frontend (npm install)...${C_RESET}"
+  if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
+    (cd "$FRONTEND_DIR" && npm install)
+  else
+    echo -e "${C_GREEN}   ✓ node_modules já presente no frontend.${C_RESET}"
+  fi
 fi
 
 # ------------------------------------------------------------------------------
@@ -83,13 +124,19 @@ echo -e "\n${C_CYAN}🗄️  Analisando estado da base de dados ($DB_PATH)...${C
 NEEDS_MIGRATIONS=false
 NEEDS_SEED=false
 
+# Escolhe o executável Python a ser usado para inspecionar o SQLite
+PY_CMD="python3"
+if [ -x "$VENV_PYTHON" ]; then
+  PY_CMD="$VENV_PYTHON"
+fi
+
 if [ ! -f "$DB_PATH" ] || [ ! -s "$DB_PATH" ]; then
   echo -e "${C_YELLOW}⚠️  Banco de dados não encontrado ou vazio. Setup inicial necessário!${C_RESET}"
   NEEDS_MIGRATIONS=true
   NEEDS_SEED=true
 else
   # Verifica se a tabela principal existe e possui dados
-  MOVIES_COUNT=$(python3 -c "
+  MOVIES_COUNT=$($PY_CMD -c "
 import sqlite3
 try:
     conn = sqlite3.connect('$DB_PATH')
@@ -116,7 +163,11 @@ fi
 # ------------------------------------------------------------------------------
 if [ "$NEEDS_MIGRATIONS" = true ]; then
   echo -e "${C_CYAN}🔄 Aplicando migrações relacionais (Alembic)...${C_RESET}"
-  (cd "$BACKEND_DIR" && uv run alembic upgrade head)
+  if [ "$BACKEND_RUNNER" = "uv" ]; then
+    (cd "$BACKEND_DIR" && uv run alembic upgrade head)
+  else
+    (cd "$BACKEND_DIR" && "$VENV_ALEMBIC" upgrade head)
+  fi
   echo -e "${C_GREEN}   ✓ Migrações aplicadas com sucesso.${C_RESET}"
 fi
 
@@ -124,7 +175,11 @@ if [ "$NEEDS_SEED" = true ]; then
   echo -e "\n${C_CYAN}🌱 Verificando arquivos CSV para ingestão de dados em $DATA_DIR...${C_RESET}"
   if [ -d "$DATA_DIR" ] && [ -f "$DATA_DIR/dim_movies.csv" ]; then
     echo -e "${C_GREEN}   ✓ CSVs encontrados. Executando seed_database.py (isso pode levar ~25s)...${C_RESET}"
-    (cd "$BACKEND_DIR" && uv run python scripts/seed_database.py)
+    if [ "$BACKEND_RUNNER" = "uv" ]; then
+      (cd "$BACKEND_DIR" && uv run python scripts/seed_database.py)
+    else
+      (cd "$BACKEND_DIR" && "$VENV_PYTHON" scripts/seed_database.py)
+    fi
     echo -e "${C_GREEN}   ✓ Ingestão analítica concluída com sucesso!${C_RESET}"
   else
     echo -e "${C_RED}❌ ERRO: Pasta data/ ou dim_movies.csv não encontrados em $DATA_DIR.${C_RESET}"
@@ -134,28 +189,90 @@ if [ "$NEEDS_SEED" = true ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 6. Execução Conjunta: Backend FastAPI + Frontend Vite
+# 6. Execução Conjunta: Backend FastAPI + Frontend Vite com Encerramento Limpo
 # ------------------------------------------------------------------------------
 echo -e "\n${C_BOLD}${C_GREEN}🚀 Tudo pronto! Iniciando servidores...${C_RESET}"
 echo -e "   • Backend FastAPI: ${C_BOLD}http://localhost:8000${C_RESET} (Docs: http://localhost:8000/docs)"
 echo -e "   • Frontend React:  ${C_BOLD}http://localhost:5173${C_RESET}"
 echo -e "   • Pressione ${C_BOLD}Ctrl+C${C_RESET} para encerrar ambos os serviços.\n"
 
+BACKEND_PID=""
+FRONTEND_PID=""
+
+kill_tree() {
+  local parent_pid=$1
+  if [ -n "$parent_pid" ] && kill -0 "$parent_pid" 2>/dev/null; then
+    # Localiza PIDs filhos recursivamente
+    local children
+    children=$(pgrep -P "$parent_pid" 2>/dev/null || true)
+    for child in $children; do
+      kill_tree "$child"
+    done
+    kill -TERM "$parent_pid" 2>/dev/null || true
+  fi
+}
+
 cleanup() {
-  echo -e "\n${C_YELLOW}🛑 Encerrando servidores...${C_RESET}"
-  kill 0
+  trap - SIGINT SIGTERM EXIT
+  echo -e "\n${C_YELLOW}🛑 Encerrando servidores e liberando portas...${C_RESET}"
+
+  if [ -n "$BACKEND_PID" ]; then
+    kill_tree "$BACKEND_PID"
+  fi
+
+  if [ -n "$FRONTEND_PID" ]; then
+    kill_tree "$FRONTEND_PID"
+  fi
+
+  # Aguarda até 2 segundos para encerramento gracioso
+  sleep 0.5
+
+  # Força encerramento se ainda houver resquícios nos PIDs
+  if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+    kill -KILL "$BACKEND_PID" 2>/dev/null || true
+  fi
+  if [ -n "$FRONTEND_PID" ] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
+    kill -KILL "$FRONTEND_PID" 2>/dev/null || true
+  fi
+
+  # Mata também qualquer processo filho remanescente no grupo de processos
+  kill 0 2>/dev/null || true
+
+  echo -e "${C_GREEN}   ✓ Todos os processos foram encerrados com sucesso.${C_RESET}"
   exit 0
 }
 
 trap cleanup SIGINT SIGTERM EXIT
 
 # Inicia backend em background
-(cd "$BACKEND_DIR" && uv run uvicorn app.main:app --reload --port 8000) &
-BACKEND_PID=$!
+if [ "$BACKEND_RUNNER" = "uv" ]; then
+  (cd "$BACKEND_DIR" && exec uv run uvicorn app.main:app --reload --port 8000) &
+  BACKEND_PID=$!
+else
+  (cd "$BACKEND_DIR" && exec "$VENV_UVICORN" app.main:app --reload --port 8000) &
+  BACKEND_PID=$!
+fi
 
 # Inicia frontend em background
-(cd "$FRONTEND_DIR" && bun run dev) &
-FRONTEND_PID=$!
+if [ "$FRONTEND_RUNNER" = "bun" ]; then
+  (cd "$FRONTEND_DIR" && exec bun run dev) &
+  FRONTEND_PID=$!
+else
+  (cd "$FRONTEND_DIR" && exec npm run dev) &
+  FRONTEND_PID=$!
+fi
 
-# Aguarda ambos os processos
-wait $BACKEND_PID $FRONTEND_PID
+# Monitoramento de processos: se qualquer um falhar ou sair, dispara cleanup
+while true; do
+  if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
+    echo -e "${C_RED}⚠️  Processo do Backend encerrou inesperadamente.${C_RESET}"
+    break
+  fi
+  if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
+    echo -e "${C_RED}⚠️  Processo do Frontend encerrou inesperadamente.${C_RESET}"
+    break
+  fi
+  sleep 1
+done
+
+cleanup

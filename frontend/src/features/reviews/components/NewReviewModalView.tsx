@@ -43,6 +43,16 @@ export function NewReviewModalView({
   const authorName = initialValues?.nome || user?.nome || 'Cinéfilo'
   const isEditMode = mode === 'edit'
 
+  const [showZeroConfirmDialog, setShowZeroConfirmDialog] = React.useState(false)
+
+  const executeSubmit = async (values: ReviewFormValues) => {
+    const validated = reviewSchema.parse({
+      ...values,
+      nome: values.nome || authorName
+    })
+    await onSubmitReview(validated)
+  }
+
   const form = useForm({
     defaultValues: {
       nome: authorName,
@@ -50,11 +60,12 @@ export function NewReviewModalView({
       comentario: initialValues?.comentario ?? ''
     } as ReviewFormValues,
     onSubmit: async ({ value }) => {
-      const validated = reviewSchema.parse({
-        ...value,
-        nome: value.nome || authorName
-      })
-      await onSubmitReview(validated)
+      // Se nota for 0 e ainda não confirmou, abre diálogo de confirmação
+      if (value.nota === 0) {
+        setShowZeroConfirmDialog(true)
+        return
+      }
+      await executeSubmit(value)
     }
   })
 
@@ -64,6 +75,7 @@ export function NewReviewModalView({
       form.setFieldValue('nome', authorName)
       form.setFieldValue('nota', initialValues?.nota ?? 0)
       form.setFieldValue('comentario', initialValues?.comentario ?? '')
+
     }
   }, [open, authorName, initialValues?.nota, initialValues?.comentario, form])
 
@@ -72,8 +84,14 @@ export function NewReviewModalView({
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       form.reset()
+      setShowZeroConfirmDialog(false)
     }
     onOpenChange(isOpen)
+  }
+
+  const handleConfirmZeroScore = async () => {
+    setShowZeroConfirmDialog(false)
+    await executeSubmit(form.state.values)
   }
 
   return (
@@ -228,6 +246,38 @@ export function NewReviewModalView({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {/* Diálogo de Confirmação para Envio com Nota Zero */}
+      <Dialog open={showZeroConfirmDialog} onOpenChange={setShowZeroConfirmDialog}>
+        <DialogContent className="max-w-sm sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Publicar com nota 0?</DialogTitle>
+            <DialogDescription>
+              Você não selecionou nenhuma estrela para este filme. Deseja realmente publicar a avaliação com a nota <strong>0.0 / 10</strong>?
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="mt-4 flex flex-row items-center justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowZeroConfirmDialog(false)}
+            >
+              Voltar e avaliar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              disabled={isSubmitting}
+              onClick={handleConfirmZeroScore}
+            >
+              Confirmar nota 0
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   )
 }

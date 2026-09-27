@@ -2,6 +2,7 @@
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import React, { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export const Tooltip = ({
   content,
@@ -28,62 +29,53 @@ export const Tooltip = ({
     }
   }, [isVisible, content])
 
-  const calculatePosition = (mouseX: number, mouseY: number) => {
-    if (!contentRef.current || !containerRef.current)
-      return { x: mouseX + 12, y: mouseY + 12 }
+  const calculatePosition = (viewportX: number, viewportY: number) => {
+    if (typeof window === 'undefined') {
+      return { x: viewportX + 12, y: viewportY + 12 }
+    }
 
-    const tooltip = contentRef.current
-    const container = containerRef.current
-    const containerRect = container.getBoundingClientRect()
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
 
-    // Get tooltip dimensions
-    const tooltipWidth = 240 // min-w-60 = 240px
-    const tooltipHeight = tooltip.scrollHeight
+    // Approximate width if not yet rendered or measured
+    const tooltipWidth = contentRef.current?.offsetWidth || 260
+    const tooltipHeight = contentRef.current?.offsetHeight || height || 60
 
-    // Calculate absolute position relative to viewport
-    const absoluteX = containerRect.left + mouseX
-    const absoluteY = containerRect.top + mouseY
+    let finalX = viewportX + 12
+    let finalY = viewportY + 12
 
-    let finalX = mouseX + 12
-    let finalY = mouseY + 12
-
-    // Check if tooltip goes beyond right edge
-    if (absoluteX + 12 + tooltipWidth > viewportWidth) {
-      finalX = mouseX - tooltipWidth - 12
+    // Check if tooltip goes beyond right edge of viewport
+    if (finalX + tooltipWidth > viewportWidth - 12) {
+      finalX = viewportX - tooltipWidth - 12
     }
 
-    // Check if tooltip goes beyond left edge
-    if (absoluteX + finalX < 0) {
-      finalX = -containerRect.left + 12
+    // Check if tooltip goes beyond left edge of viewport
+    if (finalX < 12) {
+      finalX = 12
     }
 
-    // Check if tooltip goes beyond bottom edge
-    if (absoluteY + 12 + tooltipHeight > viewportHeight) {
-      finalY = mouseY - tooltipHeight - 12
+    // Check if tooltip goes beyond bottom edge of viewport
+    if (finalY + tooltipHeight > viewportHeight - 12) {
+      finalY = viewportY - tooltipHeight - 12
     }
 
-    // Check if tooltip goes beyond top edge
-    if (absoluteY + finalY < 0) {
-      finalY = -containerRect.top + 12
+    // Check if tooltip goes beyond top edge of viewport
+    if (finalY < 12) {
+      finalY = 12
     }
 
     return { x: finalX, y: finalY }
   }
 
-  const updateMousePosition = (mouseX: number, mouseY: number) => {
-    setMouse({ x: mouseX, y: mouseY })
-    const newPosition = calculatePosition(mouseX, mouseY)
+  const updateMousePosition = (clientX: number, clientY: number) => {
+    setMouse({ x: clientX, y: clientY })
+    const newPosition = calculatePosition(clientX, clientY)
     setPosition(newPosition)
   }
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsVisible(true)
-    const rect = e.currentTarget.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-    updateMousePosition(mouseX, mouseY)
+    updateMousePosition(e.clientX, e.clientY)
   }
 
   const handleMouseLeave = () => {
@@ -94,18 +86,12 @@ export const Tooltip = ({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isVisible) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-    updateMousePosition(mouseX, mouseY)
+    updateMousePosition(e.clientX, e.clientY)
   }
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.touches[0]
-    const rect = e.currentTarget.getBoundingClientRect()
-    const mouseX = touch.clientX - rect.left
-    const mouseY = touch.clientY - rect.top
-    updateMousePosition(mouseX, mouseY)
+    updateMousePosition(touch.clientX, touch.clientY)
     setIsVisible(true)
   }
 
@@ -127,10 +113,7 @@ export const Tooltip = ({
         setMouse({ x: 0, y: 0 })
         setPosition({ x: 0, y: 0 })
       } else {
-        const rect = e.currentTarget.getBoundingClientRect()
-        const mouseX = e.clientX - rect.left
-        const mouseY = e.clientY - rect.top
-        updateMousePosition(mouseX, mouseY)
+        updateMousePosition(e.clientX, e.clientY)
         setIsVisible(true)
       }
     }
@@ -138,11 +121,46 @@ export const Tooltip = ({
 
   // Update position when tooltip becomes visible or content changes
   useEffect(() => {
-    if (isVisible && contentRef.current) {
+    if (isVisible) {
       const newPosition = calculatePosition(mouse.x, mouse.y)
       setPosition(newPosition)
     }
   }, [isVisible, height, mouse.x, mouse.y])
+
+  const renderTooltipContent = () => {
+    if (typeof document === 'undefined') return null
+
+    return createPortal(
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            key={String(isVisible)}
+            initial={{ height: 0, opacity: 1 }}
+            animate={{ height, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              type: 'spring',
+              stiffness: 200,
+              damping: 20
+            }}
+            className="pointer-events-none fixed z-[100] w-64 max-w-[260px] overflow-hidden rounded-md border border-white/10 bg-popover shadow-lg ring-1 ring-white/10"
+            style={{
+              top: `${position.y}px`,
+              left: `${position.x}px`
+            }}
+          >
+            <div
+              ref={contentRef}
+              className="p-2 text-sm text-popover-foreground md:p-4"
+            >
+              {content}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+    )
+  }
 
   return (
     <div
@@ -156,33 +174,7 @@ export const Tooltip = ({
       onClick={handleClick}
     >
       {children}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            key={String(isVisible)}
-            initial={{ height: 0, opacity: 1 }}
-            animate={{ height, opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 200,
-              damping: 20
-            }}
-            className="pointer-events-none absolute top-(--tooltip-top) left-(--tooltip-left) z-50 min-w-60 overflow-hidden rounded-md border border-white/10 bg-popover shadow-sm ring-1 ring-white/10"
-            style={{
-              '--tooltip-top': `${position.y}px`,
-              '--tooltip-left': `${position.x}px`
-            } as React.CSSProperties}
-          >
-            <div
-              ref={contentRef}
-              className="p-2 text-sm text-popover-foreground md:p-4"
-            >
-              {content}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {renderTooltipContent()}
     </div>
   )
 }

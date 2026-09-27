@@ -68,8 +68,16 @@ describe('ReviewsSectionContainer and ReviewSubmission', () => {
     expect(screen.getByText(/Fotografia e trilha sonora impecáveis/i)).toBeInTheDocument()
   })
 
-  it('abre o modal ao clicar no botão "Escrever Avaliação" e valida campos obrigatórios', async () => {
+  it('abre o modal e exibe confirmação ao submeter sem selecionar nota (nota 0)', async () => {
     vi.spyOn(reviewsApi, 'fetchMovieReviews').mockResolvedValue([])
+    const submitSpy = vi.spyOn(reviewsApi, 'submitMovieReview').mockResolvedValue({
+      sk_movie_review_id: 'rev-zero',
+      sk_movie_id: 'movie-123',
+      nome: 'Cinéfilo',
+      nota: 0,
+      comentario: '',
+      created_at: '2026-09-26T10:00:00Z'
+    })
 
     renderReviewsSection()
 
@@ -84,10 +92,20 @@ describe('ReviewsSectionContainer and ReviewSubmission', () => {
     const submitButton = screen.getByRole('button', { name: /publicar avaliação/i })
     fireEvent.click(submitButton)
 
+    // Abre diálogo de confirmação de nota 0
+    expect(await screen.findByText(/publicar com nota 0\?/i)).toBeInTheDocument()
+    expect(screen.getByText(/você não selecionou nenhuma estrela para este filme/i)).toBeInTheDocument()
+
+    // Confirma nota 0
+    const confirmButton = screen.getByRole('button', { name: /confirmar nota 0/i })
+    fireEvent.click(confirmButton)
+
     await waitFor(() => {
-      expect(
-        screen.getByText(/selecione uma nota de 0.5 a 5 estrelas/i)
-      ).toBeInTheDocument()
+      expect(submitSpy).toHaveBeenCalledWith('movie-123', {
+        nome: 'Cinéfilo',
+        nota: 0,
+        comentario: null
+      })
     })
   })
 

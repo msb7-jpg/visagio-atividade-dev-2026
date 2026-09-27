@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchMovieReviews,
   submitMovieReview,
@@ -25,8 +25,36 @@ export function useSubmitMovieReviewMutation({
   onSuccess,
   onError
 }: UseSubmitMovieReviewOptions) {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: (payload: CreateReviewDTO) => submitMovieReview(movieId, payload),
+    onMutate: async (newReviewPayload: CreateReviewDTO) => {
+      const queryKey = ['movies', movieId, 'reviews']
+      // Cancela refetches em andamento para não sobrescrever o update otimista
+      await queryClient.cancelQueries({ queryKey })
+
+      const previousReviews = queryClient.getQueryData<MovieReviewDTO[]>(queryKey) || []
+
+      // Injeta avaliação temporária no cache
+      const optimisticReview: MovieReviewDTO = {
+        sk_movie_review_id: `temp-${Date.now()}`,
+        sk_movie_id: movieId,
+        nome: newReviewPayload.nome,
+        nota: newReviewPayload.nota,
+        comentario: newReviewPayload.comentario ?? null,
+        created_at: new Date().toISOString()
+      }
+
+      queryClient.setQueryData<MovieReviewDTO[]>(queryKey, [
+        optimisticReview,
+        ...previousReviews.filter(
+          (r) => r.nome.trim().toLowerCase() !== newReviewPayload.nome.trim().toLowerCase()
+        )
+      ])
+
+      return { previousReviews }
+    },
     meta: {
       invalidates: [
         ['movies', movieId, 'reviews'],
@@ -38,7 +66,10 @@ export function useSubmitMovieReviewMutation({
     onSuccess: (data) => {
       onSuccess?.(data)
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      if (context?.previousReviews) {
+        queryClient.setQueryData(['movies', movieId, 'reviews'], context.previousReviews)
+      }
       onError?.(error)
     }
   })
@@ -55,6 +86,8 @@ export function useUpdateMovieReviewMutation({
   onSuccess,
   onError
 }: UseUpdateMovieReviewOptions) {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: ({
       reviewId,
@@ -63,6 +96,29 @@ export function useUpdateMovieReviewMutation({
       reviewId: string
       payload: CreateReviewDTO
     }) => updateMovieReview(movieId, reviewId, payload),
+    onMutate: async ({ reviewId, payload }) => {
+      const queryKey = ['movies', movieId, 'reviews']
+      await queryClient.cancelQueries({ queryKey })
+
+      const previousReviews = queryClient.getQueryData<MovieReviewDTO[]>(queryKey) || []
+
+      // Atualiza imediatamente no cache do TanStack Query
+      queryClient.setQueryData<MovieReviewDTO[]>(
+        queryKey,
+        previousReviews.map((r) =>
+          r.sk_movie_review_id === reviewId
+            ? {
+              ...r,
+              nome: payload.nome,
+              nota: payload.nota,
+              comentario: payload.comentario ?? null
+            }
+            : r
+        )
+      )
+
+      return { previousReviews }
+    },
     meta: {
       invalidates: [
         ['movies', movieId, 'reviews'],
@@ -74,7 +130,10 @@ export function useUpdateMovieReviewMutation({
     onSuccess: (data) => {
       onSuccess?.(data)
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      if (context?.previousReviews) {
+        queryClient.setQueryData(['movies', movieId, 'reviews'], context.previousReviews)
+      }
       onError?.(error)
     }
   })

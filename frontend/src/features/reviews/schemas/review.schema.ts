@@ -8,7 +8,7 @@ export const reviewSchema = z.object({
     .max(120, 'O nome deve conter no máximo 120 caracteres.'),
   nota: z
     .number()
-    .min(1, 'Selecione uma nota de 0.5 a 5 estrelas.')
+    .min(0, 'A nota deve ser entre 0 e 10.')
     .max(10, 'A nota máxima permitida é 10.'),
   comentario: z
     .string()

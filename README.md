@@ -172,7 +172,7 @@ O sistema foi desenhado a partir dos requisitos centrais da especificação ofic
 
 ### 1. Pré-Requisitos e Arquivos de Dados (CSV)
 
-O projeto depende de **Python 3.11+**, [**uv**](https://docs.astral.sh/uv/) e [**Bun**](https://bun.sh/).
+O projeto foi desenvolvido para máxima velocidade utilizando [**uv**](https://docs.astral.sh/uv/) e [**Bun**](https://bun.sh/). No entanto, os scripts de setup e execução contam com **fallback automático** e transparente para a stack padrão com **Python 3.11+ (`venv` / `pip`)** e **Node.js (`npm`)** caso `uv` ou `bun` não estejam instalados em sua máquina.
 
 > ⚠️ **IMPORTANTE (Arquivos CSV Necessários):**  
 > A ingestão de dados analíticos requer que os arquivos CSV fornecidos estejam presentes no diretório raiz `data/`:
