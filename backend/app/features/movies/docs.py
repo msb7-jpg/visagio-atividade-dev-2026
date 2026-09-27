@@ -30,6 +30,15 @@ AvailableYearsDoc = EndpointDoc(
     ),
 )
 
+AvailableStatusesDoc = EndpointDoc(
+    response_model=list[str],
+    summary="Lista os status de lançamento disponíveis no catálogo",
+    description=(
+        "Retorna lista ordenada com opções amigáveis de status de filme "
+        "presentes no catálogo."
+    ),
+)
+
 GetMovieDetailDoc = EndpointDoc(
     response_model=MovieDetailDTO,
     summary="Obtém a ficha técnica completa e métricas de um filme por ID",

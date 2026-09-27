@@ -11,6 +11,7 @@ describe('useCatalogViewModel', () => {
       q: 'Matrix',
       genre: 'Ação',
       year: undefined,
+      status: '',
       sortBy: 'popularidade',
       sortOrder: 'desc',
       viewMode: 'grid',
@@ -18,6 +19,7 @@ describe('useCatalogViewModel', () => {
       setQ: vi.fn(),
       setGenre: vi.fn(),
       setYear: vi.fn(),
+      setStatus: vi.fn(),
       setSortBy: vi.fn(),
       setSortOrder: vi.fn(),
       toggleSort: vi.fn(),
@@ -65,6 +67,10 @@ describe('useCatalogViewModel', () => {
       data: [2024, 2023, 1999]
     } as unknown as ReturnType<typeof moviesQueryHook.useAvailableYearsQuery>)
 
+    vi.spyOn(moviesQueryHook, 'useAvailableStatusesQuery').mockReturnValue({
+      data: ['Lançado', 'Pós-Produção', 'Não Lançado']
+    } as unknown as ReturnType<typeof moviesQueryHook.useAvailableStatusesQuery>)
+
     const { result } = renderHook(() => useCatalogViewModel())
 
     expect(result.current.page).toBe(1)
@@ -72,6 +78,7 @@ describe('useCatalogViewModel', () => {
     expect(result.current.movies).toHaveLength(1)
     expect(result.current.total).toBe(1)
     expect(result.current.genres).toHaveLength(1)
+    expect(result.current.availableStatuses).toHaveLength(3)
     expect(result.current.isLoading).toBe(false)
   })
 })

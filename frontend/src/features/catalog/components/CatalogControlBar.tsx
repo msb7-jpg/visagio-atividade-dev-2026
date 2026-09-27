@@ -13,7 +13,7 @@ import type {
   SortOrderOption,
   ViewModeOption
 } from '@/features/catalog/hooks/useCatalogParams'
-import { ArrowDownUp, Calendar, Clapperboard, LayoutGrid, List } from 'lucide-react'
+import { Activity, ArrowDownUp, Calendar, Clapperboard, LayoutGrid, List } from 'lucide-react'
 import React from 'react'
 
 interface CatalogControlBarProps {
@@ -23,6 +23,9 @@ interface CatalogControlBarProps {
   availableYears?: number[]
   selectedYear?: number
   onSelectYear?: (year: number | undefined) => void
+  availableStatuses?: string[]
+  selectedStatus?: string
+  onSelectStatus?: (status: string) => void
   sortBy: SortByOption
   sortOrder?: SortOrderOption
   onSelectSortBy: (sort: SortByOption) => void
@@ -31,6 +34,8 @@ interface CatalogControlBarProps {
   onChangeViewMode: (mode: ViewModeOption) => void
   totalCount: number
 }
+
+const DEFAULT_STATUSES = ['Lançado', 'Não Lançado', 'Pós-Produção', 'Em Produção', 'Planejado']
 
 const SORT_OPTIONS: { label: string; value: SortByOption }[] = [
   { label: 'Mais Populares', value: 'popularidade' },
@@ -47,6 +52,9 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
   availableYears = [],
   selectedYear,
   onSelectYear,
+  availableStatuses = [],
+  selectedStatus,
+  onSelectStatus,
   sortBy,
   sortOrder: _sortOrder,
   onSelectSortBy,
@@ -55,6 +63,8 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
   onChangeViewMode,
   totalCount
 }) => {
+  const displayStatuses =
+    availableStatuses.length > 0 ? availableStatuses : DEFAULT_STATUSES
   return (
     <div className="flex w-full flex-col gap-4 border-b border-white/10 bg-background/40 py-4 backdrop-blur-md">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -130,6 +140,37 @@ export const CatalogControlBar: React.FC<CatalogControlBarProps> = ({
               </Select>
             </div>
           )}
+
+          {/* Dropdown de Status de Lançamento */}
+          <div className="flex items-center gap-1.5">
+            <Select
+              value={selectedStatus || 'all'}
+              onValueChange={(val) => onSelectStatus?.(val === 'all' ? '' : val)}
+            >
+              <SelectTrigger
+                size="sm"
+                aria-label="Filtrar por status"
+              >
+                <Activity className="size-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Todos os Status" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectGroup>
+                  <SelectItem value="all">
+                    Todos os Status
+                  </SelectItem>
+                  {displayStatuses.map((st) => (
+                    <SelectItem
+                      key={st}
+                      value={st}
+                    >
+                      {st}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Dropdown Clássico de Ordenação */}
           <div className="flex items-center gap-1.5">

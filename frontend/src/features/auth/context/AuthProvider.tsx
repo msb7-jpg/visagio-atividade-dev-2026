@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     removeStoredToken()
     clearMovieDraft()
+    notifyAuthStore()
     logoutMutation.mutate()
   }
   const isLoading = loginMutation.isPending || logoutMutation.isPending

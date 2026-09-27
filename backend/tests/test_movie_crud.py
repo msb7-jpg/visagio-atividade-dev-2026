@@ -159,13 +159,15 @@ async def test_delete_movie_success(admin_headers):
     """Exclusão de filme por admin e confirmação de 404 subsequente."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        # Criação
+        # Criação com gêneros e diretor
         create_res = await client.post(
             "/api/v1/movies",
             headers=admin_headers,
             json={
                 "titulo": "Filme Para Ser Deletado",
                 "ano_lancamento": 2022,
+                "diretor": "Diretor Para Deletar",
+                "generos_ids": ["Ação", "Drama"],
             },
         )
         assert create_res.status_code == 201

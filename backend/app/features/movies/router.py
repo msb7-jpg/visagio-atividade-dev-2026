@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.features.auth.router import get_current_admin
 from app.features.auth.schemas import AdminUserDTO
 from app.features.movies.docs import (
+    AvailableStatusesDoc,
     AvailableYearsDoc,
     CreateMovieDoc,
     DeleteMovieDoc,
@@ -62,6 +63,14 @@ async def get_available_years(
 ) -> list[int]:
     """Retorna os anos distintos de lançamento disponíveis no catálogo."""
     return await repo.get_available_years()
+
+
+@movies_router.get("/available-statuses", **AvailableStatusesDoc.to_dict())
+async def get_available_statuses(
+    repo: MoviesRepo,
+) -> list[str]:
+    """Retorna os status de filmes disponíveis no catálogo."""
+    return await repo.get_available_statuses()
 
 
 @movies_router.get("/{movie_id}", **GetMovieDetailDoc.to_dict())

@@ -37,6 +37,7 @@ export const MovieCreateContainer: React.FC = () => {
       url_backdrop: values.url_backdrop || null,
       generos_ids: values.generos_ids
     })
+    clearMovieDraft()
   }
 
   const handleCancel = () => {

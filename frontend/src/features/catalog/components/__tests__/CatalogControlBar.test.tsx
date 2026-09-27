@@ -81,4 +81,28 @@ describe('CatalogControlBar', () => {
 
     expect(screen.getByLabelText('Filtrar por ano')).toBeDefined()
   })
+
+  it('renderiza Select de status do filme e dispara onSelectStatus', () => {
+    const handleSelectStatus = vi.fn()
+
+    render(
+      <CatalogControlBar
+        genres={mockGenres}
+        selectedGenre=""
+        onSelectGenre={vi.fn()}
+        availableStatuses={['Lançado', 'Não Lançado', 'Pós-Produção', 'Em Produção']}
+        selectedStatus="Pós-Produção"
+        onSelectStatus={handleSelectStatus}
+        sortBy="popularidade"
+        sortOrder="desc"
+        onSelectSortBy={vi.fn()}
+        viewMode="grid"
+        onChangeViewMode={vi.fn()}
+        totalCount={85}
+      />
+    )
+
+    expect(screen.getByLabelText('Filtrar por status')).toBeDefined()
+    expect(screen.getByText('Pós-Produção')).toBeDefined()
+  })
 })

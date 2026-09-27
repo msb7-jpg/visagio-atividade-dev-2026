@@ -18,7 +18,9 @@ import {
 import type { MovieAdminFormValues } from '@/features/movie-admin/types/movie-admin.types'
 import {
   clearMovieDraft,
+  DRAFT_CHANGE_EVENT,
   isDraftNotEmpty,
+  MOVIE_DRAFT_KEY,
   saveMovieDraft
 } from '@/features/movie-admin/utils/movie-draft'
 import { useForm, useSelector } from '@tanstack/react-form'
@@ -67,6 +69,8 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
     onSubmit: async ({ value }) => {
       const validated = movieFormSchema.parse(value)
       await onSubmit(validated)
+      isDiscardingRef.current = true
+      clearMovieDraft()
     }
   })
 
@@ -81,6 +85,23 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
 
   // Flag para evitar que o cleanup do useEffect ressalve o rascunho ao desmontar
   const isDiscardingRef = React.useRef(false)
+
+  // Escuta limpezas de rascunho externas (como logout ou descarte em outra aba)
+  React.useEffect(() => {
+    const handleDraftEvent = () => {
+      if (typeof window !== 'undefined' && !localStorage.getItem(MOVIE_DRAFT_KEY)) {
+        isDiscardingRef.current = true
+      }
+    }
+
+    window.addEventListener(DRAFT_CHANGE_EVENT, handleDraftEvent)
+    window.addEventListener('storage', handleDraftEvent)
+
+    return () => {
+      window.removeEventListener(DRAFT_CHANGE_EVENT, handleDraftEvent)
+      window.removeEventListener('storage', handleDraftEvent)
+    }
+  }, [])
 
   const formValues = useSelector(form.store, (s) => s.values)
   const liveTitle = useSelector(form.store, (s) => s.values.titulo)
@@ -106,7 +127,7 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
     }, 150)
 
     const handleBeforeUnload = () => {
-      if (!isDiscardingRef.current) {
+      if (!isDiscardingRef.current && typeof window !== 'undefined' && localStorage.getItem(MOVIE_DRAFT_KEY) !== null) {
         saveMovieDraft(latestValuesRef.current)
       }
     }
@@ -116,8 +137,8 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
     return () => {
       clearTimeout(timer)
       window.removeEventListener('beforeunload', handleBeforeUnload)
-      // Só salva na desmontagem se NÃO foi uma ação explícita de descarte
-      if (!isDiscardingRef.current) {
+      // Só salva na desmontagem se NÃO foi uma ação explícita de descarte/submissão e o rascunho ainda existe
+      if (!isDiscardingRef.current && typeof window !== 'undefined' && localStorage.getItem(MOVIE_DRAFT_KEY) !== null) {
         saveMovieDraft(latestValuesRef.current)
       }
     }

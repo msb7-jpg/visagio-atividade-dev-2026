@@ -45,6 +45,7 @@ async def seed_test_catalog():
             duracao_minutos=136,
             sinopse="Neo descobre a verdade sobre a simulação.",
             url_poster="https://image.tmdb.org/t/p/w500/matrix.jpg",
+            status_filme="Lançado",
         )
         m2 = DimMovie(
             id_filme="test-interstellar-2014",
@@ -53,6 +54,7 @@ async def seed_test_catalog():
             duracao_minutos=169,
             sinopse="Uma equipe de exploradores viaja através de um buraco de minhoca no espaço.",
             url_poster="https://image.tmdb.org/t/p/w500/interstellar.jpg",
+            status_filme="Pós-Produção",
         )
         session.add_all([m1, m2])
         await session.flush()
@@ -198,3 +200,37 @@ async def test_list_movies_filter_year(seed_test_catalog):
         assert len(data["items"]) >= 1
         assert all(item["ano_lancamento"] == 1999 for item in data["items"])
         assert any(item["titulo"] == "The Matrix" for item in data["items"])
+
+
+@pytest.mark.asyncio
+async def test_get_available_statuses(seed_test_catalog):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/api/v1/movies/available-statuses")
+        assert resp.status_code == 200
+        statuses = resp.json()
+        assert isinstance(statuses, list)
+        assert "Lançado" in statuses
+        assert "Pós-Produção" in statuses
+        assert "Não Lançado" in statuses
+
+
+@pytest.mark.asyncio
+async def test_list_movies_filter_status(seed_test_catalog):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # Filtro por Pós-Produção
+        resp = await client.get("/api/v1/movies?status=Pós-Produção")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data["items"]) >= 1
+        assert any(item["titulo"] == "Interstellar" for item in data["items"])
+        assert all(item["titulo"] != "The Matrix" for item in data["items"])
+
+        # Filtro por Não Lançado (deve trazer Interstellar e não The Matrix)
+        resp_unreleased = await client.get("/api/v1/movies?status=Não+Lançado")
+        assert resp_unreleased.status_code == 200
+        data_unreleased = resp_unreleased.json()
+        assert any(item["titulo"] == "Interstellar" for item in data_unreleased["items"])
+        assert all(item["titulo"] != "The Matrix" for item in data_unreleased["items"])
+

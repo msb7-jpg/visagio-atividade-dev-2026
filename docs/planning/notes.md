@@ -1,5 +1,13 @@
 
+1. - novo filtro por status do filme: e.g nao lancado, pos-produção, etc
+2. - bug ao cadastar o filme ele nao apangando do local stora a informacao, msm coisa para fazer o logout
 
+Novo dominios criar uma sessão na página principal do catalog de 
+- reviews populares, aonde so vamos ter um card do filme que nem o MovieGridListItem, mas focando nos reviews do usuário, so preciso de algum critério melhor para mostrar os reviews, pois ainda nao temos a ideia de responder reviews ou dar link em reviews, e nao teriamos dados para tal feito
+
+- criar uma página focada em person e colocar os filmes relacionados a ela, seja diretor ou ator, interessante ter algo como 
+You’ve watched 0 of 30 / 0%
+    - dentro de um filme, 
 
 Good to have
 TODO - Comportamento da estrela

@@ -198,18 +198,11 @@ class MoviesService:
         if not movie:
             return False
 
-        sk_id = movie.sk_movie_id
-
-        # Limpeza atômica explícita das tabelas de associação para garantir integridade SQLite
-        await self.session.execute(
-            delete(bridge_movie_genre).where(bridge_movie_genre.c.sk_movie_id == sk_id)
-        )
-        await self.session.execute(
-            delete(bridge_movie_company).where(bridge_movie_company.c.sk_movie_id == sk_id)
-        )
-        await self.session.execute(
-            delete(bridge_movie_person).where(bridge_movie_person.c.sk_movie_id == sk_id)
-        )
+        # Desvincula relacionamentos m2m via ORM para evitar conflitos de StaleDataError
+        movie.genres = []
+        movie.companies = []
+        movie.people = []
+        await self.session.flush()
 
         await self.session.delete(movie)
         await self.session.commit()

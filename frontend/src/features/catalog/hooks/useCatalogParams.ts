@@ -26,6 +26,7 @@ export function useCatalogParams() {
     const y = parseInt(searchParams.get('year') || '', 10)
     return isNaN(y) ? undefined : y
   }, [searchParams])
+  const status = useMemo(() => searchParams.get('status') || '', [searchParams])
   const sortBy = useMemo<SortByOption>(() => {
     const s = searchParams.get('sort') as SortByOption
     const allowed: SortByOption[] = [
@@ -130,6 +131,27 @@ export function useCatalogParams() {
     [setSearchParams]
   )
 
+  const setStatus = useCallback(
+    (newStatus: string) => {
+      setSearchParams((prev) => {
+        const currentStatus = prev.get('status') || ''
+        const targetStatus = newStatus === currentStatus ? '' : newStatus
+        if (currentStatus === targetStatus) {
+          return prev
+        }
+        const next = new URLSearchParams(prev)
+        if (!targetStatus) {
+          next.delete('status')
+        } else {
+          next.set('status', targetStatus)
+        }
+        next.delete('page') // Reseta para a página 1 ao filtrar por status
+        return next
+      })
+    },
+    [setSearchParams]
+  )
+
   const setSortBy = useCallback(
     (newSort: SortByOption) => {
       setSearchParams((prev) => {
@@ -228,6 +250,7 @@ export function useCatalogParams() {
     q,
     genre,
     year,
+    status,
     sortBy,
     sortOrder,
     viewMode,
@@ -235,6 +258,7 @@ export function useCatalogParams() {
     setQ,
     setGenre,
     setYear,
+    setStatus,
     setSortBy,
     setSortOrder,
     toggleSort,

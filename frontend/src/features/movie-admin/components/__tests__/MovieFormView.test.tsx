@@ -1,6 +1,6 @@
 import type { GenreItem } from '@/features/catalog/api/catalogApi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import * as React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { MovieFormView } from '../MovieFormView'
@@ -162,5 +162,67 @@ describe('MovieFormView', () => {
         screen.getByText('A URL do pôster deve começar com http:// ou https://')
       ).toBeInTheDocument()
     })
+  })
+
+  it('limpa o rascunho do localStorage após submissão bem-sucedida e não o recria ao desmontar', async () => {
+    localStorage.setItem(
+      'rocketfilms_movie_create_draft',
+      JSON.stringify({ titulo: 'Filme Temporário' })
+    )
+
+    const handleSubmit = vi.fn().mockResolvedValue(undefined)
+    const { unmount } = renderWithProviders(
+      <MovieFormView
+        mode="create"
+        availableGenres={mockGenres}
+        onSubmit={handleSubmit}
+        onCancel={vi.fn()}
+      />
+    )
+
+    const titleInput = screen.getByLabelText(/Título do Filme/)
+    fireEvent.change(titleInput, { target: { value: 'Filme Submetido' } })
+
+    const submitBtn = screen.getByRole('button', { name: /Cadastrar Filme/i })
+    fireEvent.click(submitBtn)
+
+    await waitFor(() => {
+      expect(handleSubmit).toHaveBeenCalledTimes(1)
+    })
+
+    // Ao submeter com sucesso, o rascunho deve ter sido removido
+    expect(localStorage.getItem('rocketfilms_movie_create_draft')).toBeNull()
+
+    // Ao desmontar o formulário após a submissão, NÃO deve ressalvar no localStorage
+    unmount()
+    expect(localStorage.getItem('rocketfilms_movie_create_draft')).toBeNull()
+  })
+
+  it('não restaura o rascunho no unmount caso tenha ocorrido logout/limpeza externa de rascunho', async () => {
+    localStorage.setItem(
+      'rocketfilms_movie_create_draft',
+      JSON.stringify({ titulo: 'Filme Digitado' })
+    )
+
+    const { unmount } = renderWithProviders(
+      <MovieFormView
+        mode="create"
+        availableGenres={mockGenres}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+
+    // Simula logout chamando remoção externa e evento de draft-change
+    act(() => {
+      localStorage.removeItem('rocketfilms_movie_create_draft')
+      window.dispatchEvent(new Event('rocketfilms:draft-change'))
+    })
+
+    // Desmonta componente (ex: transição de rota após logout)
+    unmount()
+
+    // O rascunho deve permanecer nulo
+    expect(localStorage.getItem('rocketfilms_movie_create_draft')).toBeNull()
   })
 })

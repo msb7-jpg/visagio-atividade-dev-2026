@@ -9,6 +9,7 @@ export interface MovieListItem {
   sinopse: string | null
   url_poster: string | null
   url_backdrop: string | null
+  status_filme?: string | null
   generos: string[]
   diretores: string[]
   produtoras: string[]
@@ -46,6 +47,7 @@ export interface FetchMoviesParams {
   genre?: string
   company?: string
   year?: number
+  status?: string
   sortBy?: 'popularidade' | 'nota_media_usuarios' | 'receita_usd' | 'ano_lancamento' | 'titulo'
   order?: 'asc' | 'desc'
 }
@@ -61,6 +63,7 @@ export async function fetchMovies(
       genre: params.genre || undefined,
       company: params.company || undefined,
       year: params.year || undefined,
+      status: params.status || undefined,
       sort_by: params.sortBy ?? 'popularidade',
       order: params.order ?? 'desc'
     }
@@ -80,5 +83,10 @@ export async function fetchCompanies(): Promise<CompanyItem[]> {
 
 export async function fetchAvailableYears(): Promise<number[]> {
   const response = await apiClient.get<number[]>('/movies/available-years')
+  return response.data
+}
+
+export async function fetchAvailableStatuses(): Promise<string[]> {
+  const response = await apiClient.get<string[]>('/movies/available-statuses')
   return response.data
 }

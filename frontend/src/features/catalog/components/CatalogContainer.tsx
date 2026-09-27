@@ -55,6 +55,9 @@ export const CatalogContainer: React.FC = () => {
           availableYears={vm.availableYears}
           selectedYear={vm.year}
           onSelectYear={vm.setYear}
+          availableStatuses={vm.availableStatuses}
+          selectedStatus={vm.status}
+          onSelectStatus={vm.setStatus}
           sortBy={vm.sortBy}
           sortOrder={vm.sortOrder}
           onSelectSortBy={vm.setSortBy}
@@ -71,7 +74,7 @@ export const CatalogContainer: React.FC = () => {
             isLoading={vm.isLoading}
             isFetching={vm.isFetching}
             isError={vm.isError}
-            hasFilters={Boolean(vm.q || vm.genre || vm.year)}
+            hasFilters={Boolean(vm.q || vm.genre || vm.year || vm.status)}
           />
         </div>
 

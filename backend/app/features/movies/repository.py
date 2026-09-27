@@ -77,6 +77,38 @@ class MoviesRepository:
         if filters.year is not None:
             query_filters.append(DimMovie.ano_lancamento == filters.year)
 
+        if filters.status and filters.status.strip():
+            status_clean = filters.status.strip()
+            status_lower = status_clean.lower()
+            if status_lower in ("lançado", "lancado", "released"):
+                query_filters.append(
+                    DimMovie.status_filme.in_(["Lançado", "Released", "lançado", "released"])
+                )
+            elif status_lower in ("não lançado", "nao lancado", "nao-lancado", "unreleased"):
+                query_filters.append(
+                    (DimMovie.status_filme.notin_(["Lançado", "Released", "lançado", "released"]))
+                    | (DimMovie.status_filme.is_(None))
+                )
+            elif status_lower in ("pós-produção", "pos-producao", "pos-produção", "post-production"):
+                query_filters.append(
+                    DimMovie.status_filme.ilike("%pós-produção%")
+                    | DimMovie.status_filme.ilike("%pos-producao%")
+                    | DimMovie.status_filme.ilike("%post-production%")
+                )
+            elif status_lower in ("em produção", "em producao", "in production"):
+                query_filters.append(
+                    DimMovie.status_filme.ilike("%em produção%")
+                    | DimMovie.status_filme.ilike("%em producao%")
+                    | DimMovie.status_filme.ilike("%in production%")
+                )
+            elif status_lower in ("planejado", "planned"):
+                query_filters.append(
+                    DimMovie.status_filme.ilike("%planejado%")
+                    | DimMovie.status_filme.ilike("%planned%")
+                )
+            else:
+                query_filters.append(DimMovie.status_filme.ilike(status_clean))
+
         # Contagem total ultra rápida sem outer joins redundantes
         count_stmt = select(func.count(DimMovie.sk_movie_id))
         if query_filters:
@@ -197,6 +229,25 @@ class MoviesRepository:
         )
         result = await self.session.execute(stmt)
         return [int(row[0]) for row in result.fetchall() if row[0] is not None]
+
+    async def get_available_statuses(self) -> list[str]:
+        """Retorna os status de filmes disponíveis no catálogo."""
+        stmt = (
+            select(DimMovie.status_filme)
+            .where(DimMovie.status_filme.isnot(None))
+            .distinct()
+            .order_by(DimMovie.status_filme)
+        )
+        result = await self.session.execute(stmt)
+        db_statuses = [row[0] for row in result.fetchall() if row[0]]
+
+        # Padroniza lista amigável para interface
+        predefined = ["Lançado", "Não Lançado", "Pós-Produção", "Em Produção", "Planejado"]
+        final_list = list(predefined)
+        for s in db_statuses:
+            if s not in final_list and s != "Released":
+                final_list.append(s)
+        return final_list
 
     async def get_movie_by_id(self, movie_id: str) -> MovieDetailDTO | None:
         """Busca os detalhes completos de um filme pelo seu sk_movie_id ou id_filme."""

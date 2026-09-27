@@ -42,6 +42,13 @@ class ReviewResponseDTO(BaseModel):
     comentario: str | None = None
     created_at: datetime
 
+    @classmethod
+    def model_validate(cls, obj: Any, *args: Any, **kwargs: Any) -> "ReviewResponseDTO":
+        res = super().model_validate(obj, *args, **kwargs)
+        if res.comentario == "":
+            res.comentario = None
+        return res
+
 
 class ReviewSummaryDTO(BaseModel):
     """Resumo consolidado de avaliações do filme."""

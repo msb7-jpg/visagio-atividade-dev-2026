@@ -17,6 +17,7 @@ class MovieListItemDTO(BaseModel):
     sinopse: str | None = None
     url_poster: str | None = None
     url_backdrop: str | None = None
+    status_filme: str | None = None
 
     # Metadados adicionais
     generos: list[str] = Field(default_factory=list)
@@ -69,6 +70,7 @@ class MovieListItemDTO(BaseModel):
             sinopse=m.sinopse,
             url_poster=m.url_poster,
             url_backdrop=m.url_backdrop,
+            status_filme=m.status_filme,
             generos=generos,
             diretores=diretores,
             produtoras=produtoras,

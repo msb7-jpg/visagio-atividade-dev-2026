@@ -23,6 +23,7 @@ class MovieFilterParams(BaseModel):
     genre: Annotated[str | None, Query(description="Filtro de gênero")] = None
     company: Annotated[str | None, Query(description="Filtro de produtora/estúdio")] = None
     year: Annotated[int | None, Query(description="Filtro de ano de lançamento")] = None
+    status: Annotated[str | None, Query(description="Filtro de status de lançamento")] = None
 
     sort_by: Annotated[SortField, Query(description="Campo de ordenação")] = "popularidade"
     order: Annotated[SortOrder, Query(description="Direção da ordenação (asc/desc)")] = "desc"

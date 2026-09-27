@@ -4,6 +4,7 @@ import {
   fetchGenres,
   fetchCompanies,
   fetchAvailableYears,
+  fetchAvailableStatuses,
   type FetchMoviesParams
 } from '@/features/catalog/api/catalogApi'
 
@@ -36,6 +37,14 @@ export function useAvailableYearsQuery() {
   return useQuery({
     queryKey: ['available-years'],
     queryFn: fetchAvailableYears,
+    staleTime: 1000 * 60 * 60 // 1 hora
+  })
+}
+
+export function useAvailableStatusesQuery() {
+  return useQuery({
+    queryKey: ['available-statuses'],
+    queryFn: fetchAvailableStatuses,
     staleTime: 1000 * 60 * 60 // 1 hora
   })
 }
