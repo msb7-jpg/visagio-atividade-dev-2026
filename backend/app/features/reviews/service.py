@@ -74,7 +74,7 @@ class ReviewsService:
             sk_movie_id=sk_id,
             nome=data.nome,
             nota=data.nota,
-            comentario=data.comentario,
+            comentario=data.comentario or "",
         )
         self.session.add(review)
         await self.session.flush()

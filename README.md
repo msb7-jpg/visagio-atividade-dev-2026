@@ -20,47 +20,102 @@ Plataforma cinematográfica completa inspirada no Letterboxd, integrando catálo
 
 ---
 
+## 📑 Sumário
+
+- [🎬 Demonstração & Mídias da Aplicação](#-demonstração--mídias-da-aplicação)
+  - [🎥 Demonstração em Vídeo & Animações](#-demonstração-em-vídeo--animações)
+  - [📸 Telas e Fluxos Principais](#-telas-e-fluxos-principais)
+- [🎯 Histórias de Usuário & Funcionalidades](#-histórias-de-usuário--funcionalidades)
+- [🚀 Como Executar o Projeto](#-como-executar-o-projeto)
+  - [1. Pré-Requisitos e Arquivos de Dados (CSV)](#1-pré-requisitos-e-arquivos-de-dados-csv)
+  - [2. Inicialização Rápida em Um Comando](#2-inicialização-rápida-em-um-comando-recomendado)
+  - [3. Configuração Manual Passo a Passo](#3-configuração-manual-passo-a-passo-opcional)
+  - [4. Testes Automatizados & Qualidade de Código](#4-testes-automatizados--qualidade-de-código)
+- [🏛️ Arquitetura em Vertical Slices](#️-arquitetura-em-vertical-slices)
+- [📖 Documentação Detalhada](#-documentação-detalhada)
+
+---
+
 ## 🎬 Demonstração & Mídias da Aplicação
 
 ### 🎥 Demonstração em Vídeo & Animações
 
-
 #### 1. Visão Geral do Catálogo & Navegação Fluida
+Demonstração da experiência de navegação do usuário pelo catálogo cinematográfico, alternando suavemente entre os modos de visualização em Grid e Lista Analítica, aplicando filtros combinados por gênero e navegando pelas páginas com carregamento ultrarrápido.
+
 ![Visão Geral do Catálogo](media/video-replacement/catalog-page-overviewmp4.gif)
 
 ---
 
-#### 2. Ações de Menu de Contexto, Avaliação, Favoritos & Watchlist
+#### 2. Ações Rápidas: Menu de Contexto, Avaliação, Favoritos & Watchlist
+Interações contextuais diretas sobre as obras: clique com o botão direito para acionar o menu de contexto, inclusão imediata nos Favoritos e na Watchlist via atualizações otimistas e abertura ágil do modal de avaliação com notas.
+
 ![Menu de Contexto e Ações](media/video-replacement/catalog-page-context-menu-review-favorite-add-to-list.gif)
 
 ---
 
-#### 3. Command Palette (⌘K) — Busca Global & Navegação Cross-App Instantânea
+#### 3. Command Palette (⌘K / Ctrl+K) — Busca Global & Navegação Instantânea
+Acesso instantâneo a qualquer filme, diretor ou seção do sistema através do atalho universal de teclado. Inclui busca com debouncing em tempo real, visualização de metadados no dropdown e navegação completa por setas sem tirar as mãos do teclado.
+
 ![Command Palette & Navegação Cross-App](media/video-replacement/catalog-page-using-command-pallete-to-navigate-cross-app.gif)
 
 ---
 
 #### 4. Autenticação Administrativa & Microinterações de Login
+Fluxo de autenticação do painel de administração com validação de credenciais, geração de token seguro JWT, microinterações visuais de formulário e atalho de preenchimento automático para agilizar testes e homologações.
+
 ![Login Administrativo](media/video-replacement/login-page-overview-mp4.gif)
 
 ---
 
 ### 📸 Telas e Fluxos Principais
 
-#### Catálogo & Modos de Visualização
-| Catálogo em Grid (Pôsteres 2:3) | Catálogo em Lista Analítica |
-| :---: | :---: |
-| ![Catálogo Grid](media/catalog-page-block.png) | ![Catálogo Lista](media/catalog-page-list.png) |
+#### 1. Catálogo em Grid Cinematográfico (Pôsteres 2:3)
+Visualização imersiva do catálogo de filmes com pôsteres em alta resolução na proporção 2:3, pílula de ações rápidas ao passar o mouse (favoritar, watchlist, avaliar), paginação eficiente e filtros combinados por gênero e ano de lançamento.
 
-#### Ficha Técnica Editorial & Avaliações
-| Ficha Técnica & Backdrop Panorâmico | Avaliação & Nova Resenha |
-| :---: | :---: |
-| ![Ficha Técnica](media/films-page-overview.png) | ![Modal de Resenha](media/films-page-review-add-or-edit.png) |
+![Catálogo em Grid](media/catalog-page-block.png)
 
-#### Gestão de Obras & Biblioteca Pessoal
-| Cadastro / Edição com Live Poster Preview | Minha Biblioteca (Favoritos & Watchlist) |
-| :---: | :---: |
-| ![Formulário de Filme](media/films-page-create-or-edit.png) | ![Minha Lista](media/my-list-page-overview.png) |
+---
+
+#### 2. Catálogo em Lista Analítica
+Modo de exibição alternativo, popularidade, comparativo de notas e mais metadados de cada produção em layout tabular responsivo.
+
+![Catálogo em Lista Analítica](media/catalog-page-list.png)
+
+---
+
+#### 3. Ficha Técnica Editorial & Backdrop Panorâmico
+Página detalhada da obra com imagem de fundo panorâmica em alta definição, sinopse, ficha de equipe (diretor, roteiristas, estúdios), painel financeiro comparativo (USD/BRL) e pontuação consolidada (CineFlow, TMDb e IMDb).
+
+![Ficha Técnica Editorial](media/films-page-overview.png)
+
+---
+
+#### 4. Avaliações Comunitárias & Nova Resenha
+Diálogo intuitivo para submissão de notas e resenhas em texto livre, com recálculo atômico e transacional da média da comunidade e exibição imediata na lista de críticas com expansão de texto.
+
+![Modal de Avaliação e Resenha](media/films-page-review-add-or-edit.png)
+
+---
+
+#### 5. Estúdio de Criação de Filmes (Live Poster Preview & Auto-Save)
+Formulário avançado de cadastro para administradores com validação assíncrona de URL da imagem em tempo real (`✓ Imagem verificada e acessível`), renderização instantânea do pôster 2:3 no card lateral e persistência automática de rascunhos (`• Rascunho Salvo`) para evitar perda de dados em caso de recarregamento acidental da página.
+
+![Cadastro de Filme com Live Preview e Rascunho](media/films-page-create.png)
+
+---
+
+#### 6. Edição de Metadados & Gestão de Títulos
+Painel para atualização de informações cadastrais, ajuste de diretores via combobox com busca inteligente e exclusão controlada com diálogo de confirmação destrutivo.
+
+![Edição de Filmes](media/films-page-edit.png)
+
+---
+
+#### 7. Minha Biblioteca (Favoritos & Watchlist)
+Área pessoal do cinéfilo para gerenciamento das obras salvas, com abas dedicadas para Filmes Favoritos e Lista de Desejos (Watchlist) sincronizadas instantaneamente via atualizações otimistas.
+
+![Minha Biblioteca](media/my-list-page-overview.png)
 
 ---
 
@@ -80,18 +135,19 @@ O sistema foi desenhado a partir dos requisitos centrais da especificação ofic
   - **Painel Financeiro & Métricas:** Orçamento, faturamento global, ROI consolidado (USD/BRL) e índice de popularidade.
   - Lightbox para ampliação do pôster em alta definição.
 - **Comunidade & Avaliações:**
-  - Submissão de novas avaliações com notas de **1 a 10** e resenha em texto.
+  - Submissão de novas avaliações com notas de **0 a 10** e resenha em texto.
   - Recálculo atômico e transacional da nota média e total de avaliações do filme.
   - Histórico de resenhas com cards interativos e expansão suave de comentários longos.
 - **Biblioteca Pessoal do Usuário (Minha Lista):**
   - Salvar em **Favoritos** e **Watchlist** em 1 clique (na pílula de hover do pôster, no menu de contexto ou na ficha técnica).
   - **Optimistic Updates:** Feedback visual instantâneo sem congelar a interface.
   - Aba unificada `/minha-lista` para gerenciar as obras salvas.
-- **Administração de Catálogo (CRUD Completo):**
+- **Administração de Catálogo (CRUD Completo & Estúdio de Criação):**
   - Autenticação segura com emissão de token JWT (`admin@rocketfilms.com` / `admin123`).
-  - Cadastro de novos filmes com validação em tempo real e **Live Poster Preview 2:3**.
-  - Edição de filmes existentes com recuperação de rascunhos.
-  - Exclusão segura com diálogo de confirmação destrutivo e remoção em cascata.
+  - **Auto-Save & Persistência de Rascunho (Draft Recovery):** O formulário salva automaticamente o progresso no armazenamento local (`• Rascunho Salvo`). Se o administrador atualizar a página (`F5`), fechar a aba por engano ou navegar para outra tela e voltar, todos os dados preenchidos permanecem intactos.
+  - **Validação Ativa de Imagem & Live Poster Preview (2:3):** Verificação assíncrona da URL informada (`✓ Imagem verificada e acessível`), checando se a imagem carrega antes do envio e renderizando instantaneamente o pôster cinematográfico na proporção 2:3 no card ao lado.
+  - **Combobox de Diretor com Criação Dinâmica:** Busca com debounce no banco de diretores existentes ou criação instantânea de novos diretores em 1 clique (`+ Cadastrar novo diretor`).
+  - **Edição & Exclusão Segura:** Edição ágil de qualquer título e exclusão segura com diálogo de confirmação destrutivo e remoção em cascata.
 
 ---
 
@@ -118,12 +174,22 @@ O projeto depende de **Python 3.11+**, [**uv**](https://docs.astral.sh/uv/) e [*
 
 ### 2. Inicialização Rápida em Um Comando (Recomendado)
 
-O repositório inclui o script inteligente [`setup.sh`](setup.sh) que automatiza todo o fluxo: detecta se o banco de dados já existe e está populado, aplica migrações do Alembic, sincroniza dependências (`uv` e `bun`), executa o seed analítico caso necessário e sobe ambos os servidores (FastAPI + Vite) concorrentemente:
+O repositório inclui scripts inteligentes que automatizam todo o fluxo: detectam se o banco de dados já existe e está populado, aplicam migrações do Alembic, sincronizam dependências (`uv` e `bun`), executam o seed analítico caso necessário e sobem ambos os servidores (FastAPI + Vite) concorrentemente:
 
+#### 🐧 Linux / macOS / Git Bash / WSL
 ```bash
-# Na raiz do projeto:
 ./setup.sh
 ```
+
+#### 🪟 Windows (PowerShell) obs: eu não devia te ajudar se vc ta tentando usar windows pra rodar isso, mas aq está!
+```powershell
+# Caso a execução de scripts locais esteja restrita, execute uma vez removendo o comentário abaixo:
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+.\setup.ps1
+```
+
+> **Dica Windows:** Caso prefira utilizar o **Git Bash** no Windows, você também pode executar `./setup.sh` diretamente. Para rodar nativamente via PowerShell, certifique-se de ter adicionado `uv`, `bun` e `python` ao PATH do sistema.
 
 ---
 

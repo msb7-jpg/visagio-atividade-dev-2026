@@ -312,6 +312,109 @@ def run_seed():
             transform_reviews,
         )
 
+        # Aplicar correções analíticas e visuais conhecidas (posters, popularidade real e diretores)
+        cursor.executescript(
+            """
+            -- =========================================================================
+            -- 1. CORREÇÃO DAS URLs DE PÔSTER E BACKDROP (dim_movies)
+            -- =========================================================================
+
+            -- 1.1 La Fellinette (809905)
+            UPDATE dim_movies
+            SET url_poster = 'https://image.tmdb.org/t/p/w500/ucpXEoOwkk2ggi2bEeXnmUV4aKj.jpg',
+                url_backdrop = 'https://image.tmdb.org/t/p/w1280/aRslZdNw2mi57lvV2TABgZtqDdQ.jpg'
+            WHERE id_filme = '809905';
+
+            -- 1.2 The Fear Footage 2: Curse of the Tape (658829)
+            UPDATE dim_movies
+            SET url_poster = 'https://image.tmdb.org/t/p/w500/xbbQ6AEKTWvQ3OG7AFjIwcyyrfz.jpg',
+                url_backdrop = 'https://image.tmdb.org/t/p/w1280/cL8ASiD6oFvXBMlhpvslTG30NXH.jpg'
+            WHERE id_filme = '658829';
+
+            -- 1.3 WWE Survivor Series 2018 (557809)
+            UPDATE dim_movies
+            SET url_poster = 'https://image.tmdb.org/t/p/w500/wWF0DscGaKZik8oBw7UgjU6xUMY.jpg',
+                url_backdrop = 'https://image.tmdb.org/t/p/w1280/itN9Vem3PLQXq5rkpY0g7lGtFu2.jpg'
+            WHERE id_filme = '557809';
+
+            -- 1.4 Battipaglia 1969 (418746)
+            UPDATE dim_movies
+            SET url_poster = 'https://www.cinemaitaliano.info/show_img.php?type=fotonotizie&id=46660&resize=yes&wi=600&he=800'
+            WHERE id_filme = '418746';
+
+
+            -- =========================================================================
+            -- 2. CORREÇÃO DA POPULARIDADE REAL (fact_movies_performance)
+            -- Remove os anos vazados (2020, 2019, 2018, 1969) e grava o valor real do TMDb
+            -- =========================================================================
+
+            -- 2.1 La Fellinette (Popularidade real = 0.767)
+            UPDATE fact_movies_performance
+            SET popularidade = 0.767
+            WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '809905');
+
+            -- 2.2 The Fear Footage 2 (Popularidade real = 1.716)
+            UPDATE fact_movies_performance
+            SET popularidade = 1.716
+            WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '658829');
+
+            -- 2.3 WWE Survivor Series 2018 (Popularidade real = 2.611)
+            UPDATE fact_movies_performance
+            SET popularidade = 2.611
+            WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '557809');
+
+            -- 2.4 Battipaglia 1969 (Popularidade real = 0.600)
+            UPDATE fact_movies_performance
+            SET popularidade = 0.600
+            WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '418746');
+
+
+            -- =========================================================================
+            -- 3. CORREÇÃO DOS DIRETORES NO CARD
+            -- Corrige o campo "Dir: Italy" e "Dir: United States Of America" exibido na UI
+            -- =========================================================================
+
+            -- La Fellinette: Francesca Fabbri Fellini é a Diretora (não "Italy")
+            UPDATE dim_people
+            SET tipo_pessoa = 'Diretor'
+            WHERE nome_pessoa = 'Francesca Fabbri Fellini'
+              AND sk_person_id IN (
+                  SELECT sk_person_id FROM bridge_movie_person
+                  WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '809905')
+              );
+
+            DELETE FROM bridge_movie_person
+            WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '809905')
+              AND sk_person_id IN (SELECT sk_person_id FROM dim_people WHERE nome_pessoa = 'Italy');
+
+            -- The Fear Footage 2: Ricky Umberger é o Diretor (não "United States Of America")
+            -- 1. Remove "United States Of America" da bridge
+            DELETE FROM bridge_movie_person
+            WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '658829')
+              AND sk_person_id IN (SELECT sk_person_id FROM dim_people WHERE nome_pessoa = 'United States Of America');
+
+            -- 2. Conecta Ricky Umberger como Diretor ao filme (sk_person_id já existente com tipo_pessoa='Diretor')
+            INSERT OR IGNORE INTO bridge_movie_person (sk_movie_id, sk_person_id)
+            SELECT m.sk_movie_id, p.sk_person_id
+            FROM dim_movies m, dim_people p
+            WHERE m.id_filme = '658829'
+              AND p.nome_pessoa = 'Ricky Umberger'
+              AND p.tipo_pessoa = 'Diretor';
+
+            -- 3. Atualização defensiva caso o registro de diretor ainda não existisse
+            UPDATE dim_people
+            SET tipo_pessoa = 'Diretor'
+            WHERE nome_pessoa = 'Ricky Umberger'
+              AND NOT EXISTS (
+                  SELECT 1 FROM dim_people WHERE nome_pessoa = 'Ricky Umberger' AND tipo_pessoa = 'Diretor'
+              )
+              AND sk_person_id IN (
+                  SELECT sk_person_id FROM bridge_movie_person
+                  WHERE sk_movie_id = (SELECT sk_movie_id FROM dim_movies WHERE id_filme = '658829')
+              );
+            """
+        )
+
         conn.commit()
         print("\nSeed finalizado com sucesso e transação commitada!")
 
