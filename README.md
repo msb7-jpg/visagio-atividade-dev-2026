@@ -22,26 +22,26 @@ Plataforma cinematográfica completa inspirada no Letterboxd, integrando catálo
 
 ## 🎬 Demonstração & Mídias da Aplicação
 
-### 🎥 Demonstração em Vídeo
+### 🎥 Demonstração em Vídeo & Animações
+
 
 #### 1. Visão Geral do Catálogo & Navegação Fluida
-<video src="media/catalog-page-overviewmp4.mp4" width="100%" controls></video>
-
-> 🔗 *Arquivo: [`media/catalog-page-overviewmp4.mp4`](media/catalog-page-overviewmp4.mp4)*
+![Visão Geral do Catálogo](media/video-replacement/catalog-page-overviewmp4.gif)
 
 ---
 
 #### 2. Ações de Menu de Contexto, Avaliação, Favoritos & Watchlist
-<video src="media/catalog-page-context-menu-review-favorite-add-to-list.mp4" width="100%" controls></video>
-
-> 🔗 *Arquivo: [`media/catalog-page-context-menu-review-favorite-add-to-list.mp4`](media/catalog-page-context-menu-review-favorite-add-to-list.mp4)*
+![Menu de Contexto e Ações](media/video-replacement/catalog-page-context-menu-review-favorite-add-to-list.gif)
 
 ---
 
-#### 3. Autenticação Administrativa & Microinterações de Login
-<video src="media/login-page-overview-mp4.mp4" width="100%" controls></video>
+#### 3. Command Palette (⌘K) — Busca Global & Navegação Cross-App Instantânea
+![Command Palette & Navegação Cross-App](media/video-replacement/catalog-page-using-command-pallete-to-navigate-cross-app.gif)
 
-> 🔗 *Arquivo: [`media/login-page-overview-mp4.mp4`](media/login-page-overview-mp4.mp4)*
+---
+
+#### 4. Autenticação Administrativa & Microinterações de Login
+![Login Administrativo](media/video-replacement/login-page-overview-mp4.gif)
 
 ---
 
@@ -51,11 +51,6 @@ Plataforma cinematográfica completa inspirada no Letterboxd, integrando catálo
 | Catálogo em Grid (Pôsteres 2:3) | Catálogo em Lista Analítica |
 | :---: | :---: |
 | ![Catálogo Grid](media/catalog-page-block.png) | ![Catálogo Lista](media/catalog-page-list.png) |
-
-#### Command Palette (⌘K) & Busca Rápida
-| Command Palette no Catálogo | Busca Rápida de Filmes |
-| :---: | :---: |
-| ![Command Palette](media/catalog-page-command-pallete.png) | ![Busca na Biblioteca](media/my-list-page-command-pallete-searching-movies.png) |
 
 #### Ficha Técnica Editorial & Avaliações
 | Ficha Técnica & Backdrop Panorâmico | Avaliação & Nova Resenha |
@@ -197,62 +192,24 @@ cd frontend && bun run test
 # Linters e Checagem de Tipos
 cd backend && uv run ruff check .
 cd frontend && bun run lint && bun run build
+
+# Detecção de Código Morto & Dependências Não Utilizadas (Fallow)
+cd frontend && bun run fallow
+
+# Manutenção & Sincronização do Tailwind CSS v4 (@tailwindcss/upgrade)
+cd frontend && bun run tailwind-upgrade
 ```
+
+#### Ferramentas de Auditoria & Qualidade:
+- **`fallow` (`bun run fallow`):** Analisador estático que detecta **dead code**, dependências não utilizadas em `package.json`, exports órfãos e arquivos não referenciados na árvore de módulos do frontend, mantendo o bundle enxuto.
+- **`tailwind-upgrade` (`bun run tailwind-upgrade`):** Utilitário oficial (`@tailwindcss/upgrade`) que audita e migra automaticamente classes utilitárias depreciadas, configurações legadas e sintaxes para o padrão nativo do **Tailwind CSS v4 (engine Oxide)**.
+- **`ruff` & `eslint`:** Validação estrita de linting e boas práticas tanto no Python 3.11+ (regras PEP 8, imports limpos) quanto no TypeScript 5.9+ / React 19.
 
 ---
 
 ## 🏛️ Arquitetura em Vertical Slices
 
 Ao invés de camadas horizontais que espalham a mesma funcionalidade por diretórios técnicos distantes, o CineFlow adota **Vertical Slice Architecture**. Cada domínio de funcionalidade agrupa suas próprias rotas, contratos de dados, regras de negócio e componentes de interface.
-
-```mermaid
-graph TD
-    subgraph UI ["Frontend (React 19 + TanStack + shadcn/ui)"]
-        CatalogSlice["Catalog Slice<br/>(Grid/List, Filtros, URL State)"]
-        DetailsSlice["Movie Details Slice<br/>(Ficha Técnica, Comparativo, KPIs)"]
-        ReviewsSlice["Reviews Slice<br/>(Modal TanStack Form, ExpandableCard)"]
-        AdminSlice["Movie Admin Slice<br/>(CRUD, Live Poster Preview 2:3)"]
-        LibrarySlice["User Library Slice<br/>(Favoritos, Watchlist, Optimistic Updates)"]
-        SpotlightSlice["Command Palette Slice<br/>(cmdk, Atalhos Globais ⌘K)"]
-    end
-
-    subgraph API ["Backend API (FastAPI)"]
-        MoviesEndpoint["/api/v1/movies<br/>(Catálogo, Filtros & Métricas)"]
-        ReviewsEndpoint["/api/v1/movies/:id/reviews<br/>(Histórico & Recálculo Atômico)"]
-        AdminEndpoint["/api/v1/movies [POST/PUT/DELETE]<br/>(CRUD Protegido por JWT)"]
-        LibraryEndpoint["/api/v1/user/library<br/>(Toggle Favoritos/Watchlist)"]
-        MetadataEndpoint["/api/v1/genres & /available-years<br/>(Metadados para Filtros)"]
-    end
-
-    subgraph Data ["Banco de Dados & Ingestão"]
-        SQLite[(SQLite + aiosqlite)]
-        Alembic["Alembic Migrations"]
-        Seed["seed_database.py (CSVs)"]
-    end
-
-    CatalogSlice --> MoviesEndpoint
-    CatalogSlice --> MetadataEndpoint
-    DetailsSlice --> MoviesEndpoint
-    ReviewsSlice --> ReviewsEndpoint
-    AdminSlice --> AdminEndpoint
-    LibrarySlice --> LibraryEndpoint
-    SpotlightSlice --> MoviesEndpoint
-
-    MoviesEndpoint --> SQLite
-    ReviewsEndpoint --> SQLite
-    AdminEndpoint --> SQLite
-    LibraryEndpoint --> SQLite
-    MetadataEndpoint --> SQLite
-    Alembic --> SQLite
-    Seed --> SQLite
-```
-
-### Princípios-Chave:
-1. **Linguagem Onipresente (Ubiquitous Language):** Os mesmos termos canônicos (`titulo`, `sinopse`, `ano_lancamento`, `duracao_minutos`, `url_poster`, `url_backdrop`, `nota_media_usuarios`, `comentario`) são rigorosamente preservados do banco SQLite até o TanStack Form.
-2. **Separação UI Pura vs. Orquestração:** Componentes visuais (`*View.tsx`) recebem apenas dados via props; a orquestração de queries, mutações e cache fica isolada em Containers e Hooks dedicados.
-3. **Design Editorial Anti-Cardite:** Experiência cinematográfica limpa com foco visual nas obras, tipografia Geist, contenção cromática e zero ruído visual.
-
----
 
 ## 📖 Documentação Detalhada
 
