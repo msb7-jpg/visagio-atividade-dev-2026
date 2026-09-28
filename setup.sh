@@ -90,6 +90,13 @@ VENV_UVICORN="$VENV_DIR/bin/uvicorn"
 if [ "$BACKEND_RUNNER" = "uv" ]; then
   echo -e "\n${C_CYAN}📦 Sincronizando dependências do Backend (uv sync)...${C_RESET}"
   (cd "$BACKEND_DIR" && uv sync --all-extras)
+  # Verifica se uvicorn foi instalado corretamente
+  if ! (cd "$BACKEND_DIR" && uv run python -c "import uvicorn" 2>/dev/null); then
+    echo -e "${C_RED}[ERRO] Pré-requisito ausente: 'uvicorn' não encontrado após uv sync.${C_RESET}"
+    echo -e "${C_RED}   Verifique se uvicorn está listado nas dependências do pyproject.toml.${C_RESET}"
+    exit 1
+  fi
+  echo -e "${C_GREEN}   ✓ uvicorn disponível no ambiente uv.${C_RESET}"
 else
   echo -e "\n${C_CYAN}📦 Preparando ambiente virtual do Backend (venv + pip)...${C_RESET}"
   if [ ! -d "$VENV_DIR" ]; then
@@ -98,23 +105,55 @@ else
   fi
   echo -e "   Instalando/atualizando dependências com pip..."
   (cd "$BACKEND_DIR" && "$VENV_DIR/bin/pip" install --upgrade pip && "$VENV_DIR/bin/pip" install -e ".[dev]")
+  # Verifica se uvicorn foi instalado no venv
+  if [ ! -x "$VENV_UVICORN" ]; then
+    echo -e "${C_RED}[ERRO] Pré-requisito ausente: 'uvicorn' não encontrado em $VENV_UVICORN após pip install.${C_RESET}"
+    echo -e "${C_RED}   Verifique se uvicorn está listado nas dependências do pyproject.toml ou requirements.${C_RESET}"
+    exit 1
+  fi
+  echo -e "${C_GREEN}   ✓ uvicorn disponível no venv.${C_RESET}"
 fi
+
+install_frontend_deps() {
+  if [ "$FRONTEND_RUNNER" = "bun" ]; then
+    (cd "$FRONTEND_DIR" && bun install)
+  else
+    (cd "$FRONTEND_DIR" && npm install)
+  fi
+}
+
+VITE_BIN="$FRONTEND_DIR/node_modules/.bin/vite"
 
 if [ "$FRONTEND_RUNNER" = "bun" ]; then
   echo -e "\n${C_CYAN}📦 Verificando dependências do Frontend (bun install)...${C_RESET}"
-  if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
-    (cd "$FRONTEND_DIR" && bun install)
+  if [ ! -d "$FRONTEND_DIR/node_modules" ] || [ ! -f "$VITE_BIN" ]; then
+    if [ -d "$FRONTEND_DIR/node_modules" ]; then
+      echo -e "${C_YELLOW}   ⚠️  node_modules existe mas 'vite' não encontrado em .bin/. Reinstalando...${C_RESET}"
+    fi
+    install_frontend_deps
   else
-    echo -e "${C_GREEN}   ✓ node_modules já presente no frontend.${C_RESET}"
+    echo -e "${C_GREEN}   ✓ node_modules e vite presentes no frontend.${C_RESET}"
   fi
 else
   echo -e "\n${C_CYAN}📦 Verificando dependências do Frontend (npm install)...${C_RESET}"
-  if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
-    (cd "$FRONTEND_DIR" && npm install)
+  if [ ! -d "$FRONTEND_DIR/node_modules" ] || [ ! -f "$VITE_BIN" ]; then
+    if [ -d "$FRONTEND_DIR/node_modules" ]; then
+      echo -e "${C_YELLOW}   ⚠️  node_modules existe mas 'vite' não encontrado em .bin/. Reinstalando...${C_RESET}"
+    fi
+    install_frontend_deps
   else
-    echo -e "${C_GREEN}   ✓ node_modules já presente no frontend.${C_RESET}"
+    echo -e "${C_GREEN}   ✓ node_modules e vite presentes no frontend.${C_RESET}"
   fi
 fi
+
+# Verificação final: vite deve existir após install
+if [ ! -f "$VITE_BIN" ]; then
+  echo -e "${C_RED}[ERRO] Pré-requisito ausente: 'vite' não encontrado em node_modules/.bin/ após install.${C_RESET}"
+  echo -e "${C_RED}   Verifique se 'vite' está listado como devDependency no package.json do frontend.${C_RESET}"
+  echo -e "${C_RED}   Tente manualmente: cd frontend && npm install${C_RESET}"
+  exit 1
+fi
+
 
 # ------------------------------------------------------------------------------
 # 4. Detecção de Estado do Banco de Dados & Ingestão
