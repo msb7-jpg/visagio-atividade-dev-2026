@@ -304,17 +304,17 @@ if ($NeedsSeed) {
 # 6. Execucao Conjunta: Backend FastAPI + Frontend Vite
 # ------------------------------------------------------------------------------
 Write-Host "`n[RUN] Tudo pronto! Iniciando servidores..." -ForegroundColor Green
-Write-Host "   * Backend FastAPI: http://localhost:8000 (Docs: http://localhost:8000/docs)" -ForegroundColor Gray
-Write-Host "   * Frontend React:  http://localhost:5173" -ForegroundColor Gray
+Write-Host "   * Backend FastAPI: http://0.0.0.0:8000 (Docs: http://localhost:8000/docs)" -ForegroundColor Gray
+Write-Host "   * Frontend React:  http://0.0.0.0:5173 (Local: http://localhost:5173)" -ForegroundColor Gray
 Write-Host "   * Pressione Ctrl+C para encerrar ambos os servicos.`n" -ForegroundColor Yellow
 
 $BackendJob = Start-Job -ScriptBlock {
     param($dir, $runner, $uvicornPath)
     Set-Location $dir
     if ($runner -eq "uv") {
-        & uv run uvicorn app.main:app --reload --port 8000 2>&1
+        & uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 2>&1
     } else {
-        & $uvicornPath app.main:app --reload --port 8000 2>&1
+        & $uvicornPath app.main:app --reload --host 0.0.0.0 --port 8000 2>&1
     }
 } -ArgumentList $BackendDir, $BackendRunner, $VenvUvicorn
 
@@ -322,9 +322,9 @@ $FrontendJob = Start-Job -ScriptBlock {
     param($dir, $runner)
     Set-Location $dir
     if ($runner -eq "bun") {
-        & bun run dev 2>&1
+        & bun run dev -- --host 0.0.0.0 2>&1
     } else {
-        & npm run dev 2>&1
+        & npm run dev -- --host 0.0.0.0 2>&1
     }
 } -ArgumentList $FrontendDir, $FrontendRunner
 

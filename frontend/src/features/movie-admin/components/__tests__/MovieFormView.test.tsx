@@ -225,4 +225,50 @@ describe('MovieFormView', () => {
     // O rascunho deve permanecer nulo
     expect(localStorage.getItem('rocketfilms_movie_create_draft')).toBeNull()
   })
+
+  it('salva rascunho automaticamente ao desmontar se o usuário digitou dados', async () => {
+    localStorage.removeItem('rocketfilms_movie_create_draft')
+
+    const { unmount } = renderWithProviders(
+      <MovieFormView
+        mode="create"
+        availableGenres={mockGenres}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+
+    const titleInput = screen.getByLabelText(/Título do Filme/)
+    fireEvent.change(titleInput, { target: { value: 'Filme Inacabado' } })
+
+    // Desmonta imediatamente simulando o usuário navegando para outra página
+    unmount()
+
+    const saved = localStorage.getItem('rocketfilms_movie_create_draft')
+    expect(saved).not.toBeNull()
+    const parsed = JSON.parse(saved as string)
+    expect(parsed.titulo).toBe('Filme Inacabado')
+  })
+
+  it('abre diálogo de descarte ao clicar em Voltar se houver dados preenchidos', () => {
+    const handleCancel = vi.fn()
+    renderWithProviders(
+      <MovieFormView
+        mode="create"
+        availableGenres={mockGenres}
+        onSubmit={vi.fn()}
+        onCancel={handleCancel}
+      />
+    )
+
+    const titleInput = screen.getByLabelText(/Título do Filme/)
+    fireEvent.change(titleInput, { target: { value: 'Filme Digitado' } })
+
+    const backBtn = screen.getByRole('button', { name: /Voltar/i })
+    fireEvent.click(backBtn)
+
+    // O diálogo de confirmação deve ser aberto em vez de cancelar direto
+    expect(screen.getByText('Descartar Rascunho?')).toBeInTheDocument()
+    expect(handleCancel).not.toHaveBeenCalled()
+  })
 })

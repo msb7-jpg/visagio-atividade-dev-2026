@@ -201,4 +201,42 @@ describe('Navbar component', () => {
     expect(localStorage.getItem('rocketfilms_movie_create_draft')).toBeNull()
     expect(localStorage.getItem('rocketfilms_access_token')).toBeNull()
   })
+
+  it('exibe indicador de notificação e aria-label atualizado quando há rascunho de filme', () => {
+    const mockToken = [
+      btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })),
+      btoa(
+        JSON.stringify({
+          sub: 'admin-1',
+          email: 'admin@rocketfilms.com',
+          nome: 'Miguel Batista',
+          role: 'admin',
+          exp: Math.floor(Date.now() / 1000) + 3600
+        })
+      ),
+      'mock-sig'
+    ].join('.')
+
+    localStorage.setItem('rocketfilms_access_token', mockToken)
+    localStorage.setItem(
+      'rocketfilms_movie_create_draft',
+      JSON.stringify({ titulo: 'Interestelar 2', updatedAt: Date.now() })
+    )
+
+    render(
+      <BrowserRouter>
+        <NavbarWithVisibilityToggle initialVisible={false} />
+      </BrowserRouter>
+    )
+
+    // O botão deve ter o aria-label com "(rascunho disponível)" e a bolinha pulsante renderizada
+    const createBtn = screen.getByRole('button', {
+      name: /Cadastrar filme \(rascunho disponível\)/i
+    })
+    expect(createBtn).toBeInTheDocument()
+    expect(screen.getByTestId('draft-notification-dot')).toBeInTheDocument()
+
+    localStorage.removeItem('rocketfilms_movie_create_draft')
+    localStorage.removeItem('rocketfilms_access_token')
+  })
 })

@@ -39,7 +39,7 @@ function createWrapper() {
 
 describe('useUserLibrary', () => {
   beforeEach(() => {
-    vi.restoreAllMocks()
+    vi.clearAllMocks()
     localStorage.clear()
   })
 

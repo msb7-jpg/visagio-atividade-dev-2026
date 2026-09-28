@@ -231,8 +231,8 @@ fi
 # 6. Execução Conjunta: Backend FastAPI + Frontend Vite com Encerramento Limpo
 # ------------------------------------------------------------------------------
 echo -e "\n${C_BOLD}${C_GREEN}🚀 Tudo pronto! Iniciando servidores...${C_RESET}"
-echo -e "   • Backend FastAPI: ${C_BOLD}http://localhost:8000${C_RESET} (Docs: http://localhost:8000/docs)"
-echo -e "   • Frontend React:  ${C_BOLD}http://localhost:5173${C_RESET}"
+echo -e "   • Backend FastAPI: ${C_BOLD}http://0.0.0.0:8000${C_RESET} (Docs: http://0.0.0.0:8000/docs | http://localhost:8000/docs)"
+echo -e "   • Frontend React:  ${C_BOLD}http://0.0.0.0:5173${C_RESET} (Local: http://localhost:5173)"
 echo -e "   • Pressione ${C_BOLD}Ctrl+C${C_RESET} para encerrar ambos os serviços.\n"
 
 BACKEND_PID=""
@@ -285,19 +285,19 @@ trap cleanup SIGINT SIGTERM EXIT
 
 # Inicia backend em background
 if [ "$BACKEND_RUNNER" = "uv" ]; then
-  (cd "$BACKEND_DIR" && exec uv run uvicorn app.main:app --reload --port 8000) &
+  (cd "$BACKEND_DIR" && exec uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000) &
   BACKEND_PID=$!
 else
-  (cd "$BACKEND_DIR" && exec "$VENV_UVICORN" app.main:app --reload --port 8000) &
+  (cd "$BACKEND_DIR" && exec "$VENV_UVICORN" app.main:app --reload --host 0.0.0.0 --port 8000) &
   BACKEND_PID=$!
 fi
 
 # Inicia frontend em background
 if [ "$FRONTEND_RUNNER" = "bun" ]; then
-  (cd "$FRONTEND_DIR" && exec bun run dev) &
+  (cd "$FRONTEND_DIR" && exec bun run dev -- --host 0.0.0.0) &
   FRONTEND_PID=$!
 else
-  (cd "$FRONTEND_DIR" && exec npm run dev) &
+  (cd "$FRONTEND_DIR" && exec npm run dev -- --host 0.0.0.0) &
   FRONTEND_PID=$!
 fi
 

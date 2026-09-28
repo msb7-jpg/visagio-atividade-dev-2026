@@ -114,7 +114,11 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
   const latestValuesRef = React.useRef(formValues)
   React.useEffect(() => {
     latestValuesRef.current = formValues
-  }, [formValues])
+    // Se o usuário estiver interagindo e digitando dados, reativa a permissão de salvar rascunho
+    if (!isEditMode && isDraftNotEmpty(formValues)) {
+      isDiscardingRef.current = false
+    }
+  }, [formValues, isEditMode])
 
   // Salva rascunho com debounce e flush ao recarregar a página
   React.useEffect(() => {
@@ -127,7 +131,7 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
     }, 150)
 
     const handleBeforeUnload = () => {
-      if (!isDiscardingRef.current && typeof window !== 'undefined' && localStorage.getItem(MOVIE_DRAFT_KEY) !== null) {
+      if (!isDiscardingRef.current && isDraftNotEmpty(latestValuesRef.current)) {
         saveMovieDraft(latestValuesRef.current)
       }
     }
@@ -137,8 +141,8 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
     return () => {
       clearTimeout(timer)
       window.removeEventListener('beforeunload', handleBeforeUnload)
-      // Só salva na desmontagem se NÃO foi uma ação explícita de descarte/submissão e o rascunho ainda existe
-      if (!isDiscardingRef.current && typeof window !== 'undefined' && localStorage.getItem(MOVIE_DRAFT_KEY) !== null) {
+      // Só salva na desmontagem se NÃO foi uma ação explícita de descarte/submissão e o rascunho contém valores válidos
+      if (!isDiscardingRef.current && isDraftNotEmpty(latestValuesRef.current)) {
         saveMovieDraft(latestValuesRef.current)
       }
     }
@@ -174,7 +178,7 @@ export const MovieFormView: React.FC<MovieFormViewProps> = ({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={onCancel}
+          onClick={handleAttemptCancel}
         >
           <span className="flex items-center gap-2">
             <ArrowLeft className="size-4" />
