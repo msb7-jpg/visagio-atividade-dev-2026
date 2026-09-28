@@ -19,6 +19,5 @@ htmlcov/
 .DS_Store
 .vscode/
 
-data/
 command-pallete.png
 *.mp4
