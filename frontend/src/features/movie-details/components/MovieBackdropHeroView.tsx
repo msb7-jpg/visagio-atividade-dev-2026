@@ -1,3 +1,5 @@
+import { BlurImage } from '@/components/ui/blur-image'
+
 interface MovieBackdropHeroViewProps {
   urlBackdrop: string | null | undefined
   titulo: string
@@ -23,14 +25,17 @@ export function MovieBackdropHeroView({
       data-testid="backdrop-container"
       className="relative h-64 w-full overflow-hidden sm:h-80 md:h-96"
     >
-      <img
+      <BlurImage
         src={urlBackdrop}
         alt={`Backdrop de ${titulo}`}
-        className="h-full w-full scale-105 object-cover object-top opacity-40 blur-xs filter"
+        loading="eager"
+        containerClassName="absolute inset-0"
+        className="scale-105 object-cover object-top opacity-70"
       />
       {/* Máscara de gradiente fade-to-black na base conectando fluidamente ao conteúdo */}
-      <div className="absolute inset-0 bg-linear-to-t from-background via-background/70 to-transparent" />
-      <div className="absolute inset-0 bg-linear-to-r from-background/90 via-transparent to-background/90" />
+      <div className="absolute inset-0 bg-linear-to-t from-background via-background/50 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-r from-background/60 via-transparent to-background/60" />
     </div>
   )
 }
+
